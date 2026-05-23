@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行政実務用RAG - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* Page header */
+.page-header{border-bottom:1px solid var(--solid-gray-300);padding:1.5rem 0 1rem;margin-bottom:1.5rem;}
+.page-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:768px){.page-title{font-size:1.5rem;}}
+
+/* Notes section */
+.page-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.page-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.page-notes h3{font-size:0.9375rem;font-weight:700;margin:0.75rem 0 0.25rem;}
+.page-notes p{margin:0.25rem 0;}
+.page-notes ul,.page-notes ol{margin:0.25rem 0 0.25rem 1.5rem;}
+.page-notes li{margin:0.125rem 0;}
+.page-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:12px;padding:0.5rem 0.75rem;}
+.page-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.page-notes summary::before{content:'\25B6';font-size:0.625rem;transition:transform 0.2s;}
+.page-notes details[open] summary::before{transform:rotate(90deg);}
+.page-notes details>div{padding:0.5rem 0 0 1.25rem;}
+.notice-text{color:var(--error-1);font-size:0.9375rem;line-height:1.7;margin:0.5rem 0 0;}
+
+/* Stage Badge */
+.stage-badges{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+.stage-badge{display:inline-flex;align-items:center;min-height:2rem;padding:0.25rem 0.75rem;border-radius:9999px;font-size:0.875rem;font-weight:500;line-height:1;border:1px solid transparent;}
+.stage-badge.pending{border-color:var(--solid-gray-420);background:var(--solid-gray-50);color:var(--solid-gray-536);}
+.stage-badge.active{border-color:var(--blue-900);background:var(--blue-900);color:#fff;}
+.stage-badge.done{border-color:#2e7d32;background:#2e7d32;color:#fff;}
+
+/* Result Box */
+.result-box{position:relative;margin-top:1.25rem;border-radius:12px;border:1px solid var(--solid-gray-420);padding:1.25rem;}
+.result-placeholder{color:var(--solid-gray-536);line-height:1.75;}
+.result-actions{display:flex;justify-content:flex-end;margin:-0.25rem 0 0;}
+
+/* Detail Section */
+.detail-section{margin-top:1rem;}
+.detail-toggle{display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:1rem;font-weight:700;color:var(--solid-gray-800);background:none;border:none;padding:0.25rem 0;font-family:inherit;}
+.detail-toggle:hover{text-decoration:underline;}
+.detail-toggle svg{transition:transform 0.2s;width:1.25rem;height:1.25rem;}
+.detail-toggle.open svg{transform:rotate(180deg);}
+.detail-content{display:none;margin-top:0.5rem;background:var(--solid-gray-50);padding:0.75rem;font-size:0.875rem;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow-y:auto;border-radius:8px;}
+.detail-content.open{display:block;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'rag'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:64rem">
+      <div class="page-header">
+        <h1 class="page-title">行政実務用RAG（検索拡張生成）</h1>
+        <div class="page-notes">
+          <h2>想定用途</h2>
+          <p>ナレッジベース（Markdownドキュメント）からベクトル検索で関連情報を取得し、AIが回答を生成します。クエリ拡張により検索精度を向上させます。</p>
+          <p class="notice-text">こちらは各自治体ごとのデータ（議会議事録、基本計画、子育て支援計画等）をAIに入れて使用する仕組みです。このデモでは政府の<strong>「骨太の方針2025」</strong>をRAGにしました。</p>
+          <h3>アプリ個別の留意点</h3>
+          <p>ベクトル検索を使用しているため、データの更新頻度は手動更新（再ビルド）に依存します。最新情報については、公式の情報源で確認することをお勧めします。AIが生成した回答の正確性は、必ず原典で確認してください。</p>
+          <details>
+            <summary>入力例</summary>
+            <div>
+              <p>「骨太の方針2025における重点施策は何ですか？」</p>
+              <p>「デジタル行財政改革の具体的な取り組みについて教えてください」</p>
+              <p>「地方創生に関する施策をまとめてください」</p>
+            </div>
+          </details>
+          <h2>操作方法</h2>
+          <p>質問を入力し、実行ボタンを押してください。クエリ拡張数を増やすと検索精度が向上しますが、処理に時間がかかります。「各ステージの中間結果を表示する」をオンにすると、4段階の処理過程を確認できます。</p>
+          <details>
+            <summary>仕組み（4段階パイプライン）</summary>
+            <div>
+              <ol>
+                <li><strong>クエリ拡張</strong>: 元の質問からGemini AIが複数の検索クエリを生成</li>
+                <li><strong>ベクトル検索</strong>: 各クエリでナレッジベースからコサイン類似度検索</li>
+                <li><strong>関連性評価</strong>: 検索結果の関連度をAIがスコアリング（0〜10点）</li>
+                <li><strong>回答生成</strong>: 高関連度の情報を使ってAIが最終回答を生成</li>
+              </ol>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="ragForm" onsubmit="executeRag(event)">
+        <div class="form-group">
+          <label class="dads-label" for="question">質問 <span class="dads-required">必須</span></label>
+          <p class="dads-support">ナレッジベースから情報を検索して回答を生成します</p>
+          <textarea class="dads-textarea" id="question" placeholder="例: 行政手続きのデジタル化について教えてください" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="dads-label" for="nQueries">クエリ拡張数 <span class="dads-required">必須</span></label>
+          <p class="dads-support">元の質問からいくつの検索クエリを生成するか指定します</p>
+          <select class="dads-select" id="nQueries">
+            <option value="1">1（拡張なし）</option>
+            <option value="2">2</option>
+            <option value="3" selected>3（推奨）</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+            <input type="checkbox" id="showDetail" checked style="width:1.25rem;height:1.25rem;accent-color:var(--blue-900);cursor:pointer;">
+            <span style="font-size:1rem;line-height:1.7;">各ステージの中間結果を表示する</span>
+          </label>
+        </div>
+
+        <div class="btn-area" style="justify-content:center">
+          <button type="submit" class="dads-btn" id="submitBtn" style="min-width:15rem">実行</button>
+        </div>
+      </form>
+
+      <hr class="dads-divider">
+
+      <!-- Result -->
+      <h2 style="font-size:1.125rem;font-weight:700;line-height:1.6;margin-bottom:0.5rem;">実行結果</h2>
+
+      <!-- Stage Badges -->
+      <div class="stage-badges" id="stageBadges" style="display:none;">
+        <span class="stage-badge pending" id="badge1">1. クエリ拡張</span>
+        <span class="stage-badge pending" id="badge2">2. ベクトル検索</span>
+        <span class="stage-badge pending" id="badge3">3. 関連性評価</span>
+        <span class="stage-badge pending" id="badge4">4. 回答生成</span>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-indicator" id="progress">
+        <div class="progress-spinner"></div>
+        <span class="progress-label" id="progressLabel">処理中...</span>
+      </div>
+
+      <div class="result-box" id="resultBox">
+        <div id="resultContent">
+          <span class="result-placeholder">AIアプリのレスポンスは、ここに表示されます</span>
+        </div>
+        <div class="result-actions" id="resultActions" style="display:none;">
+          <button class="copy-btn" id="copyBtn" onclick="copyResult()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            コピー
+          </button>
+        </div>
+      </div>
+
+      <!-- Detail Section -->
+      <div class="detail-section" id="detailSection" style="display:none;">
+        <button class="detail-toggle" id="detailToggle" onclick="toggleDetail()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+          中間結果（詳細）
+        </button>
+        <div class="detail-content" id="detailContent"></div>
+      </div>
+
+      <div class="page-footer">
+        注意: AIの出力は必ずしも正確ではありません。重要な情報は必ずご自身で確認してください。
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script src="../shared/markdown.js"></script>
+<script>
+initLayout({ activePage: 'rag', basePath: '' });
+
+var API_URL = '../rag/rag_api.php';
+var outputText = '';
+var detailText = '';
+var abortController = null;
+
+/* ===== Stage Badge Update ===== */
+function updateStage(stage, status) {
+  for (var i = 1; i <= 4; i++) {
+    var badge = document.getElementById('badge' + i);
+    if (!badge) continue;
+    if (i < stage) { badge.className = 'stage-badge done'; }
+    else if (i === stage) { badge.className = 'stage-badge ' + status; }
+    else { badge.className = 'stage-badge pending'; }
+  }
+}
+
+/* ===== Execute RAG ===== */
+function executeRag(e) {
+  e.preventDefault();
+  var question = document.getElementById('question').value.trim();
+  if (!question) return;
+
+  var nQueries = parseInt(document.getElementById('nQueries').value);
+  var showDetail = document.getElementById('showDetail').checked;
+
+  outputText = '';
+  detailText = '';
+  document.getElementById('resultContent').innerHTML = '';
+  document.getElementById('resultActions').style.display = 'none';
+  document.getElementById('stageBadges').style.display = 'flex';
+  document.getElementById('progress').classList.add('active');
+  document.getElementById('progressLabel').textContent = '処理中...';
+  updateStage(1, 'active');
+
+  if (showDetail) {
+    document.getElementById('detailSection').style.display = 'block';
+    document.getElementById('detailContent').textContent = '';
+  } else {
+    document.getElementById('detailSection').style.display = 'none';
+  }
+
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '実行中...';
+
+  abortController = new AbortController();
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question: question, n_queries: nQueries, show_detail: showDetail }),
+    signal: abortController.signal
+  }).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+
+    function read() {
+      return reader.read().then(function(result) {
+        if (result.done) { finishExecution(); return; }
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var t = lines[i].trim();
+          if (!t || t === 'data: [DONE]') continue;
+          if (t.startsWith('data: ')) {
+            try {
+              var j = JSON.parse(t.slice(6));
+              if (j.stage) {
+                updateStage(j.stage, 'active');
+                document.getElementById('progressLabel').textContent = j.label || 'Stage ' + j.stage;
+              }
+              if (j.text) {
+                outputText += j.text;
+                renderOutput();
+              }
+              if (j.detail) {
+                detailText += j.detail + '\n';
+                document.getElementById('detailContent').textContent = detailText;
+              }
+              if (j.error) {
+                outputText += '\n[エラー] ' + j.error;
+                renderOutput();
+              }
+              if (j.stage_done) {
+                updateStage(j.stage_done, 'done');
+              }
+            } catch (e) {}
+          }
+        }
+        return read();
+      });
+    }
+    return read();
+  }).catch(function(err) {
+    if (err.name === 'AbortError') {
+      outputText += '\n\n[中断しました]';
+      renderOutput();
+    } else {
+      document.getElementById('resultContent').innerHTML = '<p style="color:var(--error-1);">エラー: ' + escapeHtml(err.message) + '</p>';
+    }
+    finishExecution();
+  });
+}
+
+function finishExecution() {
+  document.getElementById('progress').classList.remove('active');
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = false;
+  btn.textContent = '実行';
+  abortController = null;
+  if (outputText) {
+    document.getElementById('resultActions').style.display = 'flex';
+    updateStage(5, 'done');
+  }
+}
+
+/* ===== Render Output ===== */
+function renderOutput() {
+  var el = document.getElementById('resultContent');
+  el.innerHTML = '<div class="prose">' + renderMarkdown(outputText) + '</div>';
+  var main = document.querySelector('.app-main');
+  main.scrollTop = main.scrollHeight;
+}
+
+/* ===== Copy ===== */
+function copyResult() {
+  if (!outputText) return;
+  navigator.clipboard.writeText(outputText).then(function() {
+    var btn = document.getElementById('copyBtn');
+    btn.classList.add('copied');
+    var orig = btn.innerHTML;
+    btn.innerHTML = orig.replace('コピー', 'コピー済み');
+    setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+  });
+}
+
+/* ===== Detail Toggle ===== */
+function toggleDetail() {
+  var toggle = document.getElementById('detailToggle');
+  var content = document.getElementById('detailContent');
+  toggle.classList.toggle('open');
+  content.classList.toggle('open');
+}
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>

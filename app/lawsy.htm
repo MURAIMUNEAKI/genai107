@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>法令AI Lawsy - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* Page header */
+.page-header{border-bottom:1px solid var(--solid-gray-300);padding:1.5rem 0 1rem;margin-bottom:1.5rem;}
+.page-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:768px){.page-title{font-size:1.5rem;}}
+
+/* Notes section */
+.page-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.page-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.page-notes h3{font-size:0.9375rem;font-weight:700;margin:0.75rem 0 0.25rem;}
+.page-notes p{margin:0.25rem 0;}
+.page-notes ul,.page-notes ol{margin:0.25rem 0 0.25rem 1.5rem;}
+.page-notes li{margin:0.125rem 0;}
+.page-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:12px;padding:0.5rem 0.75rem;}
+.page-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.page-notes summary::before{content:'\25B6';font-size:0.625rem;transition:transform 0.2s;}
+.page-notes details[open] summary::before{transform:rotate(90deg);}
+.page-notes details>div{padding:0.5rem 0 0 1.25rem;}
+
+/* Stage Badge */
+.stage-badges{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+.stage-badge{display:inline-flex;align-items:center;min-height:2rem;padding:0.25rem 0.75rem;border-radius:9999px;font-size:0.875rem;font-weight:500;line-height:1;border:1px solid transparent;}
+.stage-badge.pending{border-color:var(--solid-gray-420);background:var(--solid-gray-50);color:var(--solid-gray-536);}
+.stage-badge.active{border-color:var(--blue-900);background:var(--blue-900);color:#fff;}
+.stage-badge.done{border-color:#2e7d32;background:#2e7d32;color:#fff;}
+
+/* Result Box */
+.result-box{position:relative;margin-top:1.25rem;border-radius:12px;border:1px solid var(--solid-gray-420);padding:1.25rem;}
+.result-placeholder{color:var(--solid-gray-536);line-height:1.75;}
+.result-actions{display:flex;justify-content:flex-end;margin:-0.25rem 0 0;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'lawsy'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:64rem">
+      <div class="page-header">
+        <h1 class="page-title">法令AI Lawsy（法令制度AIアプリ）</h1>
+        <div class="page-notes">
+          <h2>想定用途</h2>
+          <p>法令に関する質問に対して、AIが意図を解析し、最適化された構造のレポートを動的に生成します。法的調査、政策立案支援、法令解釈の確認などに役立ちます。出力結果はAIが生成した内容ですので、正確性については必ず原典を確認してください。</p>
+          <h3>アプリ個別の留意点</h3>
+          <p>e-Gov法令APIのベクトル検索を使用しているため、データの更新頻度は手動更新に依存します。最新の法令改正情報については、e-Gov法令検索で確認することをお勧めします。</p>
+          <details>
+            <summary>入力例（初利用時は要チェック）</summary>
+            <div>
+              <p>「デジタル社会形成基本法における『デジタル社会』の定義を教えてください」</p>
+              <p>「個人情報保護法と行政機関個人情報保護法の違いを比較してください」</p>
+            </div>
+          </details>
+          <h2>操作方法</h2>
+          <p>法令に関する質問を自由に入力してください。システムが自動的に質問の種類を判定し、最適な構造のレポートを生成します。</p>
+          <details>
+            <summary>対応する質問パターン</summary>
+            <div>
+              <ol>
+                <li><strong>定義確認型</strong>: 法令用語の定義を知りたい場合</li>
+                <li><strong>手続き確認型</strong>: 具体的な手続きの流れを知りたい場合</li>
+                <li><strong>比較検討型</strong>: 複数の法令や制度を比較したい場合</li>
+                <li><strong>解釈適用型</strong>: 特定の条文の解釈や適用を知りたい場合</li>
+                <li><strong>政策研究型</strong>: 政策の背景・経緯・効果を分析したい場合</li>
+                <li><strong>包括分析型</strong>: 複数法令にまたがる総合分析が欲しい場合</li>
+              </ol>
+            </div>
+          </details>
+          <details>
+            <summary>仕組み</summary>
+            <div>
+              <p>e-Gov法令APIで関連法令条文を検索し、Gemini AIが質問意図に基づいた構造化レポートを生成します。4段階のパイプライン（法令名推定→法令検索→条文取得→レポート生成）で処理されます。</p>
+            </div>
+          </details>
+          <details>
+            <summary>参照情報</summary>
+            <div>
+              <p><a href="https://elaws.e-gov.go.jp/" target="_blank" rel="noopener">e-Gov法令検索</a></p>
+              <p><a href="https://www.digital.go.jp/" target="_blank" rel="noopener">デジタル庁</a></p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="lawsyForm" onsubmit="executeLawsy(event)">
+        <div class="form-group">
+          <label class="dads-label" for="question">質問 <span class="dads-required">必須</span></label>
+          <p class="dads-support">法令・制度に関する質問を入力してください</p>
+          <textarea class="dads-textarea" id="question" placeholder="例: 個人情報保護法における個人情報の定義は？" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="dads-label" for="queryType">質問タイプ <span class="dads-required">必須</span></label>
+          <p class="dads-support">質問の種類に応じた分析手法が適用されます</p>
+          <select class="dads-select" id="queryType">
+            <option value="definition">定義確認型 - 法律用語や概念の定義を確認</option>
+            <option value="procedure">手続き確認型 - 申請・届出等の手続きを確認</option>
+            <option value="comparison">比較検討型 - 複数の法制度を比較</option>
+            <option value="interpretation">解釈適用型 - 条文の解釈・具体的適用を検討</option>
+            <option value="policy">政策研究型 - 政策の背景・経緯・効果を分析</option>
+            <option value="comprehensive">包括分析型 - 複数法令にまたがる総合分析</option>
+          </select>
+        </div>
+
+        <div class="btn-area" style="justify-content:center">
+          <button type="submit" class="dads-btn" id="submitBtn" style="min-width:15rem">実行</button>
+        </div>
+      </form>
+
+      <hr class="dads-divider">
+
+      <!-- Result -->
+      <h2 style="font-size:1.125rem;font-weight:700;line-height:1.6;margin-bottom:0.5rem;">実行結果</h2>
+
+      <!-- Stage Badges -->
+      <div class="stage-badges" id="stageBadges" style="display:none;">
+        <span class="stage-badge pending" id="badge1">1. 法令名推定</span>
+        <span class="stage-badge pending" id="badge2">2. 法令検索</span>
+        <span class="stage-badge pending" id="badge3">3. 条文取得</span>
+        <span class="stage-badge pending" id="badge4">4. レポート生成</span>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-indicator" id="progress">
+        <div class="progress-spinner"></div>
+        <span class="progress-label" id="progressLabel">処理中...</span>
+      </div>
+
+      <div class="result-box" id="resultBox">
+        <div id="resultContent">
+          <span class="result-placeholder">AIアプリのレスポンスは、ここに表示されます</span>
+        </div>
+        <div class="result-actions" id="resultActions" style="display:none;">
+          <button class="copy-btn" id="copyBtn" onclick="copyResult()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            コピー
+          </button>
+        </div>
+      </div>
+
+      <div class="page-footer">
+        注意: AIの出力は必ずしも正確ではありません。重要な情報は必ずご自身で確認してください。
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script src="../shared/markdown.js"></script>
+<script>
+initLayout({ activePage: 'lawsy', basePath: '' });
+
+var API_URL = '../lawsy/lawsy_api.php';
+var outputText = '';
+var abortController = null;
+
+/* ===== Stage Badge Update ===== */
+function updateStage(stage, status) {
+  for (var i = 1; i <= 4; i++) {
+    var badge = document.getElementById('badge' + i);
+    if (!badge) continue;
+    if (i < stage) { badge.className = 'stage-badge done'; }
+    else if (i === stage) { badge.className = 'stage-badge ' + status; }
+    else { badge.className = 'stage-badge pending'; }
+  }
+}
+
+/* ===== Execute Lawsy ===== */
+function executeLawsy(e) {
+  e.preventDefault();
+  var question = document.getElementById('question').value.trim();
+  if (!question) return;
+
+  var queryType = document.getElementById('queryType').value;
+
+  outputText = '';
+  document.getElementById('resultContent').innerHTML = '';
+  document.getElementById('resultActions').style.display = 'none';
+  document.getElementById('stageBadges').style.display = 'flex';
+  document.getElementById('progress').classList.add('active');
+  document.getElementById('progressLabel').textContent = '処理中...';
+  updateStage(1, 'active');
+
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '実行中...';
+
+  abortController = new AbortController();
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question: question, query_type: queryType }),
+    signal: abortController.signal
+  }).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+
+    function read() {
+      return reader.read().then(function(result) {
+        if (result.done) { finishExecution(); return; }
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var t = lines[i].trim();
+          if (!t || t === 'data: [DONE]') continue;
+          if (t.startsWith('data: ')) {
+            try {
+              var j = JSON.parse(t.slice(6));
+              if (j.stage) {
+                updateStage(j.stage, 'active');
+                document.getElementById('progressLabel').textContent = j.label || 'Stage ' + j.stage;
+              }
+              if (j.text) {
+                outputText += j.text;
+                renderOutput();
+              }
+              if (j.error) {
+                outputText += '\n[エラー] ' + j.error;
+                renderOutput();
+              }
+              if (j.stage_done) {
+                updateStage(j.stage_done, 'done');
+              }
+            } catch (e) {}
+          }
+        }
+        return read();
+      });
+    }
+    return read();
+  }).catch(function(err) {
+    if (err.name === 'AbortError') {
+      outputText += '\n\n[中断しました]';
+      renderOutput();
+    } else {
+      document.getElementById('resultContent').innerHTML = '<p style="color:var(--error-1);">エラー: ' + escapeHtml(err.message) + '</p>';
+    }
+    finishExecution();
+  });
+}
+
+function finishExecution() {
+  document.getElementById('progress').classList.remove('active');
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = false;
+  btn.textContent = '実行';
+  abortController = null;
+  if (outputText) {
+    document.getElementById('resultActions').style.display = 'flex';
+    updateStage(5, 'done');
+  }
+}
+
+/* ===== Render Output ===== */
+function renderOutput() {
+  var el = document.getElementById('resultContent');
+  el.innerHTML = '<div class="prose">' + renderMarkdown(outputText) + '</div>';
+  var main = document.querySelector('.app-main');
+  main.scrollTop = main.scrollHeight;
+}
+
+/* ===== Copy ===== */
+function copyResult() {
+  if (!outputText) return;
+  navigator.clipboard.writeText(outputText).then(function() {
+    var btn = document.getElementById('copyBtn');
+    btn.classList.add('copied');
+    var orig = btn.innerHTML;
+    btn.innerHTML = orig.replace('コピー', 'コピー済み');
+    setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+  });
+}
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
