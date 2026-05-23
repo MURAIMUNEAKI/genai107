@@ -1,0 +1,198 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "deployVllmSupportModel": {
+      "value": true
+    },
+    "vllmModelName": {
+      "value": "pfnet/plamo-2-translate"
+    },
+    "vllmMaxModelLen": {
+      "value": 4096
+    },
+    "vllmMaxNumBatchedTokens": {
+      "value": 4096
+    },
+    "vllmContainerImage": {
+      "value": "vllm/vllm-openai:latest"
+    },
+    "enablePlamoCustomApiTransform": {
+      "value": false
+    },
+    "deployCodeInterpreter": {
+      "value": true
+    },
+    "deployOpenAiDirect": {
+      "value": true
+    },
+    "corsOriginUrl": {
+      "value": "*"
+    },
+    "startScheduleTime": {
+      "value": "08:00"
+    },
+    "stopScheduleTime": {
+      "value": "24:00"
+    },
+    "jobScheduleVersion": {
+      "value": "1.0.1"
+    },
+    "skipJobSchedules": {
+      "value": false
+    },
+    "scheduleAnchorDate": {
+      "value": ""
+    },
+    "rulePriority": {
+      "value": 100
+    },
+    "frontendPort": {
+      "value": 80
+    },
+    "probePath": {
+      "value": "/v1/models"
+    },
+    "probeInterval": {
+      "value": 30
+    },
+    "probeTimeout": {
+      "value": 30
+    },
+    "probeUnhealthyThreshold": {
+      "value": 3
+    },
+    "appGatewayCapacity": {
+      "value": 2
+    },
+    "vmssAdminUsername": {
+      "value": "azureuser"
+    },
+    "vmssAdminPublicKey": {
+      "value": "${VMSS_ADMIN_PUBLIC_KEY}"
+    },
+    "vmssInstanceCount": {
+      "value": 1
+    },
+    "vmssSku": {
+      "value": "Standard_NC24ads_A100_v4"
+    },
+    "enableVmssPasswordAuth": {
+      "value": true
+    },
+    "upgradePolicyMode": {
+      "value": "Automatic"
+    },
+    "overprovision": {
+      "value": true
+    },
+    "singlePlacementGroup": {
+      "value": true
+    },
+    "platformFaultDomainCount": {
+      "value": -1
+    },
+    "linuxImagePublisher": {
+      "value": "Canonical"
+    },
+    "linuxImageOffer": {
+      "value": "ubuntu-24_04-lts"
+    },
+    "osDiskSizeGB": {
+      "value": 128
+    },
+    "osDiskStorageAccountType": {
+      "value": "Premium_LRS"
+    },
+    "vmZones": {
+      "value": ["3"]
+    },
+    "provisionVMAgent": {
+      "value": true
+    },
+    "enableTrustedLaunch": {
+      "value": true
+    },
+    "applicationInsightsDashboardName": {
+      "value": ""
+    },
+    "applicationInsightsName": {
+      "value": ""
+    },
+    "useSpot": {
+      "value": true
+    },
+    "spotMaxPrice": {
+      "value": "-1"
+    },
+    "enableGenAiIoLogging": {
+      "value": true
+    },
+    "apiAllowedSourceIps": {
+      "value": [
+        "999.999.999.999"
+      ]
+    },
+    "openaiAccountName": {
+      "value": ""
+    },
+    "openaiSkuName": {
+      "value": "S0"
+    },
+    "openaiDeploymentName": {
+      "value": "gpt-4o"
+    },
+    "openaiModelName": {
+      "value": "gpt-4o"
+    },
+    "openaiModelVersion": {
+      "value": "2024-11-20"
+    },
+    "openaiCapacity": {
+      "value": 140
+    },
+    "openaiApiVersion": {
+      "value": "2024-10-21"
+    },
+    "openaiPublicNetworkAccess": {
+      "value": "Enabled"
+    },
+    "enableOpenaiPrivateEndpoint": {
+      "value": true
+    },
+    "openaiAllowedIpAddresses": {
+      "value": [
+        "999.999.999.999"
+      ]
+    },
+    "functionPublicNetworkAccess": {
+      "value": "Enabled"
+    },
+    "functionAllowedIpAddresses": {
+      "value": [
+        "999.999.999.999/32"
+      ]
+    },
+    "enableFunctionPrivateEndpoint": {
+      "value": "true"
+    },
+    "functionPrivateEndpointStaticIp": {
+      "value": "10.10.4.6"
+    },
+    "openaiTimeout": {
+      "value": "300.0"
+    },
+    "openaiMaxRetries": {
+      "value": "3"
+    },
+    "systemPrompt": {
+      "value": "あなたはデータ分析のエキスパートです。Excelファイルを分析し、ユーザーの要求に応じて集計や可視化を行ってください。結果は必ず可視化してください。\n\n# データ読み込み時のルール\nExcelファイルを読み込む際は、pandas.read_excel()を使用してください。\n\n# グラフ描画時のルール\nグラフを描画する場合は、必ず以下の手順に従いフォントを設定してください:\n- NotoSansJP-VariableFont_wght.zip を展開して NotoSansJP-VariableFont_wght.ttf を取得\n- 必ずこのフォントファイルを使用してグラフを描画してください。\n- フォントファイルと分析対象のExcelファイルがあるので必ず最初にフォントファイルを確認して分析対象のExcelファイルを確認してください。\n- NotoSansJP-VariableFont_wght.ttfは次のコードで使用してください。\nimport matplotlib.pyplot as plt\nfrom matplotlib.font_manager import FontProperties\n\n# フォントの指定\nfont_path = \"/mnt/data/NotoSansJP-VariableFont_wght.ttf\"\nfont_prop = FontProperties(fname=font_path)"
+    }
+  }
+}

@@ -1,0 +1,105 @@
+<!--
+    IMPORTANT:
+    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.
+    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.
+    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.
+    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.
+    - To remove a policy, delete the corresponding policy statement from the policy document.
+    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.
+    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.
+    - Policies are applied in the order of their appearance, from the top down.
+    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.
+-->
+<policies>
+    <inbound>
+        <base />
+        <set-backend-service backend-id="{backend-id}" />
+        {ip-filter}
+
+        <set-variable name="opt" value="@((string)context.Request.Body.As<Newtonsoft.Json.Linq.JObject>(true).SelectToken("inputs.option"))" />
+        <set-variable name="txt" value="@((string)context.Request.Body.As<Newtonsoft.Json.Linq.JObject>(true).SelectToken("inputs.input_text"))" />
+        <choose>
+            <when condition="@(((string)context.Variables["opt"]) == "Jp2En")">
+                <set-body><![CDATA[@{
+                    var inputText = (string)context.Variables["txt"] ?? string.Empty;
+
+                    var prompt = "<|plamo:op|>dataset translation "
+                                + "<|plamo:op|>input lang=Japanese " + inputText + " "
+                                + "<|plamo:op|>output lang=English\n";
+
+                    var body = new Newtonsoft.Json.Linq.JObject(
+                        new Newtonsoft.Json.Linq.JProperty("model", "{vllm-model-name}"),
+                        new Newtonsoft.Json.Linq.JProperty("max_tokens", 1024),
+                        new Newtonsoft.Json.Linq.JProperty("temperature", 0),
+                        new Newtonsoft.Json.Linq.JProperty("stop", "<|plamo:op|>"),
+                        new Newtonsoft.Json.Linq.JProperty("prompt", prompt)
+                    );
+
+                    return body.ToString(Newtonsoft.Json.Formatting.None);
+                }]]></set-body>
+            </when>
+            <when condition="@(((string)context.Variables["opt"]) == "En2Jp")">
+                <set-body><![CDATA[@{
+                    var inputText = (string)context.Variables["txt"] ?? string.Empty;
+
+                    var prompt = "<|plamo:op|>dataset translation "
+                                + "<|plamo:op|>input lang=English " + inputText + " "
+                                + "<|plamo:op|>output lang=Japanese\n";
+
+                    var body = new Newtonsoft.Json.Linq.JObject(
+                        new Newtonsoft.Json.Linq.JProperty("model", "{vllm-model-name}"),
+                        new Newtonsoft.Json.Linq.JProperty("max_tokens", 1024),
+                        new Newtonsoft.Json.Linq.JProperty("temperature", 0),
+                        new Newtonsoft.Json.Linq.JProperty("stop", "<|plamo:op|>"),
+                        new Newtonsoft.Json.Linq.JProperty("prompt", prompt)
+                    );
+
+                    return body.ToString(Newtonsoft.Json.Formatting.None);
+                }]]></set-body>
+            </when>
+        </choose>
+        <cors allow-credentials="false">
+            <allowed-origins>
+                <origin>{origin}</origin>
+            </allowed-origins>
+            <allowed-methods>
+                <method>GET</method>
+                <method>POST</method>
+            </allowed-methods>
+            <allowed-headers>
+                <header>Content-Type</header>
+                <header>Authorization</header>
+                <header>api-key</header>
+                <header>x-api-key</header>
+                <header>x-apim-secret</header>
+                <header>Origin</header>
+            </allowed-headers>
+        </cors>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+        <set-variable name="resp_text" value="@(((string)context.Response.Body.As<Newtonsoft.Json.Linq.JObject>(true)
+                    .SelectToken("choices[0].text") ?? string.Empty)
+                .TrimEnd((char)13,(char)10))" />
+        <choose>
+            <when condition="@((int)context.Response.StatusCode == 200)">
+                <set-header name="Content-Type" exists-action="override">
+                    <value>application/json; charset=utf-8</value>
+                </set-header>
+                <set-body>@{
+                    var output = (string)context.Variables["resp_text"];
+                    return new Newtonsoft.Json.Linq.JObject(
+                        new Newtonsoft.Json.Linq.JProperty("statusCode", 200),
+                        new Newtonsoft.Json.Linq.JProperty("outputs", output)
+                    ).ToString();
+                }</set-body>
+            </when>
+        </choose>
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

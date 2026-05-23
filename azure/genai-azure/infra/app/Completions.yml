@@ -1,0 +1,97 @@
+openapi: 3.0.0
+info:
+  title: Simplified Plamo API for Completions
+  version: 1.0.0
+servers:
+  - url: https://example.com
+paths:
+  /v1/completions:
+    post:
+      summary: Generates a completion for the provided prompt using the specified model.
+      operationId: Completions_Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: string
+                  description: >
+                    使用するモデル名。翻訳や生成に使うAIモデルを指定。
+                  example: pfnet/plamo-2-translate
+                max_tokens:
+                  type: integer
+                  description: >
+                    出力される最大トークン数（単語や記号の単位）。
+                  default: 16
+                  example: 1024
+                temperature:
+                  type: number
+                  format: float
+                  description: >
+                    出力のランダム性を制御（0は決定的、1以上は創造的）。
+                  default: 1
+                  example: 0.1
+                stop:
+                  type: string
+                  description: >
+                    出力を停止するトークン。指定された文字列が出力に現れると停止。
+                  example: "<|plamo:op|>"
+                prompt:
+                  type: string
+                  description: >
+                    モデルに与える入力文。翻訳や生成の指示を含む。
+                  example: >
+                    <|plamo:op|>dataset translation <|plamo:op|>input lang=English
+                    Write the text to be translated here. <|plamo:op|>output lang=Japanese
+              required:
+                - model
+                - prompt
+      responses:
+        '200':
+          description: Successful response with generated completion.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier for the completion.
+                  object:
+                    type: string
+                    description: Object type, always `text_completion`.
+                  created:
+                    type: integer
+                    description: Creation timestamp (UNIX time).
+                  model:
+                    type: string
+                    description: Model used for the completion.
+                  choices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                          description: The generated completion text.
+                        index:
+                          type: integer
+                          description: Index of the choice.
+                        finish_reason:
+                          type: string
+                          description: Reason for stopping text generation.
+                  usage:
+                    type: object
+                    properties:
+                      prompt_tokens:
+                        type: integer
+                        description: Number of tokens used in the prompt.
+                      completion_tokens:
+                        type: integer
+                        description: Number of tokens generated in the completion.
+                      total_tokens:
+                        type: integer
+                        description: Total number of tokens used.

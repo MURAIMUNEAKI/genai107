@@ -1,0 +1,57 @@
+
+swagger: "2.0"
+info:
+  title: "${api_name}"
+  description: "Lawsy-Custom: 動的レポート生成マイクロサービス。ユーザーのクエリをAIが解釈し、最適な形式で法令レポートを生成します。"
+  version: "1.0.0"
+schemes:
+  - "https"
+produces:
+  - "application/json"
+paths:
+  /invoke:
+    post:
+      summary: "法令レポートの生成"
+      description: "ユーザーのクエリ(input_text)を受け取り、AIによる分析と情報検索を経て、完全な法令レポートを生成して返します。"
+      operationId: "generateLawReport"
+      x-google-backend:
+        address: "${func_url}"
+        protocol: h2
+        deadline: 600 # タイムアウトを最大値の10分に設定
+      security:
+        - api_key: []
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "inputs"
+            properties:
+              inputs:
+                type: "object"
+                required:
+                  - "input_text"
+                properties:
+                  input_text:
+                    type: "string"
+                    example: "下請法における「親事業者」の定義とは？"
+      responses:
+        '200':
+          description: "成功"
+          schema:
+            type: "object"
+            properties:
+              outputs:
+                type: "string"
+                description: "生成された完全なレポート本文。Markdown形式。"
+        '400':
+          description: "不正なリクエスト"
+        '500':
+          description: "サーバー内部エラー"
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "x-api-key"
+    in: "header"

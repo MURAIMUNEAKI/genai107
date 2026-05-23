@@ -1,0 +1,224 @@
+name: genai-vmss
+infra:
+  provider: bicep
+  path: infra
+services:
+  api:
+    project: ./app
+    language: python
+    host: function
+
+hooks:
+  preprovision:
+    shell: sh # VMSS用のSSH鍵ペアを生成して環境変数に設定
+    run: |
+      set -eu
+      KEY_DIR=".azure/ssh"; PRIV="$KEY_DIR/id_ed25519"; PUB="$PRIV.pub"
+      if [ ! -s "$PUB" ]; then
+        if command -v ssh-keygen >/dev/null 2>&1; then
+          [ -d "$KEY_DIR" ] || mkdir -p "$KEY_DIR"
+          ssh-keygen -t ed25519 -N "" -C "${USER-azd}@$(hostname)" -f "$PRIV" >/dev/null
+        else
+          echo "ssh-keygen not found" >&2; exit 1
+        fi
+      fi
+      azd env set VMSS_ADMIN_PUBLIC_KEY "$(tr -d '\r' < "$PUB")"
+
+  postprovision:
+    shell: sh # Function Appのデフォルト関数キーを取得して環境変数に設定
+    run: |
+      # dash (sh) doesn't support 'pipefail'
+      set -eu
+      
+      # Read flags from main.parameters.json
+      DEPLOY_CODE_INTERPRETER=$(grep -A 2 '"deployCodeInterpreter":' infra/main.parameters.json | grep '"value":' | sed 's/.*: \([a-z]*\).*/\1/')
+
+      echo "  Deploy Code Interpreter: $DEPLOY_CODE_INTERPRETER"
+      
+      if [ "$DEPLOY_CODE_INTERPRETER" = "true" ]; then
+
+        # Disable MSYS path conversion (fixes Git Bash issues with Azure resource paths)
+        export MSYS_NO_PATHCONV=1
+
+        # Get Azure subscription ID
+        AZURE_SUBSCRIPTION_ID="$(azd env get-value AZURE_SUBSCRIPTION_ID || echo '')"
+        if [ -z "$AZURE_SUBSCRIPTION_ID" ] || [ "$AZURE_SUBSCRIPTION_ID" = "null" ]; then
+          echo "AZURE_SUBSCRIPTION_ID not set in azd environment" >&2
+          exit 1
+        fi
+
+        # Set the subscription context
+        echo "Setting Azure subscription context to $AZURE_SUBSCRIPTION_ID"
+        az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+
+        FUNCTION_APP_NAME="$(azd env get-value FUNCTION_APP_NAME || echo '')"
+        if [ -z "$FUNCTION_APP_NAME" ] || [ "$FUNCTION_APP_NAME" = "null" ]; then
+          echo "FUNCTION_APP_NAME not set in azd environment" >&2
+          exit 1
+        fi
+
+        RESOURCE_GROUP_NAME="$(azd env get-value RESOURCE_GROUP_NAME || echo '')"
+        if [ -z "$RESOURCE_GROUP_NAME" ] || [ "$RESOURCE_GROUP_NAME" = "null" ]; then
+          echo "RESOURCE_GROUP_NAME not set (ensure bicep outputs RESOURCE_GROUP_NAME)" >&2
+          exit 1
+        fi
+
+        echo "Function App: $FUNCTION_APP_NAME"
+        echo "Resource Group: $RESOURCE_GROUP_NAME"
+
+        # Retrieve default function key with retries (eventual consistency right after provision)
+        echo "Retrieving function key..."
+        FUNCTION_DEFAULT_KEY=""
+        for attempt in 1 2 3 4 5 6 7 8 9 10; do
+          FUNCTION_DEFAULT_KEY="$(az functionapp keys list -n "$FUNCTION_APP_NAME" -g "$RESOURCE_GROUP_NAME" --query 'functionKeys.default' -o tsv 2>/dev/null || true)"
+          if [ -n "$FUNCTION_DEFAULT_KEY" ]; then
+            echo "Function key retrieved successfully"
+            break
+          fi
+          echo "Waiting for function key (attempt $attempt)..."
+          sleep 30
+        done
+        if [ -z "$FUNCTION_DEFAULT_KEY" ]; then
+          echo "Failed to retrieve default function key from $FUNCTION_APP_NAME after retries" >&2
+          exit 1
+        fi
+
+        APIM_SERVICE_NAME="$(azd env get-value APIM_SERVICE_NAME || echo '')"
+        if [ -n "$APIM_SERVICE_NAME" ] && [ "$APIM_SERVICE_NAME" != "null" ]; then
+          echo "Updating APIM named value..."
+          NAMED_VALUE_NAME="function-app-key"
+          if az apim nv show --service-name "$APIM_SERVICE_NAME" -g "$RESOURCE_GROUP_NAME" --name "$NAMED_VALUE_NAME" >/dev/null 2>&1; then
+            az apim nv update --service-name "$APIM_SERVICE_NAME" -g "$RESOURCE_GROUP_NAME" --name "$NAMED_VALUE_NAME" --secret true --value "$FUNCTION_DEFAULT_KEY" >/dev/null
+          else
+            az apim nv create --service-name "$APIM_SERVICE_NAME" -g "$RESOURCE_GROUP_NAME" --name "$NAMED_VALUE_NAME" --secret true --display-name "$NAMED_VALUE_NAME" --value "$FUNCTION_DEFAULT_KEY" >/dev/null
+          fi
+          echo "APIM named value updated"
+        fi
+
+        azd env set FUNCTION_DEFAULT_KEY "$FUNCTION_DEFAULT_KEY"
+      fi
+      echo "postprovision completed successfully"
+
+  postdeploy:
+    shell: sh # Azure OpenAIの権限設定とフォントファイルのアップロード
+    run: |
+      set -eu
+
+      # Read flags from main.parameters.json
+      DEPLOY_CODE_INTERPRETER=$(grep -A 2 '"deployCodeInterpreter":' infra/main.parameters.json | grep '"value":' | sed 's/.*: \([a-z]*\).*/\1/')
+
+      echo "  Deploy Code Interpreter: $DEPLOY_CODE_INTERPRETER"
+      
+      if [ "$DEPLOY_CODE_INTERPRETER" = "true" ]; then
+        # Disable MSYS path conversion (fixes Git Bash issues with Azure resource paths)
+        export MSYS_NO_PATHCONV=1
+        
+        echo "Setting up Azure OpenAI permissions..."
+        
+        # Get Azure subscription ID and set context
+        AZURE_SUBSCRIPTION_ID="$(azd env get-value AZURE_SUBSCRIPTION_ID || echo '')"
+        if [ -z "$AZURE_SUBSCRIPTION_ID" ] || [ "$AZURE_SUBSCRIPTION_ID" = "null" ]; then
+          echo "[ERROR] AZURE_SUBSCRIPTION_ID not set in azd environment" >&2
+          exit 1
+        fi
+        az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+        
+        # Get current user
+        CURRENT_USER="$(az account show --query user.name -o tsv)"
+        echo "  Current user: $CURRENT_USER"
+        
+        USER_ID="$(az ad user show --id "$CURRENT_USER" --query id -o tsv)"
+        echo "  User Object ID: $USER_ID"
+        
+        # Get resource group
+        RESOURCE_GROUP="$(azd env get-value RESOURCE_GROUP_NAME || echo '')"
+        if [ -z "$RESOURCE_GROUP" ] || [ "$RESOURCE_GROUP" = "null" ]; then
+          echo "[ERROR] RESOURCE_GROUP_NAME not found in azd environment" >&2
+          exit 1
+        fi
+        echo "  Resource Group: $RESOURCE_GROUP"
+
+        # Get Azure OpenAI resource
+        OPENAI_ID="$(az cognitiveservices account list --resource-group "$RESOURCE_GROUP" --subscription "$AZURE_SUBSCRIPTION_ID" --query "[?kind=='OpenAI'].id | [0]" -o tsv || echo '')"
+        
+        if [ -n "$OPENAI_ID" ] && [ "$OPENAI_ID" != "null" ]; then
+          echo "  Azure OpenAI ID: $OPENAI_ID"
+          echo "  Assigning 'Cognitive Services OpenAI Contributor' role..."
+          
+          if az role assignment create --assignee "$USER_ID" --role "Cognitive Services OpenAI Contributor" --scope "$OPENAI_ID" --subscription "$AZURE_SUBSCRIPTION_ID" >/dev/null 2>&1; then
+            echo "[OK] Role assigned successfully"
+            sleep 10
+          else
+            echo "[WARN] Role assignment may already exist or failed"
+          fi
+        else
+          echo "[WARN] Azure OpenAI resource not found in resource group"
+        fi
+
+        echo ""
+        echo "Uploading font file to Azure OpenAI and syncing settings..."
+          
+          FUNCTION_APP_NAME="$(azd env get-value FUNCTION_APP_NAME || echo '')"
+          AZURE_OPENAI_ENDPOINT="$(azd env get-value AZURE_OPENAI_ENDPOINT || echo '')"
+
+          if [ -z "$FUNCTION_APP_NAME" ] || [ "$FUNCTION_APP_NAME" = "null" ]; then
+             echo "[ERROR] FUNCTION_APP_NAME is missing but deployCodeInterpreter is true." >&2
+             exit 1
+          fi
+          if [ -z "$AZURE_OPENAI_ENDPOINT" ] || [ "$AZURE_OPENAI_ENDPOINT" = "null" ]; then
+             echo "[ERROR] AZURE_OPENAI_ENDPOINT is missing but deployCodeInterpreter is true." >&2
+             exit 1
+          fi
+
+          cd app
+          
+          # Upload font file to Azure OpenAI using REST API
+          FONT_FILE_PATH="font/NotoSansJP-VariableFont_wght.zip"
+          if [ ! -f "$FONT_FILE_PATH" ]; then
+            echo "[ERROR] Font file not found: $FONT_FILE_PATH" >&2
+            exit 1
+          fi
+          
+          echo "Uploading font file: $FONT_FILE_PATH"
+          
+          # Get access token for Azure OpenAI
+          ACCESS_TOKEN="$(az account get-access-token --resource https://cognitiveservices.azure.com --query accessToken -o tsv)"
+
+          # Upload file using Azure OpenAI REST API with curl
+          UPLOAD_RESPONSE="$(curl -s -X POST "${AZURE_OPENAI_ENDPOINT}/openai/files?api-version=2024-05-01-preview" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -F "purpose=assistants" \
+            -F "file=@$FONT_FILE_PATH")"
+          
+          # Parse response to get file ID
+          FILE_ID="$(echo "$UPLOAD_RESPONSE" | sed -n 's/.*"id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+          FILE_NAME="$(echo "$UPLOAD_RESPONSE" | sed -n 's/.*"filename"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+          FILE_BYTES="$(echo "$UPLOAD_RESPONSE" | sed -n 's/.*"bytes"[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p' | head -1)"
+          
+          if [ -z "$FILE_ID" ] || [ "$FILE_ID" = "null" ]; then
+            echo "[ERROR] Font file upload failed. Response: $UPLOAD_RESPONSE" >&2
+            exit 1
+          fi
+          
+          echo "[OK] File uploaded successfully!"
+          echo "  File ID: $FILE_ID"
+          echo "  Filename: $FILE_NAME"
+          echo "  Size: $FILE_BYTES bytes"
+          
+          echo ""
+          echo "Updating Function App settings..."
+          
+          # Build settings from the variables we already have
+          SETTINGS_ARGS="FONT_FILE_ID=$FILE_ID"
+
+          # shellcheck disable=SC2086
+          if az functionapp config appsettings set --name "$FUNCTION_APP_NAME" --resource-group "$RESOURCE_GROUP" --settings $SETTINGS_ARGS >/dev/null; then
+            echo "[OK] Function App settings updated successfully"
+          else
+            echo "[ERROR] Failed to update Function App settings" >&2
+            exit 1
+          fi
+      fi
+      
+      echo "postdeploy completed successfully"
+    continueOnError: false

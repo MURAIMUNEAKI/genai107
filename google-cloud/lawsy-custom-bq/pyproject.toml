@@ -1,0 +1,29 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "F",    # pyflakes
+  "I",    # isort
+  "N",    # pep8-naming
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+  "SIM",  # flake8-simplify
+  "PERF", # perflint
+]
+ignore = [
+  "RUF001", # ambiguous-unicode-character-string (全角文字を使用するため)
+  "RUF002", # ambiguous-unicode-character-docstring
+  "RUF003", # ambiguous-unicode-character-comment
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["gemini_config", "retrieval_bq", "gemini_helpers", "schemas", "utils", "genai_util", "prompts", "gemini_usage_tracker", "url_validator"]
+[tool.ruff.lint.per-file-ignores]
+"modules/api/functions/src/schemas.py" = ["N805", "N815"]  # Pydantic @root_validator uses cls; camelCase fields are API contract
+"modules/api/functions/src/prompts.py" = ["E501"]           # Japanese prompt strings cannot be split
+"modules/api/functions/src/law_report_pipeline.py" = ["E501"]  # Japanese prompt strings cannot be split
+"preprocess/*.py" = ["E501"]  # Utility scripts with long usage/error strings

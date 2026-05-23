@@ -1,0 +1,9 @@
+{
+  "name": "custom-resources",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/credential-provider-node": "^3.565.0",
+    "@opensearch-project/opensearch": "^2.7.0"
+  }
+}

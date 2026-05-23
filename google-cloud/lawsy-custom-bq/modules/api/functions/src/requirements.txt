@@ -1,0 +1,18 @@
+# Core Framework
+functions-framework==3.10.1
+
+# Google Cloud & AI Libraries
+google-genai==1.72.0
+google-cloud-bigquery==3.41.0
+google-cloud-storage==2.19.0
+google-auth==2.49.2
+
+# Data Processing
+pydantic==2.12.5
+
+# HTTP & Web
+requests==2.33.1
+flask==3.1.3
+
+# Utilities
+nest-asyncio==1.6.0

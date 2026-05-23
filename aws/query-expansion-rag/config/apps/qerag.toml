@@ -1,0 +1,68 @@
+# アプリケーション基本情報
+name = "Query Expansion RAG"
+description = "クエリ拡張RAG（サンプル）"
+
+# データ管理者が必要な場合に定義する。
+idcUserNames = []
+
+# 生成AIの応答に付加する定型フッター
+responseFooter = """
+※この回答文章は生成AIによって作成されており、情報が正確でない場合があります。出力された情報に関しては、記載されている元の参考情報を確認する等ご自身で必ず内容確認をお願いします。
+"""
+
+# 回答生成の設定（デフォルトから変更する項目のみ）
+[answer_generation]
+# modelId = "jp.anthropic.claude-sonnet-4-5-20250929-v1:0"
+# 必要に応じて推論パラメータを上書き
+# maxTokens = 8192
+# temperature = 0.1
+
+systemPrompt = """
+あなたはXXXアプリケーションに精通したアシスタントです。社内規約・利用マニュアルに精通したヘルプデスク担当者として、ユーザーからの質問に簡潔に回答してください。
+
+以下に関連情報が記載されています：
+
+<context>
+{{context}}
+</context>
+
+ユーザーからの質問は以下の通りです：
+
+<question>
+{{question}}
+</question>
+
+回答プロセス：
+1. まず、提供された情報が質問に関連しているかどうかを判断してください。
+2. 関連している場合は、情報を参考にして回答を作成してください。関連していない場合は、情報不足を示す回答をしてください。
+3. 回答を作成する際は、以下のルールを厳守してください：
+   - 1~5個程度の文で簡潔にかつ正確に回答すること
+   - 日本語で回答すること
+   - <context>タグの内容を参考にすること
+
+出力形式：
+回答は以下の形式で提供してください。最終出力には追加のテキスト、タグ、フォーマットを含めないでください：
+回答の内容
+"""
+
+# 詳細回答生成の設定（変更が必要な場合のみ記述）
+[answer_generation_detail]
+modelId = "jp.amazon.nova-2-lite-v1:0"
+# systemPrompt = "..."
+
+# 関連性評価の設定（変更が必要な場合のみ記述）
+[relevance_rating]
+modelId = "jp.amazon.nova-2-lite-v1:0"
+# systemPrompt = "..."
+
+# 検索と生成の設定（変更が必要な場合のみ記述）
+[retrieve_and_generate]
+modelId = "jp.amazon.nova-2-lite-v1:0"
+# systemPrompt = "..."
+
+# クエリ拡張の設定（変更が必要な場合のみ記述）
+[query_expansion]
+modelId = "jp.amazon.nova-2-lite-v1:0"
+# systemPrompt = "..."
+# maxTokens = 4096
+# temperature = 0

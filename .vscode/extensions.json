@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "charliermarsh.ruff",
+    "biomejs.biome",
+    "yoavbls.pretty-ts-errors",
+    "ms-azuretools.vscode-docker",
+    "hashicorp.terraform"
+  ]
+}

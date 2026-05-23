@@ -1,0 +1,4 @@
+toml==0.10.2
+boto3>=1.37.33
+aws_lambda_powertools>=3.10.0
+aws_xray_sdk>=2.14.0

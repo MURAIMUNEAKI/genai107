@@ -1,0 +1,13 @@
+# Azure Functions
+azure-functions>=1.18.0
+
+# Azure OpenAI
+openai==2.7.1
+
+# Azure Identity (Managed Identity認証用)
+azure-identity==1.25.1
+
+# HTTP Client
+httpx==0.28.1
+
+azure-ai-projects==1.0.0

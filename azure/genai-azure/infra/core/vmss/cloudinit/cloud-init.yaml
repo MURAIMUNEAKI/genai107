@@ -1,0 +1,84 @@
+#cloud-config
+package_update: true
+packages:
+  - ubuntu-drivers-common
+  - docker.io
+
+write_files:
+  - path: /opt/vllm/requirements.txt
+    permissions: '0644'
+    encoding: b64
+    content: {{VLLM_REQUIREMENTS_BASE64}}
+  - path: /var/lib/cloud/scripts/per-instance/post-reboot.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+
+      exec > /var/log/post-reboot.log 2>&1
+
+      FLAG_FILE="/var/log/post-reboot-done"
+      DRIVER_FLAG="/var/log/driver-installed"
+
+      if [ -f "$FLAG_FILE" ]; then
+        echo "Post-reboot script already executed. Exiting."
+        exit 0
+      fi
+
+      echo "Running post-reboot tasks..."
+
+      if [ ! -f "$DRIVER_FLAG" ]; then
+        echo "Installing GPU drivers..."
+        ubuntu-drivers install
+        touch "$DRIVER_FLAG"
+        echo "Rebooting after driver installation..."
+        sleep 10
+        reboot
+        exit 0
+      fi
+
+      CUDA_VERSION_RAW=$(nvidia-smi | grep "CUDA Version" | sed -E 's/.*CUDA Version: ([0-9]+\.[0-9]+).*/\1/')
+      CUDA_VERSION=$(echo "$CUDA_VERSION_RAW" | sed 's/\./-/')
+      echo "Detected CUDA Version: $CUDA_VERSION"
+
+      wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
+      apt install -y ./cuda-keyring_1.1-1_all.deb
+      apt update
+      apt install -y cuda-toolkit-$CUDA_VERSION
+
+      apt install -y nvidia-container-toolkit
+
+      # nvidia-ctk でDockerランタイムを自動設定
+      nvidia-ctk runtime configure --runtime=docker
+
+      systemctl restart docker
+      sleep 5
+
+      # Start vLLM container with requirements.txt mounted
+      docker run -itd --restart always --gpus all \
+        --name vllm-server \
+        -v /home/ubuntu/.cache/huggingface:/root/.cache/huggingface \
+        -v /opt/vllm/requirements.txt:/opt/vllm/requirements.txt \
+        -p 80:8000 \
+        -e MAX_BATCH_SIZE=16 \
+        -e BATCH_TIMEOUT_MS=100 \
+        {{VLLM_CONTAINER_IMAGE}} \
+        --model {{VLLM_MODEL_NAME}} \
+        --trust-remote-code \
+        --tokenizer-mode auto \
+        --gpu-memory-utilization 0.95 \
+        --max-model-len {{VLLM_MAX_MODEL_LEN}} \
+        --max-num-batched-tokens {{VLLM_MAX_NUM_BATCHED_TOKENS}}
+
+      # Wait for container to start and install additional packages
+      sleep 10
+      docker exec vllm-server pip install -r /opt/vllm/requirements.txt
+      
+      # Restart container to apply changes
+      docker restart vllm-server
+
+      touch "$FLAG_FILE"
+      echo "Post-reboot tasks completed."
+
+runcmd:
+  - (crontab -l 2>/dev/null; echo "@reboot /var/lib/cloud/scripts/per-instance/post-reboot.sh") | crontab -
+  - reboot
