@@ -1,0 +1,6 @@
+api/.env
+api/uploads/*
+!api/uploads/.gitkeep
+log/*.csv
+genai-web/
+.claude/

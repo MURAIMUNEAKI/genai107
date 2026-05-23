@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>源内AI v1.0.7</title>
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;font-family:'Noto Sans JP',sans-serif;color:#1a1a1c}
+    .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#fff}
+    .login-card{width:100%;max-width:480px;padding:0 24px;text-align:center}
+    .login-title{font-size:1.75rem;font-weight:700;color:#1a1a1c;margin-bottom:0.5rem}
+    .login-subtitle{font-size:0.875rem;color:#6e6e71;margin-bottom:2rem}
+    .login-field{margin-bottom:1rem}
+    .login-input{width:100%;padding:0.75rem 1rem;font-size:1rem;border:1px solid #6e6e71;border-radius:8px;font-family:inherit}
+    .login-input:focus{outline:4px solid #000;outline-offset:2px;box-shadow:0 0 0 2px #ffcc00}
+    .login-btn{width:100%;margin-top:1rem;padding:0.875rem;font-size:1rem;font-weight:700;font-family:inherit;color:#fff;background:#0017c1;border:4px double transparent;border-radius:8px;cursor:pointer;transition:background 0.15s}
+    .login-btn:hover{background:#000fa8;text-decoration:underline}
+    .login-btn:disabled{background:#d8d8db;color:#f8f8fb;cursor:not-allowed;text-decoration:none}
+    .agree-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1.25rem;font-size:0.8125rem;color:#1a1a1c}
+    .agree-row input[type="checkbox"]{width:1.125rem;height:1.125rem;cursor:pointer;accent-color:#0017c1}
+    .agree-row a{color:#0017c1;text-decoration:underline}
+    .notice{margin-top:1.5rem;padding:1rem;font-size:0.75rem;color:#6e6e71;text-align:left;line-height:1.8;background:#f8f8fb;border-radius:8px}
+    .notice a{color:#0017c1;text-decoration:underline;font-weight:500}
+    .login-error{display:none;margin-top:0.75rem;padding:0.75rem;font-size:0.875rem;color:#c62828;background:#fde8e8;border-radius:8px;text-align:left}
+  </style>
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-title">源内AI by デジタル庁</div>
+      <div class="login-subtitle">v1.0.7</div>
+
+      <div style="margin-bottom:1.25rem;font-weight:700;color:#1a1a1c;font-size:1rem;line-height:1.8"><a href="https://digital-supporter.net/join/" target="_blank" rel="noopener" style="color:#0017c1;text-decoration:underline">会員（無料）</a>に登録してから、<br><span style="font-size:1.5rem">パスワード <span style="color:#c62828;font-weight:700">kaiin</span></span> を入力してください。</div>
+
+      <div class="login-field">
+        <input type="password" id="pw" class="login-input" placeholder="パスワードを入力" autocomplete="current-password">
+      </div>
+      <div id="errBox" class="login-error"></div>
+
+      <button id="loginBtn" class="login-btn" disabled>源内を利用する</button>
+
+      <div class="agree-row">
+        <input type="checkbox" id="agree" checked>
+        <label for="agree"><a href="https://digital-supporter.net/wp-content/uploads/2023/12/gennai-kiyaku-1.pdf" target="_blank" rel="noopener">利用規約・プライバシーポリシー</a>等に同意する</label>
+      </div>
+
+      <div class="notice">
+        このAIは、デジタル庁の公開ソースコードのAIのため、たしかに開発コストは0円でした。しかし、みなさんが使うAPI費用は日本の行政DXをリードする627自治体と104社で構成する日本DX応援団の各会費から支出をして会員向けに無料提供しています。<br>
+        そのため、会員自治体の職員と法人会員の社員以外の方は、無料会員でも良いので<a href="https://digital-supporter.net/join/" target="_blank" rel="noopener">必ず登録してください</a>。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if (sessionStorage.getItem('gennai_auth') === 'true') {
+      window.location.href = 'app/main.htm';
+    }
+
+    var pw = document.getElementById('pw');
+    var agree = document.getElementById('agree');
+    var btn = document.getElementById('loginBtn');
+    var errBox = document.getElementById('errBox');
+
+    function updateBtn() {
+      btn.disabled = !(agree.checked && pw.value.trim());
+    }
+    agree.addEventListener('change', updateBtn);
+    pw.addEventListener('input', updateBtn);
+    updateBtn();
+
+    pw.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !btn.disabled) doLogin();
+    });
+    btn.addEventListener('click', doLogin);
+
+    function doLogin() {
+      if (btn.disabled) return;
+      btn.disabled = true;
+      errBox.style.display = 'none';
+
+      fetch('api/auth.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw.value.trim() })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success) {
+          sessionStorage.setItem('gennai_auth', 'true');
+          window.location.href = 'app/main.htm';
+        } else {
+          errBox.textContent = 'パスワードが正しくありません';
+          errBox.style.display = 'block';
+          updateBtn();
+        }
+      })
+      .catch(function() {
+        errBox.textContent = '通信エラーが発生しました';
+        errBox.style.display = 'block';
+        updateBtn();
+      });
+    }
+  </script>
+</body>
+</html>

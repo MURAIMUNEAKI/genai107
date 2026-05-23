@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダイアグラムを生成 - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ヘッダー（GitHub UI準拠） */
+.dg-header{border-bottom:1px solid #000;padding:1rem 0 0.75rem;margin-bottom:1.5rem;}
+.dg-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:1024px){.dg-title{font-size:1.5rem;}}
+.dg-subtitle{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-600);margin:0;}
+
+/* 但書（GitHub Disclosure準拠） */
+.dg-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.dg-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.dg-notes h3{font-size:0.9375rem;font-weight:700;margin:0.75rem 0 0.25rem;}
+.dg-notes p{margin:0.25rem 0;}
+.dg-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:8px;padding:0.5rem 0.75rem;}
+.dg-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.dg-notes summary::before{content:'▶';font-size:0.625rem;transition:transform 0.2s;}
+.dg-notes details[open] summary::before{transform:rotate(90deg);}
+.dg-notes details>div{padding:0.5rem 0 0 1.25rem;}
+
+/* Type selector grid */
+.type-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-top:0.5rem;}
+@media(min-width:768px){.type-grid{grid-template-columns:repeat(4,1fr);}}
+.type-btn{display:flex;flex-direction:column;align-items:center;gap:0.375rem;padding:0.75rem 0.5rem;border:2px solid var(--solid-gray-300);border-radius:8px;background:#fff;cursor:pointer;font-family:inherit;transition:border-color 0.15s,background 0.15s;text-align:center;}
+.type-btn:hover{border-color:var(--blue-900);background:var(--blue-50);}
+.type-btn.selected{border-color:var(--blue-900);background:var(--blue-100);outline:2px solid var(--blue-900);outline-offset:-2px;}
+.type-btn .type-icon{font-size:1.5rem;line-height:1;display:flex;align-items:center;justify-content:center;}
+.type-btn .type-icon svg{width:1.5rem;height:1.5rem;fill:currentColor;color:var(--solid-gray-600);}
+.type-btn.selected .type-icon svg{color:var(--blue-900);}
+.type-btn .type-title{font-size:0.8125rem;font-weight:700;color:var(--solid-gray-800);}
+.type-btn .type-desc{font-size:0.6875rem;color:var(--solid-gray-536);line-height:1.3;}
+
+.other-toggle{display:flex;align-items:center;gap:0.5rem;background:none;border:none;cursor:pointer;font-family:inherit;font-size:0.875rem;color:var(--blue-900);font-weight:500;padding:0.5rem 0;margin-top:0.25rem;}
+.other-toggle:hover{text-decoration:underline;}
+.other-types{display:none;margin-top:0.25rem;}
+.other-types.open{display:block;}
+
+.example-link{display:inline-block;font-size:0.8125rem;color:var(--blue-900);cursor:pointer;margin-top:0.5rem;text-decoration:underline;}
+.example-link:hover{color:var(--blue-1000);}
+
+/* Steps */
+.step-box{padding:0.75rem 1rem;border-radius:8px;font-size:0.875rem;margin-bottom:0.75rem;display:none;}
+.step-box.active{display:flex;align-items:center;gap:0.75rem;}
+.step-box.pending{background:var(--solid-gray-50);color:var(--solid-gray-600);}
+.step-box.done{background:var(--blue-100);color:var(--blue-900);}
+.step-spinner{width:1rem;height:1rem;border:2px solid var(--solid-gray-300);border-top-color:var(--blue-900);border-radius:50%;animation:spin 0.6s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.step-check{flex-shrink:0;color:var(--blue-900);font-weight:700;}
+
+/* Description text from AI */
+.diagram-desc{font-size:0.875rem;color:var(--solid-gray-600);padding:0.75rem 1rem;background:var(--solid-gray-50);border-radius:8px;margin-bottom:0.75rem;line-height:1.7;display:none;}
+
+/* Result tabs */
+.result-section{display:none;margin-top:1rem;}
+.result-tabs{display:flex;border-bottom:2px solid var(--solid-gray-300);margin-bottom:0;}
+.result-tab{padding:0.5rem 1.25rem;font-size:0.875rem;font-weight:700;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;font-family:inherit;color:var(--solid-gray-536);}
+.result-tab.active{color:var(--blue-900);border-bottom-color:var(--blue-900);}
+.result-tab:hover{color:var(--blue-900);}
+.tab-panel{display:none;padding:1rem 0;}
+.tab-panel.active{display:block;}
+
+/* Preview panel */
+.preview-panel{border:1px solid var(--solid-gray-300);border-radius:8px;padding:1rem;min-height:300px;background:#fff;overflow:auto;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.preview-panel svg{max-width:100%;}
+.preview-placeholder{color:var(--solid-gray-536);}
+.diagram-error{color:var(--error-1);font-size:0.875rem;margin-top:0.5rem;}
+
+/* Code panel */
+.code-block{width:100%;min-height:200px;font-family:'Consolas','Courier New',monospace;font-size:0.875rem;background:var(--solid-gray-800);color:var(--solid-gray-50);padding:1rem;border-radius:8px;border:none;resize:vertical;}
+.code-block:focus{outline:2px solid var(--yellow-300);}
+
+/* Download area */
+.dl-area{display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;}
+
+/* Zoom dialog */
+.zoom-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;padding:2rem;}
+.zoom-overlay.open{display:flex;}
+.zoom-body{background:#fff;border-radius:12px;padding:1.5rem;max-width:95vw;max-height:90vh;overflow:auto;position:relative;}
+.zoom-close{position:absolute;top:0.5rem;right:0.75rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--solid-gray-600);z-index:1;}
+.zoom-body svg{max-width:100%;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'daia'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:70rem">
+      <div class="dg-header">
+        <h1 class="dg-title">ダイアグラムを生成</h1>
+        <div class="dg-notes">
+          <h2>想定用途</h2>
+          <p>文章を元に、フローチャート/円グラフ/マインドマップなどのダイアグラムの生成をすることができます。</p>
+          <h3>アプリ個別の留意点</h3>
+          <p>長文を入力する場合は処理が著しく重くなる場合がありますので、その場合は入力テキストの内容を単純化するなど工夫してください。なお、生成されたチャート等の正確性は利用者で確認してください。</p>
+          <h3>入力例</h3>
+          <p>図にしたい任意の文章を入力してください。</p>
+          <h2>操作方法</h2>
+          <p>図にしたい任意の文章を入力します。AIを選択すると、生成AIが適切な図を選択し、生成します。</p>
+          <details>
+            <summary>仕組み</summary>
+            <div>
+              <p>生成AIの機能を活用し、図を作成するよう入力プロンプトに指示して図を返答させています。特別な文書は読み込ませていません。</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Section 1: 図の種類 -->
+      <fieldset style="border:none;padding:0;margin:0 0 1rem">
+        <legend class="dads-label">図の種類を選択 <span class="dads-required">必須</span></legend>
+        <p class="dads-support" id="selectedTypeLabel">選択中: AI</p>
+        <div class="type-grid" id="mainTypeGrid"></div>
+        <button class="other-toggle" id="otherToggle" type="button">
+          他の図の種類を見る
+          <svg class="disclosure-chevron" id="otherChevron" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div class="other-types" id="otherTypes">
+          <div class="type-grid" id="otherTypeGrid"></div>
+        </div>
+      </fieldset>
+
+      <!-- Section 2: テキスト入力 -->
+      <div class="form-group">
+        <label class="dads-label" for="descText">ダイアグラム生成元の文章 <span class="dads-required">必須</span></label>
+        <span class="example-link" id="exampleLink">フローチャートの例を入力する</span>
+        <textarea class="dads-textarea" id="descText" rows="4" placeholder="図にしたい文章を入力してください..."></textarea>
+      </div>
+
+      <div class="btn-area" style="justify-content:center">
+        <button class="dads-btn" id="genBtn" style="min-width:15rem">実行</button>
+      </div>
+
+      <!-- Steps -->
+      <div class="step-box pending" id="step1Box">
+        <div class="step-spinner" id="step1Spinner"></div>
+        <span class="step-check" id="step1Check" style="display:none">&#10003;</span>
+        <span id="step1Text">ステップ１: 最適なダイアグラムを選んでいます</span>
+      </div>
+      <div class="step-box pending" id="step2Box">
+        <div class="step-spinner"></div>
+        <span id="step2Text">ステップ２: 図を生成しています</span>
+      </div>
+
+      <!-- Description from AI -->
+      <div class="diagram-desc" id="diagramDesc"></div>
+
+      <!-- Results -->
+      <div class="result-section" id="resultSection">
+        <hr class="dads-divider">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem">
+          <h2 style="font-size:1.125rem;font-weight:700" id="resultTitle">フローチャート</h2>
+          <div class="dl-area">
+            <button class="dads-btn-outline dads-btn-sm" id="dlSvgBtn">SVGダウンロード</button>
+            <button class="dads-btn-outline dads-btn-sm" id="dlPngBtn">PNGダウンロード</button>
+          </div>
+        </div>
+        <div class="result-tabs">
+          <button class="result-tab active" data-tab="preview">図を表示</button>
+          <button class="result-tab" data-tab="code">コードを表示</button>
+        </div>
+        <div class="tab-panel active" id="tabPreview">
+          <div class="preview-panel" id="previewPanel" title="クリックで拡大">
+            <span class="preview-placeholder">プレビューがここに表示されます</span>
+          </div>
+          <div class="diagram-error" id="diagramError"></div>
+        </div>
+        <div class="tab-panel" id="tabCode">
+          <textarea class="code-block" id="mermaidCode" readonly></textarea>
+          <div style="margin-top:0.5rem">
+            <button class="dads-btn-outline dads-btn-sm" id="editCodeBtn">コードを編集して再描画</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Zoom Dialog -->
+<div class="zoom-overlay" id="zoomOverlay">
+  <div class="zoom-body" id="zoomBody">
+    <button class="zoom-close" id="zoomClose">&times;</button>
+    <div id="zoomContent"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script src="../shared/layout107.js"></script>
+<script src="../shared/markdown.js"></script>
+<script src="../shared/api-client.js"></script>
+<script src="../shared/history-store.js"></script>
+<script>
+initLayout({ activePage: 'diagram', basePath: '' });
+mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
+
+/* ========== Diagram Type Data ========== */
+/* Inline SVG icons — monochrome, matching react-icons from GitHub reference */
+var ICONS = {
+  AI: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.753 14a2.25 2.25 0 0 1 2.25 2.25v.904A3.75 3.75 0 0 1 18.696 20c-1.565 1.344-3.806 2-6.696 2s-5.128-.656-6.69-2a3.75 3.75 0 0 1-1.306-2.843v-.907A2.25 2.25 0 0 1 6.254 14h11.5ZM12 2.004a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"/></svg>',
+  flowchart: '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 1h4v4H1V1Zm0 5h4v4H1V6Zm5-5h4v4H6V1Zm5 0h4v4h-4V1Zm0 5h4v4h-4V6ZM6 6h4v4H6V6Zm-5 5h4v4H1v-4Zm5 0h4v4H6v-4Zm5 0h4v4h-4v-4Z"/></svg>',
+  piechart: '<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128 24a104 104 0 1 0 104 104A104.12 104.12 0 0 0 128 24Zm87.63 96H136V40.37A88.13 88.13 0 0 1 215.63 120ZM120 40.37V128a8 8 0 0 0 3.31 6.49l60.4 43.47A88 88 0 1 1 120 40.37Z"/></svg>',
+  mindmap: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1h2V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V6H9v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5Zm0 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2Zm4 6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2Z"/></svg>',
+  quadrantchart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/><circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none"/><circle cx="17" cy="7" r="1.5" fill="currentColor" stroke="none"/><circle cx="7" cy="17" r="1.5" fill="currentColor" stroke="none"/><circle cx="17" cy="17" r="1.5" fill="currentColor" stroke="none"/></svg>',
+  sequencediagram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h3v18H2V3Zm17 0h3v18h-3V3ZM7 6h10v3H7V6Zm2 5h6v3H9v-3Zm-2 5h10v3H7v-3Z"/></svg>',
+  timeline: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M256 48a16 16 0 0 1 16 16v384a16 16 0 0 1-32 0V64a16 16 0 0 1 16-16ZM128 112h96v48h-96v-48Zm160 96h96v48h-96v-48Zm-160 96h96v48h-96v-48Zm160 96h96v48h-96v-48Z"/></svg>',
+  gitgraph: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>',
+  erdiagram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 4a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Zm11 0a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2V4ZM2 15a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-3Zm11 0a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-3Z"/><path d="M9 5.5h4M9 16.5h4M6.5 9v4m11-4v4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
+  classdiagram: '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6h-1A1.5 1.5 0 0 1 6 4.5v-1ZM1 10a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 6 10v2.5A1.5 1.5 0 0 1 4.5 14h-2A1.5 1.5 0 0 1 1 12.5V10Zm9 0a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 15 10v2.5a1.5 1.5 0 0 1-1.5 1.5h-2A1.5 1.5 0 0 1 10 12.5V10Z"/><path d="M8 6v2.5M4 8.5V7L8 6l4 1v1.5" fill="none" stroke="currentColor" stroke-width="1"/></svg>',
+  statediagram: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6h7M8.5 18h7M6 8.5v7m12-7v7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 2"/></svg>',
+  xychart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 17l4-8 4 4 4-8"/></svg>',
+  blockdiagram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v7H3V3Zm11 0h7v7h-7V3ZM3 14h7v7H3v-7Zm11 0h7v7h-7v-7Z"/></svg>',
+  architecture: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 10V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v4H2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-8h-4ZM8 6h8v4H8V6Zm-4 6h16v6H4v-6Z"/></svg>',
+  ganttchart: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M64 96h192v48H64V96Zm128 80h256v48H192v-48ZM64 256h320v48H64v-48Zm0 80h128v48H64v-48Z"/></svg>',
+  userjourney: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>',
+  sankeychart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4v4c0 4 4 6 8 6s8-2 8-6"/><path d="M3 10v4c0 4 4 6 8 6s8-2 8-6"/><path d="M3 16v4"/><path d="M21 4v16"/></svg>',
+  requirementdiagram: '<svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M3 4a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Zm0 4a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Zm0 4a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Zm0 4a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Zm0 4a1 1 0 0 1 1-1h8a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z"/><path d="M19.707 12.293a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414-1.414L17.586 13l-3.293-3.293a1 1 0 0 1 1.414-1.414l4 4Z"/></svg>',
+  networkpacket: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v2H2V6a2 2 0 0 1 2-2Zm-2 6h20v4H2v-4Zm0 6h20v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2Zm4-9h2v2H6V7Zm4 0h2v2h-2V7Zm-4 6h2v2H6v-2Zm4 0h2v2h-2v-2Z"/></svg>'
+};
+
+var DIAGRAM_DATA = {
+  AI:                { id:'AI',                icon:ICONS.AI,                title:'AI',                  desc:'AIが最適な図を選択',                   category:'main',  example:'会社の一般的な経費精算フローを色つきで図示してください。' },
+  flowchart:         { id:'flowchart',         icon:ICONS.flowchart,         title:'フローチャート',       desc:'プロセスの流れを視覚化',               category:'main',  example:'朝の準備の流れをフローチャートで表現したいです。以下の手順を含めてください:\n目覚める、ベッドから出る、顔を洗う、歯を磨く、朝食を食べる、服を着替える、家を出る。\n\n途中で「時間に余裕があるか？」という判断ポイントを入れ、余裕がある場合は「コーヒーを飲む」というステップを追加してください。' },
+  piechart:          { id:'piechart',          icon:ICONS.piechart,          title:'円グラフ',             desc:'データの割合を表示',                   category:'main',  example:'東京都内の20代、30代の通勤・通学手段の割合を示す円グラフを作成したいです。\n電車、自転車、徒歩、車、バスの5つの手段について、それぞれの割合を適当に設定してください。' },
+  mindmap:           { id:'mindmap',           icon:ICONS.mindmap,           title:'マインドマップ',       desc:'アイデアや概念を放射状に整理',         category:'main',  example:'生成AIのユースケースについて、様々なアイデアを考えてマインドマップで図示してください。' },
+  quadrantchart:     { id:'quadrantchart',     icon:ICONS.quadrantchart,     title:'4象限チャート',         desc:'項目を4つの領域に分類して表示',         category:'other', example:'ソーシャルメディアプラットフォームの特性を比較する4象限チャートを作成してください。\nX軸は「テキスト中心」から「視覚中心」、Y軸は「プロフェッショナル」から「カジュアル」。\nTwitter, Instagram, LinkedIn, TikTok, Facebookを配置してください。' },
+  sequencediagram:   { id:'sequencediagram',   icon:ICONS.sequencediagram,   title:'シーケンス図',         desc:'オブジェクト間の相互作用を時系列で表現', category:'other', example:'Webアプリケーションで、ユーザーがログインボタンを押してから認証が完了するまでの流れを示してください。\nフロントエンド、認証サーバー、データベースの3つのコンポーネントが関係します。' },
+  timeline:          { id:'timeline',          icon:ICONS.timeline,          title:'タイムライン図',       desc:'出来事を時系列で表示',                 category:'other', example:'2000年から2020年までのソーシャルメディアの主要な進化と転換点をタイムラインで表現してください。' },
+  gitgraph:          { id:'gitgraph',          icon:ICONS.gitgraph,          title:'Gitグラフ',            desc:'Gitのブランチと操作の履歴を視覚化',     category:'other', example:'メインブランチから、ログイン機能とプロフィール編集機能の2つのfeatureブランチが分岐する開発フローを表現してください。' },
+  erdiagram:         { id:'erdiagram',         icon:ICONS.erdiagram,         title:'ER図',                 desc:'データベース設計を表現',               category:'other', example:'ブログシステムのデータベース設計を示してください。\n記事（posts）、ユーザー（users）、コメント（comments）、カテゴリー（categories）、タグ（tags）のテーブルがあります。' },
+  classdiagram:      { id:'classdiagram',      icon:ICONS.classdiagram,      title:'クラス図',             desc:'クラスの構造と関係を表示',             category:'other', example:'ECサイトのドメインモデルを作成してください。\nUser、Product、Order、CartItemの各クラスに適切なプロパティとメソッドを含めてください。' },
+  statediagram:      { id:'statediagram',      icon:ICONS.statediagram,      title:'状態遷移図',           desc:'物の状態変化を図示',                   category:'other', example:'オンラインショッピングカートの状態遷移を示してください。\n「空」「商品追加済み」「チェックアウト中」「支払い完了」などの状態を含めます。' },
+  xychart:           { id:'xychart',           icon:ICONS.xychart,           title:'XYチャート',            desc:'2つの変数の関係を図示',                category:'other', example:'過去10年間の日本の平均睡眠時間と労働時間の関係を示すXYチャートを作成してください。' },
+  blockdiagram:      { id:'blockdiagram',      icon:ICONS.blockdiagram,      title:'ブロック図',           desc:'システムの構成要素と接続を表現',       category:'other', example:'スマートフォンのハードウェアコンポーネントを示すブロック図を作成してください。\nプロセッサ、メモリ、ストレージ、ディスプレイ、カメラ、各種センサーなどを含めます。' },
+  architecture:      { id:'architecture',      icon:ICONS.architecture,      title:'アーキテクチャ図',     desc:'システム全体の構造を表現',             category:'other', example:'クラウドベースのWebアプリケーションのアーキテクチャを示してください。\nフロントエンド、バックエンド、データベース、キャッシュ、ロードバランサー、CDNなどを含めます。' },
+  ganttchart:        { id:'ganttchart',        icon:ICONS.ganttchart,        title:'ガントチャート',       desc:'プロジェクトのスケジュールを視覚化',   category:'other', example:'Webアプリケーション開発プロジェクトのスケジュールを示してください。\n要件定義、設計、開発、テスト、デプロイメントの各フェーズを含めます。' },
+  userjourney:       { id:'userjourney',       icon:ICONS.userjourney,       title:'ユーザージャーニー図', desc:'ユーザー体験の流れを図示',             category:'other', example:'オンラインショッピングサイトでの顧客の購買体験を示してください。\n商品検索、商品閲覧、カートへの追加、チェックアウト、支払い、配送追跡を含めます。' },
+  sankeychart:       { id:'sankeychart',       icon:ICONS.sankeychart,       title:'サンキーチャート',     desc:'フローの量や割合を視覚化',             category:'other', example:'Webサイトのユーザーフローを示すサンキーチャートを作成してください。\nランディングページから始まり、各ページの遷移と離脱率を表示します。' },
+  requirementdiagram:{ id:'requirementdiagram',icon:ICONS.requirementdiagram,title:'要件図',               desc:'システム要件を構造化して表現',         category:'other', example:'スマートホームシステムの主要な機能要件を示してください。\n照明制御、温度管理、セキュリティ、エネルギー効率化などの要件を含めます。' },
+  networkpacket:     { id:'networkpacket',     icon:ICONS.networkpacket,     title:'ネットワークパケット図',desc:'ネットワーク通信のパケット構造を図示', category:'other', example:'HTTPリクエストパケットの構造を示す図を作成してください。\nヘッダーとボディの主要な要素を含めます。' }
+};
+
+/* Mermaid type names for AI selection mapping */
+var MERMAID_TYPE_MAP = {
+  'FlowChart':'flowchart','Flowchart':'flowchart','flowchart':'flowchart',
+  'PieChart':'piechart','Piechart':'piechart','piechart':'piechart',
+  'MindMap':'mindmap','Mindmap':'mindmap','mindmap':'mindmap',
+  'QuadrantChart':'quadrantchart','quadrantchart':'quadrantchart',
+  'SequenceDiagram':'sequencediagram','sequencediagram':'sequencediagram',
+  'Timeline':'timeline','timeline':'timeline',
+  'GitGraph':'gitgraph','Gitgraph':'gitgraph','gitgraph':'gitgraph',
+  'ERDiagram':'erdiagram','ErDiagram':'erdiagram','erdiagram':'erdiagram',
+  'ClassDiagram':'classdiagram','classdiagram':'classdiagram',
+  'StateDiagram':'statediagram','statediagram':'statediagram',
+  'XYChart':'xychart','Xychart':'xychart','xychart':'xychart',
+  'BlockDiagram':'blockdiagram','blockdiagram':'blockdiagram',
+  'Architecture':'architecture','architecture':'architecture',
+  'GanttChart':'ganttchart','ganttchart':'ganttchart',
+  'UserJourney':'userjourney','userjourney':'userjourney',
+  'SankeyChart':'sankeychart','sankeychart':'sankeychart',
+  'RequirementDiagram':'requirementdiagram','requirementdiagram':'requirementdiagram',
+  'NetworkPacket':'networkpacket','networkpacket':'networkpacket'
+};
+
+/* Type-specific system prompts */
+var DIAGRAM_PROMPTS = {
+  flowchart: 'あなたはMermaid.jsのフローチャート記法の専門家です。与えられた内容をMermaid.jsのフローチャート記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのフローチャート記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. 「end」という単語は「End」「END」等に変更（予約語のため）\n6. 方向指定: TD/TB(上→下), BT(下→上), LR(左→右), RL(右→左)\n7. ノード形状: [四角], (丸角), ([スタジアム]), {菱形}, ((円形)), {{六角形}}等\n8. リンク: -->(矢印), ---(線), -.->（点線）, ==>(太線), <-->(双方向)\n9. subgraph～endでグループ化可能',
+  piechart: 'あなたはMermaid.jsの円グラフ記法の専門家です。与えられた内容をMermaid.jsの円グラフ記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsの円グラフ記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. 基本構文: pie showData title "タイトル" → "ラベル" : 数値\n6. showDataで実際の値を表示',
+  mindmap: 'あなたはMermaid.jsのマインドマップ記法の専門家です。与えられた内容をMermaid.jsのマインドマップ記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのマインドマップ記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. mindmapキーワードで開始、root((中心))で中心定義\n6. インデントで階層表現\n7. 形状: [四角], (丸角), ((円)), {{六角形}}, )雲(',
+  quadrantchart: 'あなたはMermaid.jsの4象限チャート記法の専門家です。与えられた内容をMermaid.jsの4象限チャート記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsの4象限チャート記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. quadrantChartで開始（※quadrant-betaは使わないこと）、x-axis/y-axisで軸定義、quadrant-1～4でラベル\n6. ポイント配置は "ラベル": [x, y] の形式（x,yは0～1の範囲）',
+  sequencediagram: 'あなたはMermaid.jsのシーケンス図記法の専門家です。与えられた内容をMermaid.jsのシーケンス図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのシーケンス図記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. sequenceDiagramで開始\n6. participant/actorで参加者定義\n7. ->>(実線矢印), -->>（点線矢印）等でメッセージ\n8. loop, alt, opt, par等で制御構造',
+  timeline: 'あなたはMermaid.jsのタイムライン図記法の専門家です。与えられた内容をMermaid.jsのタイムライン図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのタイムライン記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. timelineで開始、sectionでグループ化、「期間 : イベント」形式',
+  gitgraph: 'あなたはMermaid.jsのGitグラフ記法の専門家です。与えられた内容をMermaid.jsのGitグラフ記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのGitグラフ記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. gitGraphで開始、commit/branch/checkout/mergeコマンド',
+  erdiagram: 'あなたはMermaid.jsのER図記法の専門家です。与えられた内容をMermaid.jsのER図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのER図記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. erDiagramで開始\n6. エンティティ定義とリレーション（||--o{等）\n7. 属性にPK,FK,UK指定可能',
+  classdiagram: 'あなたはMermaid.jsのクラス図記法の専門家です。与えられた内容をMermaid.jsのクラス図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのクラス図記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. classDiagramで開始\n6. class名{属性;メソッド()}で定義\n7. 可視性: +(public), -(private), #(protected)\n8. 関係: <|--（継承）, *--（コンポジション）, o--（集約）等',
+  statediagram: 'あなたはMermaid.jsの状態遷移図記法の専門家です。与えられた内容をMermaid.jsの状態遷移図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsの状態遷移図記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. stateDiagram-v2で開始、[*]で開始/終了状態',
+  xychart: 'あなたはMermaid.jsのXYチャート記法の専門家です。与えられた内容をMermaid.jsのXYチャート記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのXYチャート記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. xychart-betaで開始、x-axis/y-axisで軸定義、line/barでデータ',
+  blockdiagram: 'あなたはMermaid.jsのブロック図記法の専門家です。与えられた内容をMermaid.jsのブロック図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのブロック図記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. block-betaで開始、columns指定、ブロック定義',
+  architecture: 'あなたはMermaid.jsのアーキテクチャ図記法の専門家です。与えられた内容をMermaid.jsのアーキテクチャ図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのアーキテクチャ記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. architecture-betaで開始、group/service/junctionでコンポーネント定義',
+  ganttchart: 'あなたはMermaid.jsのガントチャート記法の専門家です。与えられた内容をMermaid.jsのガントチャート記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのガントチャート記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. ganttで開始、dateFormat指定、section/タスク定義',
+  userjourney: 'あなたはMermaid.jsのユーザージャーニー図記法の専門家です。与えられた内容をMermaid.jsのユーザージャーニー図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのユーザージャーニー記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. journeyで開始、sectionでグループ化、「タスク名 : スコア(1-5) : アクター」形式',
+  sankeychart: 'あなたはMermaid.jsのサンキーチャート記法の専門家です。与えられた内容をMermaid.jsのサンキーチャート記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのサンキー記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. sankeyDiagramで開始、「ソース,ターゲット,値」のCSV形式',
+  requirementdiagram: 'あなたはMermaid.jsの要件図記法の専門家です。与えられた内容をMermaid.jsの要件図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsの要件図記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. requirementDiagramで開始\n6. 要件タイプ: requirement, functionalRequirement, interfaceRequirement, performanceRequirement, physicalRequirement, designConstraint\n7. 要件定義の構文:\n   requirement 要件名 {\n     id: 1\n     text: 説明文\n     risk: low / medium / high\n     verifymethod: analysis / demonstration / inspection / test\n   }\n8. verifymethod は必ず analysis, demonstration, inspection, test のいずれかを使うこと（他の値はエラーになる）\n9. element 要素名 {\n     type: simulation / component 等\n   }\n10. 関係: satisfies, traces, contains, derives, refines, copies',
+  networkpacket: 'あなたはMermaid.jsのネットワークパケット図記法の専門家です。与えられた内容をMermaid.jsのネットワークパケット図記法で表現してください。\n制約:\n1. 出力は必ずMermaid.jsのパケット記法に従う\n2. 挨拶や前置きは出力しない\n3. 説明は<Description></Description>タグ内に出力\n4. Mermaidコードは```mermaidから```で囲む\n5. packet-betaで開始、開始ビット-終了ビット:"ラベル"形式'
+};
+
+/* AI type selection prompt */
+var AI_SELECT_PROMPT = 'あなたは図の種類を決定する専門家です。\n\n1. <content></content>を注意深く読んでください\n2. 表現したい情報の種類を特定してください\n3. 以下から最適な図を1つ選択してください:\n- FlowChart\n- SequenceDiagram\n- ClassDiagram\n- StateDiagram\n- ERDiagram\n- UserJourney\n- PieChart\n- GanttChart\n- QuadrantChart\n- RequirementDiagram\n- GitGraph\n- MindMap\n- SankeyChart\n- XYChart\n- BlockDiagram\n- NetworkPacket\n- Architecture\n- Timeline\n\n4. <output></output>タグに選択した図を一つだけ出力してください\n\n【重要ルール】\n- 選んだ図の名前だけを<output></output>タグ内に出力してください\n- それ以外の情報は一切含めないでください';
+
+/* ========== DOM ========== */
+var mainTypeGrid = document.getElementById('mainTypeGrid');
+var otherTypeGrid = document.getElementById('otherTypeGrid');
+var otherToggle = document.getElementById('otherToggle');
+var otherChevron = document.getElementById('otherChevron');
+var otherTypes = document.getElementById('otherTypes');
+var selectedTypeLabel = document.getElementById('selectedTypeLabel');
+var exampleLink = document.getElementById('exampleLink');
+var descText = document.getElementById('descText');
+var genBtn = document.getElementById('genBtn');
+var step1Box = document.getElementById('step1Box');
+var step2Box = document.getElementById('step2Box');
+var diagramDesc = document.getElementById('diagramDesc');
+var resultSection = document.getElementById('resultSection');
+var resultTitle = document.getElementById('resultTitle');
+var previewPanel = document.getElementById('previewPanel');
+var diagramError = document.getElementById('diagramError');
+var mermaidCode = document.getElementById('mermaidCode');
+var zoomOverlay = document.getElementById('zoomOverlay');
+var zoomContent = document.getElementById('zoomContent');
+
+/* ========== State ========== */
+var selectedType = 'AI';
+var resolvedType = ''; // AI決定後の実際の図タイプ
+var currentSvg = '';   // 最新のSVG文字列
+
+/* ========== Build Type Grid ========== */
+var typeIds = Object.keys(DIAGRAM_DATA);
+typeIds.forEach(function(id) {
+  var d = DIAGRAM_DATA[id];
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'type-btn' + (id === 'AI' ? ' selected' : '');
+  btn.dataset.type = id;
+  btn.innerHTML = '<span class="type-icon">' + d.icon + '</span>'
+    + '<span class="type-title">' + d.title + '</span>'
+    + '<span class="type-desc">' + d.desc + '</span>';
+  btn.addEventListener('click', function() { selectType(id); });
+  if (d.category === 'main') {
+    mainTypeGrid.appendChild(btn);
+  } else {
+    otherTypeGrid.appendChild(btn);
+  }
+});
+
+function selectType(id) {
+  selectedType = id;
+  var d = DIAGRAM_DATA[id];
+  selectedTypeLabel.textContent = '選択中: ' + d.title;
+  // Update example link
+  exampleLink.textContent = d.title + 'の例を入力する';
+  // Update button styles
+  document.querySelectorAll('.type-btn').forEach(function(b) {
+    b.classList.toggle('selected', b.dataset.type === id);
+  });
+}
+
+/* Toggle other types */
+otherToggle.addEventListener('click', function() {
+  otherTypes.classList.toggle('open');
+  otherChevron.classList.toggle('open');
+});
+
+/* Example link */
+exampleLink.addEventListener('click', function() {
+  var d = DIAGRAM_DATA[selectedType];
+  if (d && d.example) {
+    descText.value = d.example;
+    descText.focus();
+  }
+});
+
+/* ========== Tabs ========== */
+document.querySelectorAll('.result-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.result-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById('tab' + capitalize(tab.dataset.tab)).classList.add('active');
+  });
+});
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+/* ========== Generate ========== */
+genBtn.addEventListener('click', function() {
+  var desc = descText.value.trim();
+  if (!desc) { descText.focus(); return; }
+  startGeneration(desc);
+});
+
+function startGeneration(content) {
+  genBtn.disabled = true;
+  genBtn.textContent = '実行中...';
+  resultSection.style.display = 'none';
+  diagramDesc.style.display = 'none';
+  diagramError.textContent = '';
+  step1Box.style.display = 'none';
+  step2Box.style.display = 'none';
+  resolvedType = '';
+  retryCount = 0;
+
+  if (selectedType === 'AI') {
+    // Step 1: AI determines the diagram type
+    showStep1('pending');
+    aiSelectType(content);
+  } else {
+    // Direct generation with selected type
+    resolvedType = selectedType;
+    generateDiagram(content, selectedType);
+  }
+}
+
+function showStep1(state) {
+  step1Box.style.display = 'none';
+  step1Box.className = 'step-box ' + state + ' active';
+  step1Box.style.display = '';
+  document.getElementById('step1Spinner').style.display = state === 'pending' ? '' : 'none';
+  document.getElementById('step1Check').style.display = state === 'done' ? '' : 'none';
+}
+
+function aiSelectType(content) {
+  // AI_SELECT_PROMPT をユーザーメッセージに直接埋め込む
+  var prompt = AI_SELECT_PROMPT + '\n\n<content>' + content + '</content>\n<output></output>';
+
+  ApiClient.streamChat({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'gemini-3.1-flash-lite',
+    onDone: function(full) {
+      // Extract type from <output>...</output>
+      var m = full.match(/<output>([\s\S]*?)<\/output>/);
+      var raw = m ? m[1].trim() : full.trim();
+      var mapped = MERMAID_TYPE_MAP[raw];
+      if (!mapped) {
+        // Try partial match
+        var keys = Object.keys(MERMAID_TYPE_MAP);
+        for (var i = 0; i < keys.length; i++) {
+          if (raw.toLowerCase().indexOf(keys[i].toLowerCase()) !== -1) {
+            mapped = MERMAID_TYPE_MAP[keys[i]];
+            break;
+          }
+        }
+      }
+      resolvedType = mapped || 'flowchart';
+      var d = DIAGRAM_DATA[resolvedType];
+      document.getElementById('step1Text').textContent = 'ステップ１: 完了 — ' + (d ? d.title : resolvedType);
+      showStep1('done');
+      generateDiagram(content, resolvedType);
+    },
+    onError: function(err) {
+      document.getElementById('step1Text').textContent = 'ステップ１: エラー — デフォルト(フローチャート)で続行';
+      showStep1('done');
+      resolvedType = 'flowchart';
+      generateDiagram(content, 'flowchart');
+    }
+  });
+}
+
+function generateDiagram(content, type) {
+  // Show step 2
+  step2Box.className = 'step-box pending active';
+  step2Box.style.display = '';
+
+  var sysPrompt = DIAGRAM_PROMPTS[type] || DIAGRAM_PROMPTS['flowchart'];
+  var fullText = '';
+
+  // 指示をユーザーメッセージに直接埋め込む（systemPrompt経由だとliteモデルが無視する場合がある）
+  var combinedMessage = sysPrompt + '\n\n---\n\n以下の内容を上記ルールに従ってMermaid.jsのコードに変換してください:\n\n' + content;
+
+  ApiClient.streamChat({
+    messages: [{ role: 'user', content: combinedMessage }],
+    model: 'gemini-3.1-flash-lite',
+    onChunk: function(chunk, full) {
+      fullText = full;
+    },
+    onDone: function(full) {
+      fullText = full;
+      step2Box.style.display = 'none';
+      genBtn.disabled = false;
+      genBtn.textContent = '実行';
+
+      // Extract description
+      var descMatch = full.match(/<Description>([\s\S]*?)<\/Description>/);
+      if (descMatch) {
+        diagramDesc.textContent = descMatch[1].trim();
+        diagramDesc.style.display = 'block';
+      }
+
+      // Extract mermaid code
+      var code = extractMermaidCode(full);
+      if (!code) {
+        // Mermaidコードが見つからない → 自動リトライ
+        console.log('[diagram] No Mermaid code found, retrying...');
+        retryGeneration(content, type, full);
+        return;
+      }
+
+      code = fixMermaidCode(code);
+      mermaidCode.value = code;
+
+      var d = DIAGRAM_DATA[resolvedType || type];
+      resultTitle.textContent = d ? d.title : type;
+      resultSection.style.display = 'block';
+
+      // Switch to preview tab
+      document.querySelectorAll('.result-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelector('[data-tab="preview"]').classList.add('active');
+      document.getElementById('tabPreview').classList.add('active');
+
+      renderMermaid(code);
+
+      HistoryStore.save({
+        id: 'diagram_' + Date.now(),
+        appType: 'diagram',
+        title: 'ダイアグラム: ' + (d ? d.title : type),
+        descText: content,
+        diagramType: resolvedType || type,
+        mermaidCode: code
+      });
+    },
+    onError: function(err) {
+      step2Box.style.display = 'none';
+      genBtn.disabled = false;
+      genBtn.textContent = '実行';
+      diagramError.textContent = 'エラー: ' + err;
+      resultSection.style.display = 'block';
+    }
+  });
+}
+
+/* ========== Retry — AIがMermaidコードを返さなかった場合 ========== */
+var retryCount = 0;
+function retryGeneration(content, type, previousOutput) {
+  retryCount++;
+  if (retryCount > 1) {
+    // 2回失敗したら諦め
+    diagramError.textContent = 'AIがMermaidコードを生成できませんでした。入力文を短くするか、図の種類を変更して再度お試しください。';
+    resultSection.style.display = 'block';
+    mermaidCode.value = previousOutput;
+    mermaidCode.readOnly = false;
+    genBtn.disabled = false;
+    genBtn.textContent = '実行';
+    return;
+  }
+
+  // リトライ: 指示を明確にして再リクエスト
+  var retryPrompt = '【重要な指示】以下の内容をMermaid.jsのコードに変換してください。\n\n【出力ルール】\n- 必ず ```mermaid で始まるコードブロックで出力すること\n- 説明文やコメントは一切不要\n- Mermaidの図のコードだけを出力すること\n- 挨拶や前置きは出力しない\n\n【変換対象の内容】\n' + content;
+
+  step2Box.className = 'step-box pending active';
+  step2Box.style.display = '';
+  document.getElementById('step2Text').textContent = 'ステップ２: 図を再生成しています（リトライ）';
+
+  ApiClient.streamChat({
+    messages: [{ role: 'user', content: retryPrompt }],
+    model: 'gemini-3.1-flash-lite',
+    onDone: function(full) {
+      step2Box.style.display = 'none';
+      genBtn.disabled = false;
+      genBtn.textContent = '実行';
+
+      var code = extractMermaidCode(full);
+      if (!code) {
+        // リトライでも失敗
+        diagramError.textContent = 'AIがMermaidコードを生成できませんでした。入力文を短くするか、図の種類を変更して再度お試しください。';
+        resultSection.style.display = 'block';
+        mermaidCode.value = full;
+        mermaidCode.readOnly = false;
+        return;
+      }
+
+      code = fixMermaidCode(code);
+      mermaidCode.value = code;
+
+      var d = DIAGRAM_DATA[resolvedType || type];
+      resultTitle.textContent = d ? d.title : type;
+      resultSection.style.display = 'block';
+
+      document.querySelectorAll('.result-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelector('[data-tab="preview"]').classList.add('active');
+      document.getElementById('tabPreview').classList.add('active');
+
+      renderMermaid(code);
+    },
+    onError: function(err) {
+      step2Box.style.display = 'none';
+      genBtn.disabled = false;
+      genBtn.textContent = '実行';
+      diagramError.textContent = 'エラー: ' + err;
+      resultSection.style.display = 'block';
+    }
+  });
+}
+
+/* ========== Mermaid Rendering ========== */
+var renderCounter = 0;
+function renderMermaid(code) {
+  if (!code) return;
+  diagramError.textContent = '';
+  renderCounter++;
+  var id = 'mermaid-svg-' + renderCounter;
+
+  mermaid.render(id, code).then(function(result) {
+    currentSvg = result.svg;
+    previewPanel.innerHTML = result.svg;
+  }).catch(function(err) {
+    diagramError.textContent = 'Mermaid描画エラー: ' + (err.message || err);
+    previewPanel.innerHTML = '<span class="preview-placeholder">描画に失敗しました。「コードを表示」タブからコードを修正できます。</span>';
+  });
+}
+
+function extractMermaidCode(text) {
+  console.log('[diagram] AI raw output:', text);
+
+  // 方法1: GitHub準拠 — split方式で ```mermaid ... ``` を抽出
+  var lower = text.toLowerCase();
+  var mermaidIdx = lower.indexOf('```mermaid');
+  if (mermaidIdx !== -1) {
+    var afterTag = text.substring(mermaidIdx + '```mermaid'.length);
+    var endIdx = afterTag.indexOf('```');
+    var code = endIdx !== -1 ? afterTag.substring(0, endIdx) : afterTag;
+    code = code.trim();
+    if (code) {
+      console.log('[diagram] Extracted via ```mermaid split:', code.substring(0, 80));
+      return code;
+    }
+  }
+
+  // 方法2: ``` ... ``` (mermaidラベルなし) で Mermaidキーワード開始のコード
+  var codeBlockRe = /```\s*\n?([\s\S]*?)```/g;
+  var m;
+  while ((m = codeBlockRe.exec(text)) !== null) {
+    var inner = m[1].trim();
+    if (inner && /^(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram|erDiagram|journey|gantt|pie|mindmap|timeline|gitGraph|xychart|quadrantChart|quadrant|sankey|requirement|packet|block|architecture)/i.test(inner)) {
+      console.log('[diagram] Extracted via generic code block:', inner.substring(0, 80));
+      return inner;
+    }
+  }
+
+  // 方法3: コードフェンスなし — テキスト中のMermaidキーワードを検索
+  var keywordRe = /^(flowchart|graph\s|sequenceDiagram|classDiagram|stateDiagram|erDiagram|journey|gantt|pie|mindmap|timeline|gitGraph|xychart-beta|xychart|quadrantChart|quadrant-beta|quadrant|sankey-beta|sankeyDiagram|sankey|requirementDiagram|requirement|packet-beta|packet|block-beta|block|architecture-beta|architecture)/im;
+  var cleaned = text.replace(/<Description>[\s\S]*?<\/Description>/gi, '');
+  var kwMatch = keywordRe.exec(cleaned);
+  if (kwMatch) {
+    var startPos = kwMatch.index;
+    var rest = cleaned.substring(startPos).replace(/```\s*$/, '').trim();
+    // 先頭の余計な空行を除去して、Mermaidコード部分だけに
+    if (rest) {
+      console.log('[diagram] Extracted via keyword fallback:', rest.substring(0, 80));
+      return rest;
+    }
+  }
+
+  console.log('[diagram] Extraction FAILED. Full text:', text);
+  return null;
+}
+
+function fixMermaidCode(code) {
+  // Mermaid v11: quadrant-beta → quadrantChart
+  code = code.replace(/^quadrant-beta\b/m, 'quadrantChart');
+  code = code
+    .replace(/(^|\s)classDef(?!\s)/gm, '$1classDef ')
+    .replace(/・/g, '/')
+    .replace(/：/g, ':')
+    .replace(/subgraph\s+(.*),/gm, 'subgraph $1');
+  // requirementDiagram: verifymethod の無効な値を修正
+  code = code.replace(/verifymethod\s*:\s*(\w+)/g, function(match, val) {
+    var valid = ['analysis', 'demonstration', 'inspection', 'test'];
+    if (valid.indexOf(val.toLowerCase()) !== -1) return 'verifymethod: ' + val.toLowerCase();
+    // 無効な値を最も近い有効値にマッピング
+    if (/func|logic|valid/i.test(val)) return 'verifymethod: test';
+    if (/review|check|audit|inspect/i.test(val)) return 'verifymethod: inspection';
+    if (/demo|show|prototype/i.test(val)) return 'verifymethod: demonstration';
+    return 'verifymethod: analysis';
+  });
+  return code;
+}
+
+/* ========== Edit & Re-render ========== */
+document.getElementById('editCodeBtn').addEventListener('click', function() {
+  mermaidCode.readOnly = false;
+  mermaidCode.focus();
+  this.textContent = '再描画';
+  this.onclick = function() {
+    var code = fixMermaidCode(mermaidCode.value.trim());
+    mermaidCode.value = code;
+    renderMermaid(code);
+    mermaidCode.readOnly = true;
+    document.getElementById('editCodeBtn').textContent = 'コードを編集して再描画';
+  };
+});
+
+/* ========== Zoom ========== */
+previewPanel.addEventListener('click', function() {
+  if (!currentSvg) return;
+  zoomContent.innerHTML = currentSvg;
+  zoomOverlay.classList.add('open');
+});
+document.getElementById('zoomClose').addEventListener('click', function() {
+  zoomOverlay.classList.remove('open');
+});
+zoomOverlay.addEventListener('click', function(e) {
+  if (e.target === zoomOverlay) zoomOverlay.classList.remove('open');
+});
+
+/* ========== Download ========== */
+document.getElementById('dlSvgBtn').addEventListener('click', function() {
+  if (!currentSvg) return;
+  var blob = new Blob([currentSvg], { type: 'image/svg+xml' });
+  downloadBlob(blob, 'diagram.svg');
+});
+
+document.getElementById('dlPngBtn').addEventListener('click', function() {
+  if (!currentSvg) return;
+  var svgEl = previewPanel.querySelector('svg');
+  if (!svgEl) return;
+
+  var canvas = document.createElement('canvas');
+  var bbox = svgEl.getBoundingClientRect();
+  var scale = 2;
+  canvas.width = bbox.width * scale;
+  canvas.height = bbox.height * scale;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(scale, scale);
+
+  var img = new Image();
+  var svgData = new XMLSerializer().serializeToString(svgEl);
+  var svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  var url = URL.createObjectURL(svgBlob);
+
+  img.onload = function() {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, bbox.width, bbox.height);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(function(blob) {
+      downloadBlob(blob, 'diagram.png');
+    }, 'image/png');
+  };
+  img.src = url;
+});
+
+function downloadBlob(blob, filename) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ---------- 履歴復元 ---------- */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    HistoryStore.load(id).then(function(data) {
+      if (!data) return;
+      if (data.descText) descText.value = data.descText;
+      if (data.diagramType) {
+        var dtSelect = document.getElementById('diagramType');
+        if (dtSelect) {
+          for (var k = 0; k < dtSelect.options.length; k++) {
+            if (dtSelect.options[k].value === data.diagramType) {
+              dtSelect.value = data.diagramType;
+              break;
+            }
+          }
+        }
+      }
+      if (data.mermaidCode) {
+        mermaidCode.value = data.mermaidCode;
+        var d = DIAGRAM_DATA[data.diagramType];
+        resultTitle.textContent = d ? d.title : data.diagramType;
+        resultSection.style.display = 'block';
+        document.querySelectorAll('.result-tab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+        document.querySelector('[data-tab="preview"]').classList.add('active');
+        document.getElementById('tabPreview').classList.add('active');
+        renderMermaid(data.mermaidCode);
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

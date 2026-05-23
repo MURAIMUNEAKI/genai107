@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>チャット - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ヘッダー（GitHub UI準拠） */
+.ct-header{border-bottom:1px solid #000;padding:0.75rem 1.5rem 0.5rem;flex-shrink:0;}
+@media(min-width:1024px){.ct-header{padding:0.75rem 2.5rem 0.5rem;}}
+.ct-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0;}
+@media(min-width:1024px){.ct-title{font-size:1.5rem;}}
+
+/* Notification Banners (GitHub準拠) */
+.ct-banner{max-width:64rem;margin:0 auto 1rem;border-radius:8px;padding:1rem 1.25rem;font-size:0.875rem;line-height:1.7;text-align:left;}
+.ct-banner-info{background:#fff;border:1px solid var(--blue-200);color:#1a1a1c;}
+.ct-banner-warning{background:#fff;border:1px solid #ffe082;color:#1a1a1c;}
+.ct-banner h3{font-size:0.9375rem;font-weight:700;margin:0 0 0.5rem;}
+.ct-banner p{margin:0.25rem 0;}
+.ct-banner ul,.ct-banner ol{margin:0.25rem 0 0.25rem 1.5rem;}
+.ct-banner li{margin:0.125rem 0;}
+.ct-banner strong{font-weight:700;}
+.ct-banner kbd{background:var(--solid-gray-100);border:1px solid var(--solid-gray-300);border-radius:3px;padding:0.125rem 0.375rem;font-size:0.8125rem;font-family:monospace;}
+
+.chat-layout{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+.chat-controls{padding:0.5rem 1.5rem 0.5rem;border-bottom:1px solid var(--solid-gray-300);flex-shrink:0;}
+@media(min-width:1024px){.chat-controls{padding:0.5rem 2.5rem 0.5rem;}}
+.chat-controls-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.model-select{min-width:16rem;}
+.sys-prompt-toggle{display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.875rem;color:var(--solid-gray-600);background:none;border:none;font-family:inherit;padding:0.25rem 0.5rem;border-radius:4px;}
+.sys-prompt-toggle:hover{background:var(--solid-gray-50);}
+.sys-prompt-panel{display:none;margin-top:0.5rem;}
+.sys-prompt-panel.open{display:block;}
+.sys-prompt-area{width:100%;min-height:80px;max-height:200px;}
+.sys-prompt-btns{display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;}
+.sys-prompt-btns button{font-size:0.875rem;}
+
+/* Prompt List Dialog */
+.sp-dialog-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;}
+.sp-dialog-overlay.open{display:flex;}
+.sp-dialog{background:#fff;border-radius:12px;padding:1.5rem;max-width:36rem;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,0.15);}
+.sp-dialog-title{font-size:1.25rem;font-weight:700;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;}
+.sp-dialog-close{background:none;border:none;cursor:pointer;font-size:1.5rem;color:var(--solid-gray-600);padding:0 4px;line-height:1;}
+.sp-section-title{font-size:0.875rem;font-weight:700;color:var(--solid-gray-600);margin:1rem 0 0.5rem;text-transform:uppercase;letter-spacing:0.03em;}
+.sp-list{list-style:none;display:flex;flex-direction:column;gap:0.25rem;}
+.sp-item{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.75rem;border-radius:8px;cursor:pointer;border:1px solid var(--solid-gray-300);transition:background 0.15s;}
+.sp-item:hover{background:var(--solid-gray-50);}
+.sp-item-title{flex:1;font-size:0.9375rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sp-item-actions{display:flex;gap:0.25rem;flex-shrink:0;margin-left:0.5rem;}
+.sp-item-actions button{background:none;border:none;cursor:pointer;color:var(--solid-gray-536);font-size:0.8125rem;padding:0.25rem 0.375rem;border-radius:4px;}
+.sp-item-actions button:hover{background:var(--solid-gray-100);color:var(--solid-gray-800);}
+.sp-empty{font-size:0.875rem;color:var(--solid-gray-536);padding:0.5rem 0;}
+.sp-example{padding:0.5rem 0.75rem;border-radius:8px;cursor:pointer;border:1px solid var(--solid-gray-300);margin-bottom:0.25rem;}
+.sp-example:hover{background:var(--solid-gray-50);}
+.sp-example-title{font-size:0.9375rem;font-weight:500;}
+.sp-example-desc{font-size:0.8125rem;color:var(--solid-gray-536);margin-top:0.125rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* Save Dialog */
+.sp-save-field{margin-bottom:1rem;}
+.sp-save-field label{display:block;font-size:0.875rem;font-weight:700;margin-bottom:0.25rem;}
+.sp-save-field input,.sp-save-field textarea{width:100%;}
+.sp-save-actions{display:flex;gap:0.5rem;justify-content:flex-end;}
+
+/* Rename inline */
+.sp-rename-wrap{display:flex;gap:0.25rem;align-items:center;flex:1;min-width:0;}
+.sp-rename-wrap input{flex:1;padding:0.25rem 0.5rem;font-size:0.875rem;border:1px solid var(--blue-900);border-radius:4px;font-family:inherit;min-width:0;}
+.sp-rename-wrap button{font-size:0.75rem;padding:0.25rem 0.5rem;border-radius:4px;border:none;cursor:pointer;font-family:inherit;}
+.sp-rename-ok{background:var(--blue-900);color:#fff;}
+.sp-rename-cancel{background:var(--solid-gray-100);color:var(--solid-gray-800);}
+
+.chat-body{flex:1;overflow-y:auto;padding:0 1.5rem;scrollbar-gutter:stable;}
+@media(min-width:1024px){.chat-body{padding:0 2.5rem;}}
+.chat-messages{max-width:64rem;margin:0 auto;padding:1rem 0 1.5rem;}
+.chat-welcome{text-align:center;color:var(--solid-gray-536);padding:3rem 0;}
+.chat-welcome h2{font-size:1.25rem;font-weight:700;margin-bottom:0.5rem;}
+
+/* Card-style messages with borders (genai-web v1.0.7) */
+.chat-msg{display:flex;gap:1rem;padding:1rem;max-width:100%;border-radius:8px;margin-bottom:0.75rem;border:1px solid var(--solid-gray-300);}
+.chat-msg.user{background:var(--solid-gray-50);}
+.chat-msg.ai{background:#fff;}
+.chat-bubble{flex:1;line-height:1.7;overflow-wrap:anywhere;min-width:0;}
+.chat-avatar{width:2.5rem;height:2.5rem;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--solid-gray-600);background:var(--solid-gray-50);border:1px solid var(--solid-gray-200);}
+.chat-avatar svg{width:1.25rem;height:1.25rem;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.msg-meta{font-size:0.8125rem;color:var(--solid-gray-536);margin-top:0.25rem;}
+.msg-actions{display:flex;gap:0.5rem;margin-top:0.375rem;justify-content:flex-end;}
+.msg-actions button{font-size:0.8125rem;}
+
+/* Scroll to bottom */
+.scroll-bottom-btn{position:fixed;right:1rem;bottom:5.5rem;z-index:10;width:2.75rem;height:2.75rem;border-radius:50%;border:1px solid var(--solid-gray-300);background:#fff;color:var(--blue-900);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.scroll-bottom-btn:hover{background:var(--blue-100);}
+.scroll-bottom-btn.visible{display:flex;}
+@media(min-width:1024px){.scroll-bottom-btn{right:2rem;}}
+
+.chat-input-area{border-top:1px solid var(--solid-gray-300);padding:0.75rem 1.5rem;flex-shrink:0;background:#fff;}
+@media(min-width:1024px){.chat-input-area{padding:0.75rem 2.5rem;}}
+.chat-input-wrap{display:flex;gap:0.5rem;max-width:64rem;margin:0 auto;align-items:flex-end;}
+.chat-input{flex:1;min-height:3rem;max-height:12rem;border-radius:8px;border:1px solid var(--solid-gray-600);padding:0.625rem 1rem;font-size:1rem;font-family:inherit;resize:none;line-height:1.7;overflow-y:auto;}
+.chat-input:focus{outline:4px solid #000;outline-offset:2px;box-shadow:0 0 0 2px var(--yellow-300);}
+.send-btn{min-width:3.5rem;min-height:3rem;border-radius:8px;background:var(--blue-900);color:#fff;border:none;cursor:pointer;font-size:1.25rem;display:flex;align-items:center;justify-content:center;}
+.send-btn:hover{background:var(--blue-1000);}
+.send-btn:disabled{background:var(--solid-gray-300);cursor:not-allowed;}
+.stop-btn{background:var(--error-1);}
+.stop-btn:hover{background:var(--error-2);}
+
+.file-attach-btn{min-width:3rem;min-height:3rem;border-radius:8px;background:transparent;border:1px solid var(--solid-gray-420);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--solid-gray-600);}
+.file-attach-btn:hover{background:var(--solid-gray-50);}
+.attached-files{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;max-width:64rem;margin-left:auto;margin-right:auto;}
+.file-chip{display:inline-flex;align-items:center;gap:0.25rem;padding:0.25rem 0.5rem;background:var(--solid-gray-100);border-radius:4px;font-size:0.875rem;}
+.file-chip .remove{background:none;border:none;cursor:pointer;color:var(--solid-gray-600);font-size:1rem;line-height:1;padding:0 2px;}
+
+.typing-indicator{display:inline-flex;gap:4px;padding:0.5rem;}
+.typing-indicator span{width:6px;height:6px;border-radius:50%;background:var(--solid-gray-420);animation:blink 1.4s infinite both;}
+.typing-indicator span:nth-child(2){animation-delay:0.2s;}
+.typing-indicator span:nth-child(3){animation-delay:0.4s;}
+@keyframes blink{0%,80%,100%{opacity:0.3}40%{opacity:1}}
+
+/* drag & drop overlay */
+.drop-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,23,193,0.08);border:3px dashed var(--blue-900);align-items:center;justify-content:center;font-size:1.25rem;font-weight:700;color:var(--blue-900);}
+.drop-overlay.active{display:flex;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'chat'}));</script>
+
+<!-- Drop overlay -->
+<div class="drop-overlay" id="dropOverlay">ファイルをドロップしてアップロード</div>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="chat-layout">
+      <!-- Page Header -->
+      <div class="ct-header">
+        <h1 class="ct-title">チャット</h1>
+      </div>
+
+      <!-- Controls -->
+      <div class="chat-controls">
+        <div class="chat-controls-row">
+          <select class="dads-select model-select" id="modelSelect">
+            <option value="gemini-3.1-flash-lite">Google Gemini</option>
+            <option value="gpt-5.4-nano">OpenAI GPT</option>
+            <option disabled>(今後、国産LLMを追加予定)</option>
+          </select>
+          <button class="sys-prompt-toggle" id="sysToggle">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+            システムプロンプト
+            <svg class="disclosure-chevron" id="sysChevron" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </button>
+        </div>
+        <div class="sys-prompt-panel" id="sysPanel">
+          <textarea class="dads-textarea sys-prompt-area" id="sysPrompt" placeholder="AIの役割や回答ルールを設定..."></textarea>
+          <div class="sys-prompt-btns">
+            <button class="dads-btn-outline" id="openPromptListBtn" type="button">プロンプト一覧から選択</button>
+            <button class="dads-btn-outline" id="savePromptBtn" type="button">このプロンプトを保存</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-body" id="chatBody">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-welcome" id="welcomeMsg">
+            <!-- Notification Banner: Enter key -->
+            <div class="ct-banner ct-banner-info">
+              <h3>チャット入力のEnterキー仕様変更のお知らせ</h3>
+              <p><kbd>Enter</kbd> キーを押下すると改行されます。送信は <kbd>Ctrl</kbd> + <kbd>Enter</kbd>(Macでは <kbd>Command</kbd> + <kbd>Enter</kbd>)で行います。</p>
+            </div>
+            <!-- Notification Banner: AI Warning -->
+            <div class="ct-banner ct-banner-warning">
+              <h3>生成AI利用時の注意事項</h3>
+              <p>本アプリは生成AIを使用しています。以下のリスクと対応をご理解ください：</p>
+              <p><strong>リスクの例：</strong></p>
+              <ul>
+                <li>ハルシネーション（でたらめ）：事実と異なる不正確な情報を生成するおそれ</li>
+                <li>最新性の欠如：古い情報に基づく回答を生成するおそれ</li>
+                <li>バイアス：偏った見解や政府の公式見解と異なる判断を生成するおそれ</li>
+                <li>著作権侵害：保護された著作物を不適切に生成するおそれ</li>
+                <li>倫理的問題：道徳的に問題のある判断や提案を生成するおそれ</li>
+                <li>再現性や説明可能性の欠如：同じ質問でも異なる回答を生成し、生成された内容の根拠も不明なおそれ</li>
+              </ul>
+              <p><strong>対応アクション：</strong></p>
+              <ol>
+                <li>常に出力内容を批判的に評価し、利用者自身で正確性・妥当性等を判断してください</li>
+                <li>機密性３情報や業務目的以外の私的利用の情報の入力は避けてください</li>
+                <li>必ず他の信頼できる情報源を確認してください</li>
+              </ol>
+              <p><strong>長い会話での注意：</strong></p>
+              <ul>
+                <li>生成AIが過去の会話内容を参照しにくくなる</li>
+                <li>生成AIの出力まで時間がかかるようになる</li>
+                <li>一定以上（入力文と出力文の合計が数十万文字ほど）になるとエラーになり会話が続けられなくなる</li>
+              </ul>
+              <p>ある程度会話が続いたら、「ここまでの会話を要約して」とAIに依頼し、その要約文をもとに新しい会話を開始すると回避できます。</p>
+            </div>
+            <h2>ガバメントAIへようこそ</h2>
+            <p>何でもお聞きください。AIがお手伝いします。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="chat-input-area">
+        <div class="attached-files" id="attachedFiles"></div>
+        <div class="chat-input-wrap">
+          <button class="file-attach-btn" id="fileBtn" title="ファイルを添付">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+          </button>
+          <input type="file" id="fileInput" multiple accept="image/*,.pdf,.docx,.pptx,.xlsx,.txt,.csv" style="display:none">
+          <textarea class="chat-input" id="chatInput" rows="1" placeholder="メッセージを入力（Enterで改行、Ctrl+Enterで送信します）"></textarea>
+          <button class="send-btn" id="sendBtn" disabled title="送信">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Scroll to bottom -->
+<button class="scroll-bottom-btn" id="scrollBottomBtn" title="チャット下部へ戻る">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+</button>
+
+<!-- Prompt List Dialog -->
+<div class="sp-dialog-overlay" id="promptListOverlay">
+  <div class="sp-dialog">
+    <div class="sp-dialog-title">
+      プロンプト一覧
+      <button class="sp-dialog-close" id="closePromptList">&times;</button>
+    </div>
+    <div class="sp-section-title">保存したプロンプトから選択</div>
+    <ul class="sp-list" id="savedPromptList"></ul>
+    <div class="sp-empty" id="savedPromptEmpty">保存したプロンプトはありません</div>
+    <div class="sp-section-title">プロンプト例から選択</div>
+    <div id="examplePromptList"></div>
+  </div>
+</div>
+
+<!-- Save Prompt Dialog -->
+<div class="sp-dialog-overlay" id="savePromptOverlay">
+  <div class="sp-dialog" style="max-width:28rem">
+    <div class="sp-dialog-title">
+      システムプロンプトの保存
+      <button class="sp-dialog-close" id="closeSavePrompt">&times;</button>
+    </div>
+    <p style="font-size:0.875rem;color:var(--solid-gray-600);margin-bottom:1rem;">保存することで、プロンプト一覧から選択して使えるようになります</p>
+    <div class="sp-save-field">
+      <label for="saveTitle">タイトル <span class="dads-required">必須</span></label>
+      <input class="dads-input" type="text" id="saveTitle" placeholder="プロンプトのタイトル">
+    </div>
+    <div class="sp-save-field">
+      <label for="saveBody">システムプロンプト <span class="dads-required">必須</span></label>
+      <textarea class="dads-textarea" id="saveBody" rows="4" placeholder="システムプロンプト"></textarea>
+    </div>
+    <div class="sp-save-actions">
+      <button class="dads-btn-outline" id="cancelSavePrompt">キャンセル</button>
+      <button class="dads-btn" id="confirmSavePrompt">保存して閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<div class="sp-dialog-overlay" id="deletePromptOverlay">
+  <div class="sp-dialog" style="max-width:24rem">
+    <div class="sp-dialog-title">プロンプトの削除</div>
+    <p style="font-size:0.875rem;margin:0.5rem 0 1.5rem;" id="deleteMsg"></p>
+    <div class="sp-save-actions">
+      <button class="dads-btn-outline" id="cancelDeletePrompt">キャンセル</button>
+      <button class="dads-btn" id="confirmDeletePrompt" style="background:var(--error-1);">削除</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+<script src="../shared/layout107.js"></script>
+<script src="../shared/markdown.js"></script>
+<script src="../shared/api-client.js"></script>
+<script src="../shared/history-store.js"></script>
+<script>
+initLayout({ activePage: 'chat', basePath: '' });
+
+/* ---------- DOM ---------- */
+var chatBody = document.getElementById('chatBody');
+var chatMessages = document.getElementById('chatMessages');
+var welcomeMsg = document.getElementById('welcomeMsg');
+var chatInput = document.getElementById('chatInput');
+var sendBtn = document.getElementById('sendBtn');
+var modelSelect = document.getElementById('modelSelect');
+var sysToggle = document.getElementById('sysToggle');
+var sysPanel = document.getElementById('sysPanel');
+var sysChevron = document.getElementById('sysChevron');
+var sysPrompt = document.getElementById('sysPrompt');
+var fileBtn = document.getElementById('fileBtn');
+var fileInput = document.getElementById('fileInput');
+var attachedFiles = document.getElementById('attachedFiles');
+var dropOverlay = document.getElementById('dropOverlay');
+
+/* ---------- State ---------- */
+var messages = [];       // { role, content }
+var uploadedFiles = [];  // { filename, originalName, mimeType }
+var isStreaming = false;
+var currentStream = null;
+var currentChatId = null;
+
+// 履歴復元チェック
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    currentChatId = id;
+    restoreChat(id);
+  } else {
+    currentChatId = 'chat_' + Date.now();
+  }
+})();
+
+// Landing page query
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var q = params.get('q');
+  if (q && !params.get('id')) {
+    chatInput.value = q;
+    chatInput.dispatchEvent(new Event('input'));
+    setTimeout(function() { sendMessage(); }, 300);
+  }
+})();
+
+/* ---------- System Prompt Toggle ---------- */
+sysToggle.addEventListener('click', function() {
+  sysPanel.classList.toggle('open');
+  sysChevron.classList.toggle('open');
+});
+
+/* ---------- Input Auto-resize ---------- */
+chatInput.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 192) + 'px';
+  sendBtn.disabled = !this.value.trim() && !uploadedFiles.length;
+});
+
+chatInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    if (!sendBtn.disabled) sendMessage();
+  }
+});
+
+sendBtn.addEventListener('click', function() {
+  if (isStreaming) {
+    stopStream();
+  } else {
+    sendMessage();
+  }
+});
+
+/* ---------- File Upload ---------- */
+fileBtn.addEventListener('click', function() { fileInput.click(); });
+fileInput.addEventListener('change', function() {
+  handleFiles(this.files);
+  this.value = '';
+});
+
+// Drag & Drop
+document.addEventListener('dragenter', function(e) { e.preventDefault(); dropOverlay.classList.add('active'); });
+dropOverlay.addEventListener('dragleave', function(e) { e.preventDefault(); dropOverlay.classList.remove('active'); });
+dropOverlay.addEventListener('dragover', function(e) { e.preventDefault(); });
+dropOverlay.addEventListener('drop', function(e) {
+  e.preventDefault();
+  dropOverlay.classList.remove('active');
+  handleFiles(e.dataTransfer.files);
+});
+
+function handleFiles(fileList) {
+  for (var i = 0; i < fileList.length; i++) {
+    (function(file) {
+      ApiClient.uploadFile(file).then(function(data) {
+        var entry = { filename: data.filename, originalName: file.name, mimeType: file.type, extractedText: '' };
+        uploadedFiles.push(entry);
+        renderAttachedFiles();
+        sendBtn.disabled = false;
+        // PDF の場合はブラウザ側で pdf.js テキスト抽出
+        if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+          extractPdfText(file, entry);
+        }
+      }).catch(function(e) { alert('アップロードエラー: ' + e.message); });
+    })(fileList[i]);
+  }
+}
+
+function extractPdfText(file, entry) {
+  var reader = new FileReader();
+  reader.onload = function() {
+    var typedArray = new Uint8Array(this.result);
+    pdfjsLib.getDocument({ data: typedArray }).promise.then(function(pdf) {
+      var pages = [];
+      var total = pdf.numPages;
+      function getPage(n) {
+        if (n > total) {
+          entry.extractedText = pages.join('\n');
+          return;
+        }
+        pdf.getPage(n).then(function(page) {
+          page.getTextContent().then(function(tc) {
+            var lines = [];
+            var lastY = null;
+            tc.items.forEach(function(item) {
+              if (lastY !== null && Math.abs(item.transform[5] - lastY) > 2) {
+                lines.push('\n');
+              }
+              lines.push(item.str);
+              lastY = item.transform[5];
+            });
+            pages.push(lines.join(''));
+            getPage(n + 1);
+          });
+        });
+      }
+      getPage(1);
+    }).catch(function() { /* PDF 解析失敗 — サーバー側フォールバック */ });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderAttachedFiles() {
+  attachedFiles.innerHTML = '';
+  for (var i = 0; i < uploadedFiles.length; i++) {
+    var chip = document.createElement('div');
+    chip.className = 'file-chip';
+    chip.innerHTML = escapeHtml(uploadedFiles[i].originalName) + '<button class="remove" data-idx="' + i + '">&times;</button>';
+    attachedFiles.appendChild(chip);
+  }
+  attachedFiles.querySelectorAll('.remove').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var idx = parseInt(this.dataset.idx);
+      var f = uploadedFiles.splice(idx, 1)[0];
+      ApiClient.deleteFile(f.filename).catch(function(){});
+      renderAttachedFiles();
+      if (!chatInput.value.trim() && !uploadedFiles.length) sendBtn.disabled = true;
+    });
+  });
+}
+
+/* ---------- Send Message ---------- */
+function sendMessage() {
+  var text = chatInput.value.trim();
+  if (!text && !uploadedFiles.length) return;
+
+  welcomeMsg.style.display = 'none';
+
+  // PDF 抽出テキストをメッセージに付加
+  var pdfTexts = [];
+  uploadedFiles.forEach(function(f) {
+    if (f.extractedText) {
+      pdfTexts.push('【添付PDF: ' + f.originalName + '】\n' + f.extractedText);
+    }
+  });
+  var fullContent = text;
+  if (pdfTexts.length) {
+    fullContent = (text ? text + '\n\n' : '') + pdfTexts.join('\n\n');
+  }
+
+  // ユーザーメッセージ追加
+  var userMsg = { role: 'user', content: fullContent };
+  // 画像等（PDF以外）の添付はファイルとしても送信
+  var nonPdfFiles = uploadedFiles.filter(function(f) { return !f.extractedText; });
+  if (nonPdfFiles.length) {
+    userMsg.files = nonPdfFiles.map(function(f) { return { filename: f.filename, originalName: f.originalName, mimeType: f.mimeType }; });
+  }
+  messages.push(userMsg);
+  appendMessage('user', text, uploadedFiles.map(function(f){ return f.originalName; }));
+
+  // 入力リセット
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  uploadedFiles = [];
+  renderAttachedFiles();
+  sendBtn.disabled = true;
+
+  // AI応答開始
+  startStream();
+}
+
+function startStream() {
+  isStreaming = true;
+  sendBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+  sendBtn.classList.add('stop-btn');
+  sendBtn.disabled = false;
+
+  var aiBubble = appendMessage('ai', '');
+  var prose = aiBubble.querySelector('.prose');
+  prose.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+
+  currentStream = ApiClient.streamChat({
+    messages: messages,
+    model: modelSelect.value,
+    systemPrompt: sysPrompt.value.trim() || undefined,
+    files: messages[messages.length - 1].files || undefined,
+    onChunk: function(chunk, full) {
+      prose.innerHTML = renderMarkdown(full);
+      scrollToBottom();
+    },
+    onDone: function(full) {
+      messages.push({ role: 'model', content: full });
+      prose.innerHTML = renderMarkdown(full);
+      finishStream();
+      saveChat();
+      // タイトル生成（最初のメッセージ時）
+      if (messages.length === 2) generateTitle();
+    },
+    onError: function(err) {
+      prose.innerHTML = '<span class="text-error">' + escapeHtml(err) + '</span>';
+      finishStream();
+    }
+  });
+}
+
+function stopStream() {
+  if (currentStream) currentStream.abort();
+  finishStream();
+}
+
+function finishStream() {
+  isStreaming = false;
+  currentStream = null;
+  sendBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+  sendBtn.classList.remove('stop-btn');
+  sendBtn.disabled = !chatInput.value.trim();
+}
+
+/* ---------- DOM Helpers ---------- */
+function appendMessage(role, text, fileNames) {
+  var msg = document.createElement('div');
+  msg.className = 'chat-msg ' + role;
+
+  var avatarLabel = role === 'user'
+    ? '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+    : '<svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 014 4v1h1a2 2 0 012 2v6a2 2 0 01-2 2h-1v1a2 2 0 01-2 2H10a2 2 0 01-2-2v-1H7a2 2 0 01-2-2V9a2 2 0 012-2h1V6a4 4 0 014-4z"/><circle cx="9.5" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>';
+  var html = '<div class="chat-avatar ' + role + '">' + avatarLabel + '</div>';
+  html += '<div class="chat-bubble">';
+
+  if (fileNames && fileNames.length) {
+    html += '<div class="file-chips" style="margin-bottom:0.5rem">';
+    for (var i = 0; i < fileNames.length; i++) {
+      html += '<span class="file-chip">' + escapeHtml(fileNames[i]) + '</span>';
+    }
+    html += '</div>';
+  }
+
+  if (role === 'ai') {
+    html += '<div class="prose">' + (text ? renderMarkdown(text) : '') + '</div>';
+    html += '<div class="msg-meta">' + escapeHtml(modelSelect.value) + '</div>';
+  } else {
+    html += '<div style="white-space:pre-wrap">' + escapeHtml(text) + '</div>';
+  }
+
+  if (role === 'ai') {
+    html += '<div class="msg-actions">';
+    html += '<button class="copy-btn" onclick="copyBubble(this)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>コピー</button>';
+    html += '<button class="copy-btn" onclick="retryLast()">↻ 再生成</button>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  msg.innerHTML = html;
+  chatMessages.appendChild(msg);
+  scrollToBottom();
+  return msg;
+}
+
+function scrollToBottom() {
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function copyBubble(btn) {
+  var bubble = btn.closest('.chat-msg').querySelector('.prose');
+  if (!bubble) return;
+  navigator.clipboard.writeText(bubble.innerText).then(function() {
+    btn.classList.add('copied');
+    var orig = btn.innerHTML;
+    btn.innerHTML = btn.innerHTML.replace('コピー', 'コピー済み');
+    setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+  });
+}
+
+function retryLast() {
+  if (isStreaming || messages.length < 2) return;
+  // 最後のAI応答を削除
+  messages.pop();
+  var lastAi = chatMessages.querySelectorAll('.chat-msg.ai');
+  if (lastAi.length) lastAi[lastAi.length - 1].remove();
+  startStream();
+}
+
+/* ---------- Chat History (HistoryStore 使用) ---------- */
+
+function saveChat() {
+  if (messages.length < 2) return;
+  var msgCopy = JSON.parse(JSON.stringify(messages));
+  HistoryStore.save({
+    id: currentChatId,
+    appType: 'chat',
+    title: chatTitle || msgCopy[0].content.substring(0, 50),
+    messages: msgCopy,
+    model: modelSelect.value,
+    systemPrompt: sysPrompt.value,
+    messageCount: msgCopy.length
+  });
+}
+
+function restoreChat(id) {
+  HistoryStore.load(id).then(function(data) {
+    try {
+      if (!data) return;
+      messages = Array.isArray(data.messages) ? data.messages : [];
+      if (data.model) {
+        for (var k = 0; k < modelSelect.options.length; k++) {
+          if (modelSelect.options[k].value === data.model) {
+            modelSelect.value = data.model;
+            break;
+          }
+        }
+      }
+      if (data.systemPrompt) { sysPrompt.value = data.systemPrompt; sysPanel.classList.add('open'); sysChevron.classList.add('open'); }
+      chatTitle = data.title || '';
+      welcomeMsg.style.display = 'none';
+      for (var i = 0; i < messages.length; i++) {
+        var m = messages[i];
+        var content = m.content != null ? String(m.content) : '';
+        var fnames = m.files ? m.files.map(function(f){ return f.originalName || ''; }) : undefined;
+        appendMessage(m.role === 'user' ? 'user' : 'ai', content, fnames);
+      }
+    } catch(err) {
+      console.error('restoreChat error:', err);
+    }
+  }).catch(function(err) {
+    console.error('restoreChat openDB error:', err);
+  });
+}
+
+var chatTitle = '';
+function generateTitle() {
+  ApiClient.predict({
+    messages: [{ role: 'user', content: 'この会話のタイトルを15文字以内で生成してください（タイトルのみ出力）: ' + messages[0].content }],
+    systemPrompt: 'タイトルのみを出力してください。説明や装飾は不要です。'
+  }).then(function(title) {
+    chatTitle = title.replace(/[「」『』]/g, '').trim();
+    saveChat();
+  }).catch(function(){});
+}
+
+/* ---------- System Prompt CRUD ---------- */
+var SYSCTX_API = '../api/systemcontexts.php';
+var openPromptListBtn = document.getElementById('openPromptListBtn');
+var savePromptBtn = document.getElementById('savePromptBtn');
+var promptListOverlay = document.getElementById('promptListOverlay');
+var savePromptOverlay = document.getElementById('savePromptOverlay');
+var deletePromptOverlay = document.getElementById('deletePromptOverlay');
+var savedPromptList = document.getElementById('savedPromptList');
+var savedPromptEmpty = document.getElementById('savedPromptEmpty');
+var examplePromptListEl = document.getElementById('examplePromptList');
+var deleteTarget = null; // {id, title}
+
+// Example prompts (reference: genai-web/prompts/claude.ts)
+var EXAMPLE_PROMPTS = [
+  {
+    category: 'コンテンツ生成',
+    items: [
+      { title: 'テキストの書き換え', prompt: 'あなたは文章校正の専門家です。ユーザーから受け取ったテキストを、わかりやすく簡潔に書き換えてください。元の意味を変えず、読みやすさを重視してください。' },
+      { title: '箇条書きに説明をつける', prompt: 'あなたは説明文作成の専門家です。ユーザーから受け取った箇条書きリストに対し、各項目について1〜2文の簡潔な説明を追加してください。' },
+      { title: '返信メールの作成', prompt: 'あなたはビジネスメール作成の専門家です。ユーザーが受け取ったメール本文と返信意図を入力します。それに基づいて丁寧で適切なビジネスメール返信を作成してください。' }
+    ]
+  },
+  {
+    category: 'テキスト処理',
+    items: [
+      { title: '情報抽出', prompt: 'あなたはテキスト分析の専門家です。ユーザーが提供するテキストからメールアドレス、電話番号、日付、固有名詞などの重要な情報を抽出してリスト形式で出力してください。' },
+      { title: '個人情報削除（PII）', prompt: 'あなたはプライバシー保護の専門家です。ユーザーが提供するテキストから個人を特定できる情報（氏名、住所、電話番号、メールアドレス、マイナンバーなど）を検出し、[氏名]、[住所] のようにマスキングしてください。' }
+    ]
+  },
+  {
+    category: 'テキスト分析',
+    items: [
+      { title: 'テキスト類似度評価', prompt: 'あなたはテキスト分析の専門家です。ユーザーが2つのテキストを提供します。それらの類似度を0〜100%で評価し、類似している点と異なる点を分析してください。' },
+      { title: '議事録からの質疑応答', prompt: 'あなたは議事録分析の専門家です。ユーザーが会議の議事録を提供します。その内容に基づいて質問に正確に回答してください。議事録に記載がない情報については「議事録に記載がありません」と回答してください。' }
+    ]
+  },
+  {
+    category: 'ロールプレイ',
+    items: [
+      { title: 'キャリアコーチ', prompt: 'あなたは経験豊富なキャリアコーチです。ユーザーの経歴や希望を聞き取り、キャリアプランの策定やスキルアップのアドバイスを提供してください。質問を通じて相手の強みや課題を引き出してください。' },
+      { title: 'カスタマーサポート', prompt: 'あなたは親切で知識豊富なカスタマーサポート担当です。ユーザーからの問い合わせに対し、丁寧かつ具体的に対応してください。解決策がわからない場合は正直に伝え、代替案を提示してください。' }
+    ]
+  },
+  {
+    category: 'プログラミング',
+    items: [
+      { title: 'コードの作成', prompt: 'あなたは優秀なソフトウェアエンジニアです。ユーザーの要件に基づいてコードを作成してください。言語やフレームワークの指定がない場合は、最適なものを選んで提案してください。コードにはコメントを添えて説明してください。' },
+      { title: 'コードの解説', prompt: 'あなたはプログラミング教育の専門家です。ユーザーが提供するコードの処理内容をわかりやすく日本語で解説してください。初心者にもわかるよう、専門用語には簡単な説明を添えてください。' },
+      { title: 'コードの修正・改善', prompt: 'あなたはコードレビューの専門家です。ユーザーが提供するコードのバグ、非効率な部分、セキュリティ上の問題を指摘し、修正案を提示してください。修正理由も説明してください。' }
+    ]
+  },
+  {
+    category: '行政業務',
+    items: [
+      { title: '公文書作成サポート', prompt: 'あなたは行政文書の作成に精通した専門家です。ユーザーの要件に基づいて、公文書の形式に則った文書を作成してください。敬語の使い方、文書番号の付け方、宛先の書き方など、公文書特有のルールに従ってください。' },
+      { title: '政策立案サポート', prompt: 'あなたは政策分析の専門家です。ユーザーが提示する政策課題について、現状分析、課題の整理、解決策の提案を行ってください。エビデンスに基づいた提案を心がけ、実施に向けた具体的なステップも示してください。' }
+    ]
+  }
+];
+
+// --- Open Prompt List ---
+openPromptListBtn.addEventListener('click', function() {
+  loadSavedPrompts();
+  renderExamplePrompts();
+  promptListOverlay.classList.add('open');
+});
+
+document.getElementById('closePromptList').addEventListener('click', function() {
+  promptListOverlay.classList.remove('open');
+});
+
+promptListOverlay.addEventListener('click', function(e) {
+  if (e.target === promptListOverlay) promptListOverlay.classList.remove('open');
+});
+
+function loadSavedPrompts() {
+  savedPromptList.innerHTML = '';
+  savedPromptEmpty.style.display = '';
+  fetch(SYSCTX_API)
+    .then(function(res) { return res.json(); })
+    .then(function(items) {
+      if (!items.length) { savedPromptEmpty.style.display = ''; return; }
+      savedPromptEmpty.style.display = 'none';
+      items.forEach(function(item) {
+        var li = document.createElement('li');
+        li.className = 'sp-item';
+        li.innerHTML = '<span class="sp-item-title">' + escapeHtml(item.title) + '</span>'
+          + '<div class="sp-item-actions">'
+          + '<button class="sp-rename-btn" title="名前を変更">&#x270F;&#xFE0F;</button>'
+          + '<button class="sp-delete-btn" title="削除">&#x1F5D1;&#xFE0F;</button>'
+          + '</div>';
+        // Select
+        li.querySelector('.sp-item-title').addEventListener('click', function() {
+          sysPrompt.value = item.systemContext;
+          promptListOverlay.classList.remove('open');
+        });
+        // Rename
+        li.querySelector('.sp-rename-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          startRename(li, item);
+        });
+        // Delete
+        li.querySelector('.sp-delete-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          deleteTarget = { id: item.id, title: item.title };
+          document.getElementById('deleteMsg').textContent = 'プロンプト「' + item.title + '」を削除しますか？';
+          deletePromptOverlay.classList.add('open');
+        });
+        savedPromptList.appendChild(li);
+      });
+    })
+    .catch(function() { savedPromptEmpty.textContent = '読み込みエラー'; });
+}
+
+function startRename(li, item) {
+  var titleEl = li.querySelector('.sp-item-title');
+  var actionsEl = li.querySelector('.sp-item-actions');
+  titleEl.style.display = 'none';
+  actionsEl.style.display = 'none';
+
+  var wrap = document.createElement('div');
+  wrap.className = 'sp-rename-wrap';
+  var inp = document.createElement('input');
+  inp.value = item.title;
+  var okBtn = document.createElement('button');
+  okBtn.className = 'sp-rename-ok';
+  okBtn.textContent = '確定';
+  var cancelBtn = document.createElement('button');
+  cancelBtn.className = 'sp-rename-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  wrap.appendChild(inp);
+  wrap.appendChild(okBtn);
+  wrap.appendChild(cancelBtn);
+  li.insertBefore(wrap, actionsEl);
+  inp.focus();
+  inp.select();
+
+  function finishRename(newTitle) {
+    if (newTitle && newTitle !== item.title) {
+      fetch(SYSCTX_API, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: item.id, title: newTitle })
+      }).then(function() { loadSavedPrompts(); });
+    }
+    wrap.remove();
+    titleEl.style.display = '';
+    actionsEl.style.display = '';
+  }
+
+  okBtn.addEventListener('click', function() { finishRename(inp.value.trim()); });
+  cancelBtn.addEventListener('click', function() { finishRename(null); });
+  inp.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') finishRename(inp.value.trim());
+    if (e.key === 'Escape') finishRename(null);
+  });
+}
+
+// --- Delete Confirmation ---
+document.getElementById('cancelDeletePrompt').addEventListener('click', function() {
+  deletePromptOverlay.classList.remove('open');
+  deleteTarget = null;
+});
+
+document.getElementById('confirmDeletePrompt').addEventListener('click', function() {
+  if (!deleteTarget) return;
+  var btn = document.getElementById('confirmDeletePrompt');
+  btn.disabled = true;
+  btn.textContent = '削除中...';
+  fetch(SYSCTX_API, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: deleteTarget.id })
+  }).then(function() {
+    deletePromptOverlay.classList.remove('open');
+    btn.disabled = false;
+    btn.textContent = '削除';
+    deleteTarget = null;
+    loadSavedPrompts();
+  }).catch(function() {
+    btn.disabled = false;
+    btn.textContent = '削除';
+    alert('削除に失敗しました');
+  });
+});
+
+deletePromptOverlay.addEventListener('click', function(e) {
+  if (e.target === deletePromptOverlay) { deletePromptOverlay.classList.remove('open'); deleteTarget = null; }
+});
+
+// --- Example Prompts ---
+function renderExamplePrompts() {
+  examplePromptListEl.innerHTML = '';
+  EXAMPLE_PROMPTS.forEach(function(cat) {
+    var section = document.createElement('div');
+    section.style.marginBottom = '0.5rem';
+
+    var header = document.createElement('button');
+    header.className = 'sp-example';
+    header.style.width = '100%';
+    header.style.textAlign = 'left';
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'center';
+    header.innerHTML = '<span class="sp-example-title">' + escapeHtml(cat.category) + '</span>'
+      + '<svg class="disclosure-chevron" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>';
+
+    var list = document.createElement('div');
+    list.style.display = 'none';
+    list.style.paddingLeft = '0.75rem';
+    list.style.marginTop = '0.25rem';
+
+    cat.items.forEach(function(item) {
+      var row = document.createElement('div');
+      row.className = 'sp-example';
+      row.innerHTML = '<div class="sp-example-title">' + escapeHtml(item.title) + '</div>'
+        + '<div class="sp-example-desc">' + escapeHtml(item.prompt.substring(0, 80)) + '...</div>';
+      row.addEventListener('click', function() {
+        sysPrompt.value = item.prompt;
+        promptListOverlay.classList.remove('open');
+      });
+      list.appendChild(row);
+    });
+
+    header.addEventListener('click', function() {
+      var isOpen = list.style.display !== 'none';
+      list.style.display = isOpen ? 'none' : 'block';
+      header.querySelector('.disclosure-chevron').classList.toggle('open', !isOpen);
+    });
+
+    section.appendChild(header);
+    section.appendChild(list);
+    examplePromptListEl.appendChild(section);
+  });
+}
+
+// --- Save Prompt ---
+savePromptBtn.addEventListener('click', function() {
+  document.getElementById('saveTitle').value = '';
+  document.getElementById('saveBody').value = sysPrompt.value;
+  savePromptOverlay.classList.add('open');
+  document.getElementById('saveTitle').focus();
+});
+
+document.getElementById('closeSavePrompt').addEventListener('click', function() {
+  savePromptOverlay.classList.remove('open');
+});
+
+document.getElementById('cancelSavePrompt').addEventListener('click', function() {
+  savePromptOverlay.classList.remove('open');
+});
+
+document.getElementById('confirmSavePrompt').addEventListener('click', function() {
+  var title = document.getElementById('saveTitle').value.trim();
+  var body = document.getElementById('saveBody').value.trim();
+  if (!title) { alert('タイトルを入力してください'); document.getElementById('saveTitle').focus(); return; }
+  if (!body) { alert('システムプロンプトを入力してください'); document.getElementById('saveBody').focus(); return; }
+
+  var btn = document.getElementById('confirmSavePrompt');
+  btn.disabled = true;
+  btn.textContent = '保存中...';
+
+  fetch(SYSCTX_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: title, systemContext: body })
+  }).then(function(res) { return res.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.textContent = '保存して閉じる';
+      if (data.ok) {
+        savePromptOverlay.classList.remove('open');
+      } else {
+        alert(data.error || '保存に失敗しました');
+      }
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.textContent = '保存して閉じる';
+      alert('保存に失敗しました');
+    });
+});
+
+savePromptOverlay.addEventListener('click', function(e) {
+  if (e.target === savePromptOverlay) savePromptOverlay.classList.remove('open');
+});
+
+/* ---------- Reset (new chat) ---------- */
+function resetChat() {
+  messages = [];
+  uploadedFiles = [];
+  currentChatId = 'chat_' + Date.now();
+  chatTitle = '';
+  chatMessages.innerHTML = '';
+  welcomeMsg.style.display = '';
+  chatMessages.appendChild(welcomeMsg);
+  sysPrompt.value = '';
+}
+
+/* ---------- Scroll to Bottom Button ---------- */
+var scrollBottomBtn = document.getElementById('scrollBottomBtn');
+chatBody.addEventListener('scroll', function() {
+  var atBottom = chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 80;
+  scrollBottomBtn.classList.toggle('visible', !atBottom);
+});
+scrollBottomBtn.addEventListener('click', function() { scrollToBottom(); });
+</script>
+</body>
+</html>

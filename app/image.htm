@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>画像を生成 - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ===== ページ全体 ===== */
+.gi-page{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);}
+
+/* ヘッダー */
+.gi-header{border-bottom:1px solid #000;padding:1rem 1rem 0.5rem;}
+@media(min-width:1024px){.gi-header{padding:1rem 1.5rem 0.5rem;}}
+.gi-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:1024px){.gi-title{font-size:1.5rem;}}
+
+/* 2カラム */
+.gi-cols{display:grid;grid-template-columns:1fr;grid-template-rows:1fr 1fr;height:100%;}
+@media(min-width:1024px){.gi-cols{grid-template-columns:1fr 24rem;grid-template-rows:1fr;}}
+
+/* ===== 左パネル ===== */
+.gi-left{min-height:0;border-right:1px solid var(--solid-gray-420);display:grid;grid-template-rows:minmax(0,1fr) auto;}
+
+.gi-chat-scroll{overflow-x:hidden;overflow-y:auto;padding:0.75rem 0;scrollbar-gutter:stable;}
+
+/* 空状態 */
+.gi-chat-heading{margin:0 1rem 0.5rem;font-size:1.125rem;font-weight:700;line-height:1.6;}
+@media(min-width:1024px){.gi-chat-heading{margin-left:1.5rem;font-size:1.25rem;line-height:1.5;}}
+.gi-empty{margin:0 1rem;}
+@media(min-width:1024px){.gi-empty{margin:0 1.5rem;}}
+.gi-empty p{margin-bottom:0.75rem;line-height:1.7;font-size:0.9375rem;}
+
+/* ヒントボックス */
+.gi-hint{margin:0 1rem 0 2rem;border:1px solid var(--solid-gray-536);border-radius:8px;background:var(--solid-gray-50);padding:0.75rem 1rem;color:var(--solid-gray-800);}
+@media(min-width:1024px){.gi-hint{margin-left:2.5rem;}}
+.gi-hint h3{font-size:1.0625rem;font-weight:700;line-height:1.7;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;}
+.gi-hint ul{list-style:disc;padding-left:1.25rem;font-size:0.9375rem;line-height:1.7;}
+.gi-hint li{margin:0.25rem 0;}
+
+/* チャットメッセージ */
+.gi-msg{display:flex;gap:1rem;border-top:1px solid var(--solid-gray-420);padding:0.75rem 1.5rem;}
+.gi-msg.is-user{background:var(--solid-gray-50);}
+.gi-avatar{flex:none;width:2.25rem;height:2.25rem;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.gi-avatar.user-av{background:#3b82f6;color:#fff;}
+.gi-avatar.ai-av{background:#16a34a;}
+.gi-avatar svg{width:1.25rem;height:1.25rem;}
+.gi-msg-body{flex:1;padding-top:0.125rem;font-size:0.9375rem;line-height:1.7;overflow-wrap:anywhere;min-width:0;}
+
+/* 進捗表示 */
+.gi-progress{display:flex;align-items:center;gap:0.5rem;font-size:0.9375rem;color:var(--solid-gray-700);}
+.gi-spinner{width:18px;height:18px;border:2.5px solid var(--solid-gray-300);border-top-color:var(--blue-900);border-radius:50%;animation:gispin 0.7s linear infinite;}
+@keyframes gispin{to{transform:rotate(360deg)}}
+.gi-done-icon{width:1.25rem;height:1.25rem;border-radius:50%;border:3px solid #16a34a;margin-right:0.125rem;}
+
+/* エラー */
+.gi-error{color:#d32f2f;font-weight:700;display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;}
+
+/* スタイルプリセット推薦 */
+.gi-reco{margin-top:1rem;}
+.gi-reco-title{font-weight:700;margin-bottom:0.75rem;font-size:0.9375rem;}
+.gi-reco-btns{display:flex;flex-wrap:wrap;gap:0.25rem;}
+@media(min-width:1280px){.gi-reco-btns{display:flex;gap:0.75rem;}}
+.gi-reco-btn{padding:0.375rem 0.875rem;border:1px solid var(--solid-gray-420);border-radius:6px;background:#fff;cursor:pointer;font-size:0.875rem;font-family:inherit;color:var(--solid-gray-800);transition:all 0.15s;}
+.gi-reco-btn:hover{background:var(--solid-gray-50);border-color:var(--blue-900);}
+.gi-reco-btn-text{padding:0.375rem 0.875rem;border:none;background:none;cursor:pointer;font-size:0.875rem;font-family:inherit;color:var(--blue-900);text-decoration:underline;}
+.gi-reco-btn-text:hover{color:var(--blue-1000);}
+
+/* 入力エリア */
+.gi-input-section{border-top:1px solid var(--solid-gray-420);padding:0.75rem 1.5rem;}
+.gi-input-wrap{display:flex;gap:0.5rem;align-items:flex-end;background:#fff;}
+.gi-input-ta{flex:1;resize:none;border:1px solid var(--solid-gray-600);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.9375rem;font-family:inherit;line-height:1.6;min-height:2.75rem;max-height:10rem;overflow-y:auto;}
+.gi-input-ta:focus{outline:4px solid #000;outline-offset:2px;box-shadow:0 0 0 2px var(--yellow-300);}
+.gi-send-btn{flex-shrink:0;width:2.75rem;height:2.75rem;border-radius:8px;background:var(--blue-900);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.gi-send-btn:hover{background:var(--blue-1000);}
+.gi-send-btn:disabled{background:var(--solid-gray-300);cursor:not-allowed;}
+
+/* ===== 右パネル ===== */
+.gi-right{min-height:0;overflow-x:hidden;overflow-y:auto;scrollbar-gutter:stable;}
+.gi-right-inner{padding:0.75rem 0.75rem 0.75rem 1rem;}
+.gi-right-title{font-size:1.125rem;font-weight:700;line-height:1.6;margin-bottom:1rem;}
+@media(min-width:1024px){.gi-right-title{font-size:1.25rem;line-height:1.5;}}
+
+/* 画像表示 */
+.gi-image-main{display:flex;align-items:center;justify-content:center;min-height:15rem;min-width:15rem;max-width:32rem;margin:0 auto;border-radius:8px;overflow:hidden;background:var(--solid-gray-50);border:1px solid var(--solid-gray-200);}
+.gi-image-main img{max-width:100%;display:block;border-radius:8px;}
+.gi-image-placeholder{color:var(--solid-gray-536);font-size:0.875rem;text-align:center;padding:1rem;}
+.gi-image-loading{display:flex;flex-direction:column;align-items:center;gap:0.75rem;color:var(--solid-gray-536);}
+
+.gi-download-row{display:flex;justify-content:flex-end;margin-top:0.5rem;gap:0.5rem;}
+
+/* 区切り */
+.gi-divider{border:none;border-top:1px solid var(--solid-gray-420);margin:0.75rem 0;}
+@media(min-width:1024px){.gi-divider{margin:1.5rem 0;}}
+
+/* フォーム */
+.gi-field{margin-bottom:0.75rem;}
+.gi-label{display:block;font-size:1rem;font-weight:700;line-height:1.7;margin-bottom:0.25rem;}
+.gi-label-sm{font-size:0.875rem;}
+.gi-required{display:inline-block;margin-left:0.375rem;font-size:0.75rem;font-weight:400;color:var(--error-1);border:1px solid var(--error-1);border-radius:4px;padding:0 0.375rem;vertical-align:middle;}
+.gi-support{font-size:0.8125rem;color:var(--solid-gray-536);line-height:1.3;margin-bottom:0.375rem;}
+.gi-textarea{width:100%;border:1px solid var(--solid-gray-600);border-radius:8px;padding:0.375rem 0.625rem;font-size:0.875rem;font-family:inherit;line-height:1.5;resize:vertical;}
+.gi-textarea:focus{outline:4px solid #000;outline-offset:2px;}
+.gi-select{width:100%;height:2.75rem;border:1px solid var(--solid-gray-600);border-radius:8px;padding:0 0.625rem;font-size:0.875rem;font-family:inherit;background:#fff;cursor:pointer;}
+.gi-select:focus{outline:4px solid #000;outline-offset:2px;}
+
+/* サイズ（アスペクト比） */
+.gi-size-btns{display:flex;flex-wrap:wrap;gap:0.375rem;}
+.gi-size-btn{padding:0.375rem 0.75rem;border:1px solid var(--solid-gray-420);border-radius:6px;background:#fff;cursor:pointer;font-size:0.8125rem;font-family:inherit;color:var(--solid-gray-800);transition:all 0.15s;}
+.gi-size-btn:hover{border-color:var(--blue-900);}
+.gi-size-btn.active{background:var(--blue-900);color:#fff;border-color:var(--blue-900);}
+
+/* スタイルプリセット */
+.gi-style-select{width:100%;}
+
+/* ボタンエリア */
+.gi-btn-row{display:flex;flex-direction:row-reverse;align-items:center;justify-content:center;gap:1.25rem;margin-top:1rem;}
+.gi-gen-btn{min-width:10rem;min-height:3rem;border-radius:8px;background:var(--blue-900);color:#fff;border:none;cursor:pointer;font-size:1rem;font-family:inherit;font-weight:700;padding:0 1.5rem;}
+.gi-gen-btn:hover{background:var(--blue-1000);}
+.gi-gen-btn:disabled{background:var(--solid-gray-300);cursor:not-allowed;}
+.gi-clear-btn{min-height:3rem;border:none;background:none;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--blue-900);text-decoration:underline;padding:0 1rem;}
+.gi-clear-btn:hover{color:var(--blue-1000);}
+.gi-clear-btn:disabled{color:var(--solid-gray-420);cursor:not-allowed;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'gazou'}));</script>
+
+<div class="app-shell">
+  <main class="app-main" style="padding:0;overflow:hidden;">
+    <div class="gi-page">
+
+      <!-- ===== ヘッダー ===== -->
+      <div class="gi-header">
+        <h1 class="gi-title">画像を生成</h1>
+      </div>
+
+      <!-- ===== 2カラム ===== -->
+      <div class="gi-cols">
+
+        <!-- ===== 左パネル: チャット形式で画像生成 ===== -->
+        <div class="gi-left">
+          <div class="gi-chat-scroll" id="chatScroll">
+            <h2 class="gi-chat-heading">チャット形式で画像生成</h2>
+
+            <!-- 空状態 -->
+            <div id="emptyState" class="gi-empty">
+              <p>チャット形式でプロンプトの生成と設定、画像生成をまとめて行います。</p>
+              <p>生成された画像の利用にあたっては、各ユーザーにおいてその利用が適切かどうかを判断してください。</p>
+
+              <div class="gi-hint">
+                <h3>
+                  <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor"><path d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h24V147.31L90.34,117.66a8,8,0,0,1,11.32-11.32L128,132.69l26.34-26.35a8,8,0,0,1,11.32,11.32L136,147.31V192h24v-6a32.12,32.12,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Z"/></svg>
+                  ヒント
+                </h3>
+                <ul>
+                  <li>具体的で詳細な指示を出すようにしましょう。形容詞や副詞を使って、正確に表現することが重要です。</li>
+                  <li>「ブランコで遊ぶ」ではなく、「夏休みの公園で楽しそうに滑り台をしている」のように具体的に指示しましょう。</li>
+                  <li>文章で書くこともできますが、「ライオン、砂漠、ジャンプしている」のように、単語を羅列して指示することもできます。</li>
+                  <li>除外して欲しい要素を指示することもできます。「人間は出力しない」など。</li>
+                  <li>LLMが会話の流れを考慮してくれるので、「やっぱり犬じゃなくて猫にして」などの会話形式の指示もできます。</li>
+                  <li>プロンプトで意図した画像が生成できない場合は、詳細画像の設定やパラメータの変更も試してみましょう。</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- チャットメッセージ（JSで追加） -->
+            <div id="chatMessages" style="display:none;margin-top:1rem;"></div>
+          </div>
+
+          <!-- 入力エリア -->
+          <section class="gi-input-section" aria-label="メッセージ入力">
+            <div class="gi-input-wrap">
+              <textarea class="gi-input-ta" id="chatInput" rows="1" placeholder="生成したい画像の概要を入力（Enterで改行、Ctrl+Enterで送信します）"></textarea>
+              <button class="gi-send-btn" id="sendBtn" disabled title="送信">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ===== 右パネル: 画像生成結果 + フォーム ===== -->
+        <div class="gi-right">
+          <div class="gi-right-inner">
+            <h2 class="gi-right-title">画像生成結果</h2>
+
+            <!-- メイン画像 -->
+            <div class="gi-image-main" id="imageBox">
+              <span class="gi-image-placeholder">生成された画像がここに表示されます</span>
+            </div>
+            <div id="errMsg" style="display:none;margin-top:0.375rem;font-size:0.8125rem;color:#d32f2f;"></div>
+            <div class="gi-download-row" id="downloadArea" style="display:none">
+              <button class="copy-btn" id="downloadBtn">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                ダウンロード
+              </button>
+            </div>
+
+            <hr class="gi-divider">
+
+            <!-- プロンプト -->
+            <div class="gi-field">
+              <label class="gi-label" for="promptText">プロンプト<span class="gi-required">※必須</span></label>
+              <p class="gi-support">生成したい画像の説明を記載してください。文章ではなく、単語の羅列で記載します。</p>
+              <textarea class="gi-textarea" id="promptText" rows="2" placeholder=""></textarea>
+            </div>
+
+            <!-- ネガティブプロンプト -->
+            <div class="gi-field">
+              <label class="gi-label" for="negPrompt">ネガティブプロンプト</label>
+              <p class="gi-support">生成したくない要素、排除したい要素を記載してください。文章ではなく、単語の羅列で記載します。</p>
+              <textarea class="gi-textarea" id="negPrompt" rows="2" placeholder=""></textarea>
+            </div>
+
+            <!-- モデル -->
+            <div class="gi-field">
+              <label class="gi-label gi-label-sm">モデル</label>
+              <select class="gi-select" disabled>
+                <option>Imagen 4.0 Fast</option>
+              </select>
+            </div>
+
+            <!-- サイズ -->
+            <div class="gi-field">
+              <label class="gi-label gi-label-sm">サイズ</label>
+              <div class="gi-size-btns" id="sizeOptions">
+                <button class="gi-size-btn active" data-ratio="1:1">1:1 (1024x1024)</button>
+                <button class="gi-size-btn" data-ratio="5:4">5:4 (1088x896)</button>
+                <button class="gi-size-btn" data-ratio="3:2">3:2 (1216x832)</button>
+                <button class="gi-size-btn" data-ratio="16:9">16:9 (1344x768)</button>
+                <button class="gi-size-btn" data-ratio="9:16">9:16 (768x1344)</button>
+              </div>
+            </div>
+
+            <!-- スタイルプリセット -->
+            <div class="gi-field">
+              <label class="gi-label gi-label-sm" for="styleSelect">スタイルプリセット</label>
+              <select class="gi-select gi-style-select" id="styleSelect">
+                <option value="">未設定</option>
+                <option value="photographic">photographic</option>
+                <option value="anime">anime</option>
+                <option value="cinematic">cinematic</option>
+                <option value="digital-art">digital-art</option>
+                <option value="illustration">illustration</option>
+                <option value="comic">comic</option>
+                <option value="watercolor">watercolor</option>
+                <option value="oil-painting">oil-painting</option>
+                <option value="pencil-sketch">pencil-sketch</option>
+                <option value="3d-render">3d-render</option>
+                <option value="pixel-art">pixel-art</option>
+                <option value="minimalist">minimalist</option>
+                <option value="pop-art">pop-art</option>
+                <option value="ukiyo-e">ukiyo-e</option>
+              </select>
+            </div>
+
+            <hr class="gi-divider">
+
+            <!-- 生成 / クリア -->
+            <div class="gi-btn-row">
+              <button class="gi-gen-btn" id="genBtn">生成</button>
+              <button class="gi-clear-btn" id="clearBtn">クリア</button>
+            </div>
+
+            <hr class="gi-divider">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script src="../shared/api-client.js"></script>
+<script src="../shared/history-store.js"></script>
+<script>
+initLayout({ activePage: 'image', basePath: '' });
+
+/* ========== DOM ========== */
+var chatScroll = document.getElementById('chatScroll');
+var chatMessages = document.getElementById('chatMessages');
+var emptyState = document.getElementById('emptyState');
+var chatInput = document.getElementById('chatInput');
+var sendBtn = document.getElementById('sendBtn');
+var promptText = document.getElementById('promptText');
+var negPrompt = document.getElementById('negPrompt');
+var styleSelect = document.getElementById('styleSelect');
+var genBtn = document.getElementById('genBtn');
+var clearBtn = document.getElementById('clearBtn');
+var imageBox = document.getElementById('imageBox');
+var errMsg = document.getElementById('errMsg');
+var downloadArea = document.getElementById('downloadArea');
+var downloadBtn = document.getElementById('downloadBtn');
+
+/* ========== State ========== */
+var selectedRatio = '1:1';
+var currentImageData = null;
+var chatHistory = [];    // { role, content }
+var isStreaming = false;
+var isGeneratingImage = false;
+var currentStream = null;
+var lastBasePrompt = '';
+
+/* ========== スタイル → プロンプト接頭辞 ========== */
+var STYLE_PREFIX = {
+  'photographic': 'A photographic, realistic photo of',
+  'illustration': 'A detailed illustration of',
+  'anime': 'An anime-style illustration of',
+  'watercolor': 'A watercolor painting of',
+  'oil-painting': 'An oil painting of',
+  'digital-art': 'Digital art of',
+  'pencil-sketch': 'A pencil sketch of',
+  '3d-render': 'A 3D rendered image of',
+  'pixel-art': 'Pixel art of',
+  'comic': 'A comic book style illustration of',
+  'cinematic': 'A cinematic, movie-still quality photo of',
+  'minimalist': 'A minimalist, clean design of',
+  'pop-art': 'A pop art style image of',
+  'ukiyo-e': 'An ukiyo-e Japanese woodblock print style of'
+};
+
+/* ========== スタイル → 隠しサフィックス（API送信時のみ付加、UIには非表示） ========== */
+var STYLE_SUFFIX = {
+  'photographic': '. Shot with DSLR camera, shallow depth of field, golden hour natural lighting, tack-sharp focus on subject, creamy bokeh background, professional color grading, rich dynamic range, 8K resolution award-winning photography.',
+  'illustration': '. Clean precise linework, rich complementary color harmony, ambient occlusion shading, rim lighting, concept art level polish, storytelling composition, trending on ArtStation, professional digital illustration finish.',
+  'anime': '. Cel-shading with precise color flats, expressive detailed eyes, delicate hair highlights, Makoto Shinkai inspired atmospheric background, soft light bloom effects, sakuga-quality dynamic pose, studio Ghibli environmental detail.',
+  'watercolor': '. Painted on cold-press textured paper, soft wet-on-wet color bleeding, transparent layered washes, visible pigment granulation, preserved white paper highlights, calligraphic dry-brush accents, inspired by J.M.W. Turner luminosity.',
+  'oil-painting': '. Thick impasto brushstrokes on canvas texture, glazing technique for luminous depth, chiaroscuro dramatic lighting, sfumato soft transitions, palette knife highlights, Rembrandt-inspired lighting, rich saturated pigments.',
+  'digital-art': '. Smooth gradients with vibrant neon accents, volumetric fog and atmospheric haze, chromatic aberration, synthwave color palette of cool blues and warm magentas, Octane render aesthetic, polished AAA game concept art.',
+  'pencil-sketch': '. Expressive cross-hatching and tonal gradation on cream paper, varied pencil pressure thick-to-thin lines, smudged graphite soft shadows, sharp mechanical pencil fine details, visible construction lines, classical academic drawing.',
+  '3d-render': '. Ray-traced global illumination, physically based rendering materials, volumetric lighting with god rays, subsurface scattering on organic surfaces, Unreal Engine 5 Lumen quality, 8K ultra-detailed photorealistic CGI.',
+  'pixel-art': '. Carefully crafted limited 16-color palette, clean manual dithering patterns, tile-perfect alignment, selective anti-aliasing on curves only, retro 16-bit SNES era aesthetic, inspired by classic Capcom and Treasure sprite art.',
+  'comic': '. Bold black ink outlines, Ben-Day halftone dot shading, vivid flat primary colors, dramatic foreshortening, dynamic speed lines and impact effects, Silver Age Marvel-DC heroic proportions, four-color separation print look.',
+  'cinematic': '. Anamorphic lens horizontal flare, teal and orange color grading, atmospheric haze depth layering, Roger Deakins naturalistic lighting, 2.39:1 widescreen composition, ARRI Alexa color science, Kodak film stock emulation with subtle grain.',
+  'minimalist': '. Generous negative space, Bauhaus geometric balance, maximum three colors plus neutrals, flat design with subtle long shadow, grid-based golden ratio composition, Dieter Rams functional aesthetic, high-end Swiss editorial design.',
+  'pop-art': '. CMYK rotated halftone dot screens, stark black holding lines, flat unmodulated fills in primary red yellow blue, mass-produced screen print aesthetic, Roy Lichtenstein benday dot precision, Andy Warhol high contrast repetition.',
+  'ukiyo-e': '. Nishiki-e multi-color woodblock registration, key-block sumi ink outlines, flat color areas with bokashi gradation, flowing organic lines, Hokusai wave energy, Hiroshige atmospheric rain technique, Edo period museum print quality.'
+};
+
+/* ========== スタイル → 隠しネガティブ（API送信時のみマージ、UIには非表示） ========== */
+var STYLE_NEGATIVE = {
+  'photographic': 'illustration, painting, drawing, cartoon, anime, 3d render, sketch, CGI, oversaturated',
+  'illustration': 'photograph, photo, realistic, 3d render, pixel art, blurry, noisy, watermark',
+  'anime': 'realistic, photographic, western cartoon, 3d render, oil painting, watercolor, deformed hands',
+  'watercolor': 'digital art, photograph, sharp edges, hard lines, vector art, 3d render, thick impasto',
+  'oil-painting': 'digital art, photograph, watercolor, flat colors, vector art, pixel art, anime, thin lines',
+  'digital-art': 'traditional media, watercolor, oil painting, pencil, paper texture, canvas texture, photograph',
+  'pencil-sketch': 'color, painting, digital art, photograph, watercolor, oil paint, saturated, vibrant, neon',
+  '3d-render': 'flat, 2d, drawing, painting, sketch, watercolor, hand-drawn, paper texture, low poly',
+  'pixel-art': 'smooth gradients, anti-aliased, photograph, realistic, blurry, soft edges, painterly',
+  'comic': 'photograph, realistic, watercolor, oil painting, soft edges, muted colors, pastel',
+  'cinematic': 'cartoon, anime, illustration, drawing, painting, flat lighting, overexposed, low resolution',
+  'minimalist': 'cluttered, busy, detailed texture, ornate, baroque, photographic, noisy, complex patterns',
+  'pop-art': 'realistic, muted colors, watercolor, oil painting, soft gradients, pastel, monochrome, subtle',
+  'ukiyo-e': 'photograph, realistic, digital art, 3d render, western art style, oil painting, modern'
+};
+
+/* ========== システムプロンプト（本家準拠） ========== */
+var IMAGE_SYSTEM_PROMPT = [
+  'あなたは画像生成AIのプロンプトを生成するAIアシスタントです。',
+  '以下の手順でプロンプトを生成してください。',
+  '',
+  '手順:',
+  '* ユーザは生成して欲しい画像の要件をチャットで指示します。チャットのやり取りを全て理解してください。',
+  '* チャットのやり取りから、生成して欲しい画像の特徴を正しく認識してください。',
+  '* 画像生成において重要な要素から順にプロンプトに出力してください。',
+  '',
+  '以下のJSON形式のみを出力してください。JSON以外のテキストは一切出力しないでください:',
+  '{',
+  '  "prompt": "英語のプロンプト（主題、構図、照明、色調、雰囲気のみ。画風・媒体の記述は絶対に含めない）",',
+  '  "negativePrompt": "除外要素の英語カンマ区切り（例: blurry, text, watermark, low quality）",',
+  '  "comment": "日本語でユーザーへのコメント。画像を生成しました。続けて会話することでプロンプトを調整できます。\\n改善提案:\\n- 提案1\\n- 提案2\\n- 提案3",',
+  '  "recommendedStylePreset": ["style1", "style2", "style3"]',
+  '}',
+  '',
+  'ルール:',
+  '- promptは必ず英語で出力すること',
+  '- 重要: promptに画風・媒体の記述を絶対に含めないこと。以下の表現は禁止:',
+  '  "photo of", "photograph of", "realistic", "illustration of", "painting of",',
+  '  "drawing of", "sketch of", "render of", "digital art of" 等',
+  '  画風はスタイルプリセットで別途制御するため、promptには主題・構図・照明・雰囲気のみを記述する',
+  '- 高品質キーワード(detailed, sharp focus, vivid colors等)は含めてよい',
+  '- recommendedStylePresetは最大3つ、以下から選択:',
+  '  photographic, illustration, anime, watercolor, oil-painting, digital-art,',
+  '  pencil-sketch, 3d-render, pixel-art, comic, cinematic, minimalist, pop-art, ukiyo-e',
+  '- 会話の文脈を理解し、前回のプロンプトへの修正指示にも対応すること',
+  '- JSON以外のテキストは絶対に出力しないこと'
+].join('\n');
+
+/* ========== サイズ選択 ========== */
+document.getElementById('sizeOptions').addEventListener('click', function(e) {
+  var btn = e.target.closest('.gi-size-btn');
+  if (!btn) return;
+  document.querySelectorAll('.gi-size-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  selectedRatio = btn.dataset.ratio;
+});
+
+/* ========== 入力制御 ========== */
+chatInput.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 160) + 'px';
+  updateSendBtn();
+});
+
+chatInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    if (!sendBtn.disabled) sendMessage();
+  }
+});
+
+sendBtn.addEventListener('click', function() {
+  if (!sendBtn.disabled) sendMessage();
+});
+
+function updateSendBtn() {
+  sendBtn.disabled = !chatInput.value.trim() || isStreaming || isGeneratingImage;
+}
+
+/* ========== チャット送信 ========== */
+function sendMessage() {
+  var text = chatInput.value.trim();
+  if (!text || isStreaming || isGeneratingImage) return;
+
+  // 空状態を非表示、メッセージ領域を表示
+  emptyState.style.display = 'none';
+  chatMessages.style.display = 'block';
+
+  // ユーザーメッセージ追加
+  appendMsg('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  isStreaming = true;
+  updateSendBtn();
+
+  // AI応答枠を追加
+  var aiEl = appendMsg('ai', null);
+  var bodyEl = aiEl.querySelector('.gi-msg-body');
+  bodyEl.innerHTML = '<div class="gi-progress"><div class="gi-spinner"></div> プロンプト生成中</div>';
+
+  var fullText = '';
+  currentStream = ApiClient.streamChat({
+    messages: chatHistory,
+    model: 'gemini-2.5-flash',
+    systemPrompt: IMAGE_SYSTEM_PROMPT,
+    onChunk: function(chunk, full) {
+      fullText = full;
+    },
+    onDone: function(full) {
+      fullText = full;
+      chatHistory.push({ role: 'model', content: full });
+      isStreaming = false;
+      currentStream = null;
+      processAiResponse(bodyEl, full);
+    },
+    onError: function(err) {
+      bodyEl.innerHTML = '<div class="gi-error"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> エラー</div>'
+        + '<p>プロンプト生成時にエラーが発生しました。</p>'
+        + '<button class="gi-reco-btn" id="retryBtn" style="margin-top:0.75rem;">再実行</button>';
+      document.getElementById('retryBtn').addEventListener('click', retryLast);
+      isStreaming = false;
+      currentStream = null;
+      updateSendBtn();
+    }
+  });
+}
+
+/* ========== AI応答処理 ========== */
+function processAiResponse(bodyEl, responseText) {
+  // JSONを正規表現で抽出
+  var parsed = null;
+  try {
+    var match = responseText.match(/\{[^{}]*\}/g);
+    parsed = JSON.parse(match ? match[0] : '{}');
+  } catch(e) {
+    try {
+      var deepMatch = responseText.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(deepMatch[0]);
+    } catch(e2) {
+      bodyEl.innerHTML = '<div class="gi-error"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> エラー</div>'
+        + '<p>プロンプト生成時にエラーが発生しました。</p>'
+        + '<button class="gi-reco-btn" id="retryBtn" style="margin-top:0.75rem;">再実行</button>';
+      document.getElementById('retryBtn').addEventListener('click', retryLast);
+      updateSendBtn();
+      return;
+    }
+  }
+
+  if (!parsed || !parsed.prompt) {
+    bodyEl.innerHTML = '<p>プロンプトを生成できませんでした。もう少し具体的に説明してみてください。</p>';
+    updateSendBtn();
+    return;
+  }
+
+  // 右パネルにプロンプト自動入力
+  promptText.value = parsed.prompt;
+  lastBasePrompt = parsed.prompt;
+  if (parsed.negativePrompt) negPrompt.value = parsed.negativePrompt;
+
+  // ステップ1: 「プロンプト生成完了」+「画像生成中」を表示
+  bodyEl.innerHTML = '<div class="gi-progress" style="margin-bottom:0.375rem;"><div class="gi-done-icon"></div> プロンプト生成完了</div>'
+    + '<div class="gi-progress"><div class="gi-spinner"></div> 画像生成中</div>';
+  scrollToBottom();
+
+  // 自動画像生成
+  isGeneratingImage = true;
+  updateSendBtn();
+
+  doGenerateImage(function() {
+    // 画像生成完了 → コメントとスタイルボタンを表示
+    var html = '';
+    if (parsed.comment) {
+      html += '<div style="line-height:1.7;">';
+      var lines = parsed.comment.split('\n');
+      for (var i = 0; i < lines.length; i++) {
+        html += '<div>' + escapeHtml(lines[i]) + '</div>';
+      }
+      html += '</div>';
+    }
+
+    // おすすめのスタイルプリセット
+    var styles = parsed.recommendedStylePreset || parsed.recommendedStyles || [];
+    if (styles.length) {
+      html += '<div class="gi-reco">';
+      html += '<div class="gi-reco-title">おすすめのスタイルプリセット</div>';
+      html += '<div class="gi-reco-btns">';
+      for (var j = 0; j < styles.length; j++) {
+        if (STYLE_PREFIX[styles[j]]) {
+          html += '<button class="gi-reco-btn" data-style="' + escapeHtml(styles[j]) + '">' + escapeHtml(styles[j]) + '</button>';
+        }
+      }
+      html += '<button class="gi-reco-btn-text" data-style="">未設定</button>';
+      html += '</div></div>';
+    }
+
+    bodyEl.innerHTML = html;
+
+    // スタイルボタンにイベント
+    bodyEl.querySelectorAll('[data-style]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var s = this.dataset.style;
+        styleSelect.value = s;
+        applyStyleAndGenerate(s);
+      });
+    });
+
+    isGeneratingImage = false;
+    updateSendBtn();
+    scrollToBottom();
+  });
+}
+
+/* ========== 再実行 ========== */
+function retryLast() {
+  if (isStreaming || isGeneratingImage) return;
+  // 最後のAI応答を削除
+  if (chatHistory.length && chatHistory[chatHistory.length - 1].role === 'model') {
+    chatHistory.pop();
+  }
+  var lastMsg = chatMessages.lastElementChild;
+  if (lastMsg) lastMsg.remove();
+  // 最後のユーザー入力で再送
+  var lastUser = chatHistory[chatHistory.length - 1];
+  if (lastUser && lastUser.role === 'user') {
+    chatHistory.pop();
+    chatInput.value = lastUser.content;
+    chatInput.dispatchEvent(new Event('input'));
+    sendMessage();
+  }
+}
+
+/* ========== スタイル適用して再生成 ========== */
+function applyStyleAndGenerate(styleName) {
+  if (!lastBasePrompt) return;
+
+  // スタイルプレフィックスとスタイル記述を除去してベースを取得
+  var base = lastBasePrompt;
+  Object.keys(STYLE_PREFIX).forEach(function(key) {
+    if (base.indexOf(STYLE_PREFIX[key]) === 0) {
+      base = base.substring(STYLE_PREFIX[key].length).replace(/^[,\s]+/, '');
+    }
+  });
+  base = base.replace(/^(A |An )?(realistic |photographic |cinematic )?(high[- ]quality )?(photo|photograph|illustration|drawing|painting|sketch|render|digital art|3D render|pixel art)( of| depicting| showing)?,?\s*/i, '');
+
+  if (styleName && STYLE_PREFIX[styleName]) {
+    promptText.value = STYLE_PREFIX[styleName] + ' ' + base;
+  } else {
+    promptText.value = base;
+  }
+
+  isGeneratingImage = true;
+  updateSendBtn();
+  doGenerateImage(function() {
+    isGeneratingImage = false;
+    updateSendBtn();
+  });
+}
+
+/* ========== 画像生成 ========== */
+function doGenerateImage(callback) {
+  var prompt = promptText.value.trim();
+  if (!prompt) { if (callback) callback(); return; }
+
+  // スタイルプリセットが選択されている場合、接頭辞を付与
+  var selectedStyle = styleSelect.value;
+  if (selectedStyle && STYLE_PREFIX[selectedStyle]) {
+    var prefix = STYLE_PREFIX[selectedStyle];
+    if (prompt.indexOf(prefix) !== 0) {
+      // 既存のスタイル接頭辞を除去
+      Object.keys(STYLE_PREFIX).forEach(function(key) {
+        if (prompt.indexOf(STYLE_PREFIX[key]) === 0) {
+          prompt = prompt.substring(STYLE_PREFIX[key].length).replace(/^[,\s]+/, '');
+        }
+      });
+      // AI が含めてしまったスタイル/媒体の記述も除去
+      prompt = prompt.replace(/^(A |An )?(realistic |photographic |cinematic )?(high[- ]quality )?(photo|photograph|illustration|drawing|painting|sketch|render|digital art|3D render|pixel art)( of| depicting| showing)?,?\s*/i, '');
+      prompt = prefix + ' ' + prompt;
+    }
+    // 隠しサフィックスを付加（UIには非表示、API送信時のみ）
+    if (STYLE_SUFFIX[selectedStyle] && prompt.indexOf(STYLE_SUFFIX[selectedStyle]) === -1) {
+      prompt = prompt + STYLE_SUFFIX[selectedStyle];
+    }
+  }
+
+  // スタイル別ネガティブプロンプトをマージ（UIには非表示）
+  var negText = negPrompt.value.trim();
+  if (selectedStyle && STYLE_NEGATIVE && STYLE_NEGATIVE[selectedStyle]) {
+    negText = negText ? negText + ', ' + STYLE_NEGATIVE[selectedStyle] : STYLE_NEGATIVE[selectedStyle];
+  }
+
+  genBtn.disabled = true;
+  genBtn.textContent = '生成中...';
+  errMsg.style.display = 'none';
+  downloadArea.style.display = 'none';
+  imageBox.innerHTML = '<div class="gi-image-loading"><div class="gi-spinner" style="width:24px;height:24px;border-width:3px;"></div><span>画像を生成中...</span></div>';
+
+  ApiClient.generateImage({
+    prompt: prompt,
+    negativePrompt: negText,
+    aspectRatio: selectedRatio
+  }).then(function(data) {
+    if (data.image) {
+      currentImageData = data.image;
+      imageBox.innerHTML = '<img src="data:image/jpeg;base64,' + data.image + '" alt="生成画像">';
+      downloadArea.style.display = 'flex';
+      HistoryStore.save({
+        id: 'image_' + Date.now(),
+        appType: 'image',
+        title: '画像: ' + prompt.substring(0, 40),
+        prompt: prompt,
+        negativePrompt: negPrompt.value.trim(),
+        aspectRatio: selectedRatio
+      });
+    } else if (data.error) {
+      imageBox.innerHTML = '<span class="gi-image-placeholder">画像を生成できませんでした</span>';
+      errMsg.textContent = data.error;
+      errMsg.style.display = 'block';
+    }
+  }).catch(function(e) {
+    imageBox.innerHTML = '<span class="gi-image-placeholder">エラーが発生しました</span>';
+    errMsg.textContent = e.message;
+    errMsg.style.display = 'block';
+  }).finally(function() {
+    genBtn.disabled = false;
+    genBtn.textContent = '生成';
+    if (callback) callback();
+  });
+}
+
+/* ========== 手動生成ボタン ========== */
+genBtn.addEventListener('click', function() {
+  if (genBtn.disabled) return;
+  isGeneratingImage = true;
+  updateSendBtn();
+  doGenerateImage(function() {
+    isGeneratingImage = false;
+    updateSendBtn();
+  });
+});
+
+/* ========== クリア ========== */
+clearBtn.addEventListener('click', function() {
+  if (isStreaming || isGeneratingImage) return;
+  chatHistory = [];
+  chatMessages.innerHTML = '';
+  chatMessages.style.display = 'none';
+  emptyState.style.display = '';
+  promptText.value = '';
+  negPrompt.value = '';
+  styleSelect.value = '';
+  currentImageData = null;
+  lastBasePrompt = '';
+  imageBox.innerHTML = '<span class="gi-image-placeholder">生成された画像がここに表示されます</span>';
+  errMsg.style.display = 'none';
+  downloadArea.style.display = 'none';
+  // サイズを1:1にリセット
+  selectedRatio = '1:1';
+  document.querySelectorAll('.gi-size-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.ratio === '1:1');
+  });
+});
+
+/* ========== ダウンロード ========== */
+downloadBtn.addEventListener('click', function() {
+  if (!currentImageData) return;
+  var a = document.createElement('a');
+  a.href = 'data:image/jpeg;base64,' + currentImageData;
+  a.download = 'gennai_image_' + Date.now() + '.png';
+  a.click();
+});
+
+/* ========== DOM Helpers ========== */
+function appendMsg(role, text) {
+  var el = document.createElement('div');
+  el.className = 'gi-msg' + (role === 'user' ? ' is-user' : '');
+
+  var avatarClass = role === 'user' ? 'user-av' : 'ai-av';
+  var avatarSvg = role === 'user'
+    ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a4 4 0 014 4v1h1a2 2 0 012 2v6a2 2 0 01-2 2h-1v1a2 2 0 01-2 2H10a2 2 0 01-2-2v-1H7a2 2 0 01-2-2V9a2 2 0 012-2h1V6a4 4 0 014-4z"/><circle cx="9.5" cy="11.5" r="1.25" fill="#16a34a"/><circle cx="14.5" cy="11.5" r="1.25" fill="#16a34a"/></svg>';
+
+  var html = '<div class="gi-avatar ' + avatarClass + '">' + avatarSvg + '</div>';
+  html += '<div class="gi-msg-body">';
+  if (role === 'user' && text !== null) {
+    var lines = text.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      html += '<div>' + escapeHtml(lines[i]) + '</div>';
+    }
+  }
+  html += '</div>';
+
+  el.innerHTML = html;
+  chatMessages.appendChild(el);
+  scrollToBottom();
+  return el;
+}
+
+function scrollToBottom() {
+  chatScroll.scrollTop = chatScroll.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ========== 履歴復元 ========== */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    HistoryStore.load(id).then(function(data) {
+      if (!data) return;
+      if (data.prompt) promptText.value = data.prompt;
+      if (data.negativePrompt) negPrompt.value = data.negativePrompt;
+      if (data.aspectRatio) {
+        selectedRatio = data.aspectRatio;
+        document.querySelectorAll('.gi-size-btn').forEach(function(b) {
+          b.classList.toggle('active', b.dataset.ratio === data.aspectRatio);
+        });
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

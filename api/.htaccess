@@ -1,0 +1,18 @@
+# PHP アップロード上限（音声文字起こし用）
+php_value upload_max_filesize 55M
+php_value post_max_size 60M
+php_value max_execution_time 300
+php_value memory_limit 256M
+
+<Files ".env">
+  Require all denied
+</Files>
+<Files ".user.ini">
+  Require all denied
+</Files>
+<Files "*.json">
+  Require all denied
+</Files>
+<Files "debug.log">
+  Require all denied
+</Files>

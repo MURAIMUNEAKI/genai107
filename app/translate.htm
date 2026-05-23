@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>翻訳 - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ヘッダー（GitHub UI準拠） */
+.tl-header{border-bottom:1px solid #000;padding:1rem 0 0.75rem;margin-bottom:1.5rem;}
+.tl-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:1024px){.tl-title{font-size:1.5rem;}}
+.tl-subtitle{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-600);margin:0;}
+
+/* 但書（GitHub Disclosure準拠） */
+.tl-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.tl-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.tl-notes h3{font-size:0.9375rem;font-weight:700;margin:0.75rem 0 0.25rem;}
+.tl-notes p{margin:0.25rem 0;}
+.tl-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:8px;padding:0.5rem 0.75rem;}
+.tl-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.tl-notes summary::before{content:'▶';font-size:0.625rem;transition:transform 0.2s;}
+.tl-notes details[open] summary::before{transform:rotate(90deg);}
+.tl-notes details>div{padding:0.5rem 0 0 1.25rem;}
+
+.translate-grid{display:flex;flex-direction:column;gap:1rem;}
+@media(min-width:1024px){.translate-grid{flex-direction:row;}}
+.translate-grid>div{flex:1;}
+.result-box{border:1px solid var(--solid-gray-420);border-radius:8px;padding:1rem;min-height:140px;line-height:1.8;}
+.result-placeholder{color:var(--solid-gray-536);font-size:0.875rem;}
+.result-copy-area{display:flex;justify-content:flex-end;margin-top:0.5rem;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'honyaku'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:70rem">
+      <div class="tl-header">
+        <h1 class="tl-title">翻訳</h1>
+        <div class="tl-notes">
+          <h2>想定用途</h2>
+          <p>Gemini の機能を使って、翻訳サービスを提供するものです。文章を英語/日本語/中国語/韓国語/フランス語/スペイン語/ドイツ語のいずれかに翻訳することができます。カジュアルな文章がほしいなどのコンテキストを追加することもできます。</p>
+          <h3>アプリ個別の留意点</h3>
+          <p>長文を入力する場合は処理が著しく重くなる場合がありますので、その場合は、分割して入力してください。翻訳の正確性の確認は利用者側の責任です。翻訳後の文章を再翻訳して大意が変わってないことを確認する等の工夫をお願いします。</p>
+          <h3>入力例</h3>
+          <p>翻訳したい文章のみを入力してください。</p>
+          <h2>操作方法</h2>
+          <p>テキストの箇所に翻訳したいテキストを入力します。翻訳する言語は、プルダウンから選択してください。翻訳して、といったAIへの指示は不要です。</p>
+          <details>
+            <summary>仕組み</summary>
+            <div>
+              <p>生成AIの機能を活用し、翻訳するよう入力プロンプトに指示して翻訳文を返答させています。特別な文書は読み込ませていません。</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="switch-wrap" style="margin-top:1rem">
+        <span style="font-size:0.875rem;font-weight:700">即時翻訳</span>
+        <button class="switch" id="autoSwitch" type="button" role="switch" aria-checked="false"></button>
+        <span id="autoSwitchLabel" style="font-size:0.875rem;color:var(--solid-gray-600)">OFF</span>
+      </div>
+
+      <hr class="dads-divider">
+
+      <div class="translate-grid">
+        <!-- 左カラム: 入力 -->
+        <div>
+          <div class="form-group">
+            <label class="dads-label" for="srcText">翻訳したい文章 <span class="dads-required">必須</span></label>
+            <p class="dads-support">言語は自動検出されます</p>
+            <textarea class="dads-textarea" id="srcText" rows="5" placeholder="翻訳したい文章を入力してください"></textarea>
+          </div>
+        </div>
+
+        <!-- 右カラム: 結果 -->
+        <div>
+          <div class="form-group" style="margin-bottom:0.25rem">
+            <label class="dads-label">翻訳する言語：</label>
+            <select class="dads-select" id="tgtLang" style="max-width:16rem">
+              <option value="英語">英語</option>
+              <option value="日本語">日本語</option>
+              <option value="中国語">中国語</option>
+              <option value="韓国語">韓国語</option>
+              <option value="フランス語">フランス語</option>
+              <option value="スペイン語">スペイン語</option>
+              <option value="ドイツ語">ドイツ語</option>
+            </select>
+          </div>
+
+          <div class="result-box" id="resultBox">
+            <div class="result-placeholder" id="resultPlaceholder">翻訳結果がここに表示されます</div>
+            <div id="resultContent" style="display:none"></div>
+          </div>
+
+          <div class="progress-indicator" id="progress">
+            <div class="progress-spinner"></div>
+            <span class="progress-label">実行中...</span>
+          </div>
+
+          <div class="result-copy-area" id="copyArea" style="display:none">
+            <button class="copy-btn" id="copyBtn">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              コピー
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 追加コンテキスト -->
+      <div class="form-group" style="margin-top:1rem">
+        <label class="dads-label" for="contextText">追加コンテキスト <span style="font-size:0.75rem;font-weight:400;color:var(--solid-gray-536)">※任意</span></label>
+        <p class="dads-support">追加で考慮してほしい点を入力することができます（カジュアルさ等）</p>
+        <textarea class="dads-textarea" id="contextText" rows="2" placeholder="例: カジュアルな文章にしてほしい"></textarea>
+      </div>
+
+      <div class="btn-area" id="manualBtnArea" style="justify-content:center">
+        <button class="dads-btn" id="translateBtn" style="min-width:15rem">実行</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script src="../shared/api-client.js"></script>
+<script src="../shared/history-store.js"></script>
+<script>
+initLayout({ activePage: 'translate', basePath: '' });
+
+var srcText = document.getElementById('srcText');
+var tgtLang = document.getElementById('tgtLang');
+var contextText = document.getElementById('contextText');
+var translateBtn = document.getElementById('translateBtn');
+var manualBtnArea = document.getElementById('manualBtnArea');
+var autoSwitch = document.getElementById('autoSwitch');
+var autoSwitchLabel = document.getElementById('autoSwitchLabel');
+var progress = document.getElementById('progress');
+var resultBox = document.getElementById('resultBox');
+var resultContent = document.getElementById('resultContent');
+var resultPlaceholder = document.getElementById('resultPlaceholder');
+var copyBtn = document.getElementById('copyBtn');
+var copyArea = document.getElementById('copyArea');
+var autoMode = false;
+var debounceTimer = null;
+var currentStream = null;
+
+/* 即時翻訳トグル */
+autoSwitch.addEventListener('click', function() {
+  autoMode = !autoMode;
+  this.classList.toggle('on', autoMode);
+  this.setAttribute('aria-checked', autoMode);
+  autoSwitchLabel.textContent = autoMode ? 'ON' : 'OFF';
+  manualBtnArea.style.display = autoMode ? 'none' : '';
+  if (autoMode && srcText.value.trim()) doTranslate();
+});
+
+/* 即時翻訳（デバウンス 1秒） */
+srcText.addEventListener('input', function() {
+  if (!autoMode) return;
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(function() {
+    if (srcText.value.trim()) doTranslate();
+  }, 1000);
+});
+
+tgtLang.addEventListener('change', function() { if (autoMode && srcText.value.trim()) doTranslate(); });
+
+translateBtn.addEventListener('click', function() {
+  if (srcText.value.trim()) doTranslate();
+  else srcText.focus();
+});
+
+function doTranslate() {
+  var text = srcText.value.trim();
+  if (!text) return;
+
+  if (currentStream) currentStream.abort();
+
+  var lang = tgtLang.value;
+  var context = contextText.value.trim();
+  var prompt = '<input>' + text + '</input><language>' + lang + '</language>\n';
+  if (context) {
+    prompt += '<考慮して欲しいこと>' + context + '</考慮して欲しいこと>\n';
+  }
+  prompt += '\n出力は翻訳結果だけを <output></output> の xml タグで囲って出力してください。\nそれ以外の文章は一切出力してはいけません。例外はありません。';
+
+  translateBtn.disabled = true;
+  translateBtn.textContent = '実行中...';
+  progress.classList.add('active');
+  resultPlaceholder.style.display = 'none';
+  resultContent.style.display = 'block';
+  resultContent.textContent = '';
+  copyArea.style.display = 'none';
+
+  currentStream = ApiClient.streamChat({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'gemini-3.1-flash-lite',
+    systemPrompt: '以下は文章を翻訳したいユーザーと、ユーザーの意図と文章を理解して適切に翻訳する AI のやりとりです。ユーザーは <input> タグで翻訳する文章と、<language> タグで翻訳先の言語を与えます。また、<考慮してほしいこと> タグで翻訳時に考慮してほしいことを与えることもあります。AI は <考慮してほしいこと> がある場合は考慮しつつ、<input> で与えるテキストを <language> で与える言語に翻訳してください。出力は<output>{翻訳結果}</output>の形で翻訳した文章だけを出力してください。それ以外の文章は一切出力してはいけません。',
+    onChunk: function(chunk, full) {
+      resultContent.textContent = cleanOutput(full);
+    },
+    onDone: function(full) {
+      var cleaned = cleanOutput(full);
+      resultContent.textContent = cleaned;
+      translateBtn.disabled = false;
+      translateBtn.textContent = '実行';
+      progress.classList.remove('active');
+      copyArea.style.display = 'flex';
+      HistoryStore.save({
+        id: 'translate_' + Date.now(),
+        appType: 'translate',
+        title: '翻訳: ' + lang + ' — ' + text.substring(0, 30),
+        srcText: text,
+        tgtLang: lang,
+        context: context,
+        result: cleaned
+      });
+    },
+    onError: function(err) {
+      resultContent.innerHTML = '<span class="text-error">' + escapeHtml(err) + '</span>';
+      translateBtn.disabled = false;
+      translateBtn.textContent = '実行';
+      progress.classList.remove('active');
+    }
+  });
+}
+
+function cleanOutput(text) {
+  var m = text.match(/<output>([\s\S]*?)<\/output>/);
+  return m ? m[1].trim() : text;
+}
+
+copyBtn.addEventListener('click', function() {
+  navigator.clipboard.writeText(resultContent.textContent || resultContent.innerText).then(function() {
+    copyBtn.classList.add('copied');
+    var orig = copyBtn.innerHTML;
+    copyBtn.innerHTML = orig.replace('コピー', 'コピー済み');
+    setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = orig; }, 2000);
+  });
+});
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ---------- 履歴復元 ---------- */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    HistoryStore.load(id).then(function(data) {
+      if (!data) return;
+      if (data.srcText) srcText.value = data.srcText;
+      if (data.tgtLang) tgtLang.value = data.tgtLang;
+      if (data.context) contextText.value = data.context;
+      if (data.result) {
+        resultPlaceholder.style.display = 'none';
+        resultContent.style.display = 'block';
+        resultContent.textContent = data.result;
+        copyArea.style.display = 'flex';
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
