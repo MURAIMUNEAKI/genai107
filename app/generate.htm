@@ -159,7 +159,7 @@ genBtn.addEventListener('click', function() {
   ApiClient.streamChat({
     messages: [{ role: 'user', content: prompt }],
     model: 'gemini-3.1-flash-lite',
-    systemPrompt: 'あなたは指示に従って文章を作成するライターです。',
+    systemPrompt: 'あなたは指示に従って文章を作成するライターです。それぞれの回答は必ず1000字以上で詳細かつ丁寧に作成してください。',
     onChunk: function(chunk, full) {
       resultContent.innerHTML = renderMarkdown(cleanOutput(full));
     },

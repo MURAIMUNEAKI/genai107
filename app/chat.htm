@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="../shared/dads107.css">
 <style>
 /* ヘッダー（GitHub UI準拠） */
-.ct-header{border-bottom:1px solid #000;padding:0.75rem 1.5rem 0.5rem;flex-shrink:0;}
+.ct-header{border-bottom:1px solid #000;padding:0.75rem 1.5rem 0.5rem;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;}
 @media(min-width:1024px){.ct-header{padding:0.75rem 2.5rem 0.5rem;}}
 .ct-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0;}
 @media(min-width:1024px){.ct-title{font-size:1.5rem;}}
@@ -30,7 +30,7 @@
 .chat-controls{padding:0.5rem 1.5rem 0.5rem;border-bottom:1px solid var(--solid-gray-300);flex-shrink:0;}
 @media(min-width:1024px){.chat-controls{padding:0.5rem 2.5rem 0.5rem;}}
 .chat-controls-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
-.model-select{min-width:16rem;}
+.model-select{width:auto;min-width:0;max-width:12rem;white-space:nowrap;flex-shrink:0;}
 .sys-prompt-toggle{display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.875rem;color:var(--solid-gray-600);background:none;border:none;font-family:inherit;padding:0.25rem 0.5rem;border-radius:4px;}
 .sys-prompt-toggle:hover{background:var(--solid-gray-50);}
 .sys-prompt-panel{display:none;margin-top:0.5rem;}
@@ -74,8 +74,8 @@
 
 .chat-body{flex:1;overflow-y:auto;padding:0 1.5rem;scrollbar-gutter:stable;}
 @media(min-width:1024px){.chat-body{padding:0 2.5rem;}}
-.chat-messages{max-width:64rem;margin:0 auto;padding:1rem 0 1.5rem;}
-.chat-welcome{text-align:center;color:var(--solid-gray-536);padding:3rem 0;}
+.chat-messages{max-width:64rem;margin:0 auto;padding:0.25rem 0 1.5rem;}
+.chat-welcome{text-align:center;color:var(--solid-gray-536);padding:0.25rem 0;}
 .chat-welcome h2{font-size:1.25rem;font-weight:700;margin-bottom:0.5rem;}
 
 /* Card-style messages with borders (genai-web v1.0.7) */
@@ -137,16 +137,16 @@
       <!-- Page Header -->
       <div class="ct-header">
         <h1 class="ct-title">チャット</h1>
+        <select class="dads-select model-select" id="modelSelect">
+          <option value="gemini-3.1-flash-lite">Google Gemini</option>
+          <option value="gpt-5.4-nano">OpenAI GPT</option>
+          <option disabled>(今後、国産LLMを追加予定)</option>
+        </select>
       </div>
 
       <!-- Controls -->
       <div class="chat-controls">
         <div class="chat-controls-row">
-          <select class="dads-select model-select" id="modelSelect">
-            <option value="gemini-3.1-flash-lite">Google Gemini</option>
-            <option value="gpt-5.4-nano">OpenAI GPT</option>
-            <option disabled>(今後、国産LLMを追加予定)</option>
-          </select>
           <button class="sys-prompt-toggle" id="sysToggle">
             <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
             システムプロンプト

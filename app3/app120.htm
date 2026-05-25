@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教員自己評価シート</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{height:100%;}
+body{font-family:'Noto Sans JP',sans-serif;background:#1a1a2e;color:#333;line-height:1.6;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+body>:not(.header):not(.main):not(.retry-modal):not(.chat-input-bar){position:absolute;width:0;height:0;overflow:hidden;}
+
+.header{background:linear-gradient(to right,#3a8a9c 0%,#53b5ca 40%,#7dcfb6 75%,#a8e6a3 100%);color:#fff;padding:10px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);flex-shrink:0;}
+.header h1{font-size:1.2rem;font-weight:900;letter-spacing:0.08em;text-shadow:0 2px 8px rgba(0,0,0,0.3);}
+
+.main{display:flex;flex:1;overflow:hidden;}
+
+/* 左パネル */
+.left-panel{width:40%;background:#f8f9fa;display:flex;flex-direction:column;border-right:1px solid #e0e0e0;overflow:hidden;}
+.left-panel h2{font-size:1rem;font-weight:700;padding:14px 16px 8px;color:#533483;flex-shrink:0;}
+.form-area{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1;overflow-y:auto;}
+
+.form-group{display:flex;flex-direction:column;gap:3px;}
+.form-group label{font-size:0.82rem;font-weight:700;color:#444;}
+.form-group input,.form-group select,.form-group textarea{border:2px solid #d0d0d0;border-radius:8px;padding:8px 10px;font-size:0.88rem;font-family:inherit;transition:border-color 0.2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#533483;box-shadow:0 0 0 2px rgba(83,52,131,0.15);}
+.form-group textarea{resize:vertical;min-height:60px;}
+
+/* ボタン群 */
+.btn-area{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #e0e0e0;flex-shrink:0;background:#f0f0f0;}
+.send-btn{flex:1;background:linear-gradient(135deg,#0f3460,#533483,#e94560);color:#fff;border:none;border-radius:10px;padding:12px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.send-btn:hover{box-shadow:0 4px 16px rgba(83,52,131,0.3);transform:translateY(-1px);}
+.send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.send-btn.inactive{background:#ccc;color:#333;}
+.send-btn.inactive:hover{box-shadow:none;transform:none;}
+.reset-btn{background:#fff;color:#666;border:2px solid #ccc;border-radius:10px;padding:12px 20px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.reset-btn:hover{border-color:#e94560;color:#e94560;}
+
+/* 右パネル */
+.right-panel{width:60%;display:flex;flex-direction:column;background:#fff;}
+.right-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#fafafa;}
+.right-header h2{font-size:0.95rem;font-weight:700;color:#333;}
+.right-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.right-actions button{background:#fff;border:2px solid #d0d0d0;border-radius:8px;padding:6px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.right-actions button:hover{border-color:#533483;color:#533483;}
+.right-actions button.copied{background:#10b981;color:#fff;border-color:#10b981;}
+.word-btn{border-color:#2563eb !important;color:#2563eb !important;}
+.word-btn:hover{background:#2563eb !important;color:#fff !important;}
+
+.output-area{flex:1;overflow-y:auto;padding:16px;}
+.output-content{font-size:0.9rem;line-height:1.8;color:#333;min-height:100px;}
+.output-content .placeholder{color:#aaa;font-size:0.88rem;}
+
+/* ローディング */
+.loading{display:none;text-align:center;padding:40px;}
+.loading.active{display:block;}
+.spinner{width:36px;height:36px;border:4px solid #e0e0e0;border-top-color:#533483;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* 承認・ストップバー */
+.action-bar{display:none;padding:10px 16px;border-top:1px solid #eee;background:#fafafa;gap:8px;flex-shrink:0;}
+.action-bar.active{display:flex;}
+
+.stop-btn{background:#fff;color:#e94560;border:2px solid #e94560;border-radius:10px;padding:12px 24px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;}
+.stop-btn:hover{background:#e94560;color:#fff;}
+.stop-btn.visible{display:block;}
+.approve-btn{flex:1;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.approve-btn:hover{box-shadow:0 4px 16px rgba(16,185,129,0.3);transform:translateY(-1px);}
+.retry-btn{background:#fff;color:#f59e0b;border:2px solid #f59e0b;border-radius:10px;padding:12px 24px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.retry-btn:hover{background:#f59e0b;color:#fff;}
+.retry-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;}
+.retry-modal.active{display:flex;}
+.retry-modal-content{background:#fff;border-radius:16px;padding:24px;width:90%;max-width:500px;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.retry-modal-content h3{font-size:1rem;color:#333;margin-bottom:12px;}
+.retry-modal-content textarea{width:100%;min-height:100px;border:2px solid #d0d0d0;border-radius:8px;padding:10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;}
+.retry-modal-content textarea:focus{outline:none;border-color:#f59e0b;}
+.retry-modal-btns{display:flex;gap:8px;margin-top:12px;justify-content:flex-end;}
+.retry-submit-btn{background:#f59e0b;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.retry-submit-btn:hover{background:#d97706;}
+.retry-cancel-btn{background:#fff;color:#666;border:2px solid #ccc;border-radius:8px;padding:10px 24px;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.retry-cancel-btn:hover{border-color:#e94560;color:#e94560;}
+
+/* Markdown 整形出力 */
+.output-content h1{font-size:1.3rem;font-weight:900;margin:16px 0 8px;color:#1a1a2e;border-bottom:2px solid #533483;padding-bottom:4px;}
+.output-content h2{font-size:1.15rem;font-weight:700;margin:14px 0 6px;color:#533483;}
+.output-content h3{font-size:1.02rem;font-weight:700;margin:12px 0 4px;color:#0f3460;}
+.output-content h4{font-size:0.95rem;font-weight:700;margin:10px 0 3px;color:#444;}
+.output-content table{border-collapse:collapse;width:100%;margin:10px 0;font-size:0.85rem;}
+.output-content th,.output-content td{border:1px solid #ccc;padding:7px 10px;text-align:left;}
+.output-content th{background:#f0f0f5;font-weight:700;color:#333;}
+.output-content td{background:#fff;}
+.output-content tr:nth-child(even) td{background:#fafafa;}
+.output-content hr{border:none;border-top:2px solid #533483;margin:14px 0;}
+.output-content ul,.output-content ol{margin:6px 0 6px 20px;}
+.output-content li{margin:2px 0;}
+.output-content strong{font-weight:700;color:#1a1a2e;}
+.output-content em{font-style:italic;}
+.output-content code{background:#f0f0f5;padding:1px 5px;border-radius:4px;font-size:0.85em;font-family:monospace;}
+.output-content .md-separator{text-align:center;color:#533483;font-weight:700;margin:12px 0;letter-spacing:0.2em;}
+
+/* チャットUI */
+.chat-area{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.chat-bubble{max-width:85%;padding:10px 14px;border-radius:12px;font-size:0.9rem;line-height:1.7;word-break:break-word;}
+.chat-bubble.user{align-self:flex-end;background:#533483;color:#fff;border-bottom-right-radius:4px;}
+.chat-bubble.ai{align-self:flex-start;background:#f0f0f5;color:#333;border-bottom-left-radius:4px;}
+.chat-input-bar{display:flex;gap:8px;padding:10px 16px;border-top:1px solid #eee;background:#fafafa;flex-shrink:0;}
+.chat-input-bar textarea{flex:1;border:2px solid #d0d0d0;border-radius:10px;padding:10px;font-size:0.9rem;font-family:inherit;resize:none;min-height:44px;max-height:120px;}
+.chat-input-bar textarea:focus{outline:none;border-color:#533483;}
+.chat-send-btn{background:linear-gradient(135deg,#0f3460,#533483);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:0.9rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.chat-send-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* レスポンシブ */
+@media(max-width:700px){
+  .main{flex-direction:column;}
+  .left-panel,.right-panel{width:100%;}
+  .left-panel{max-height:50vh;border-right:none;border-bottom:1px solid #e0e0e0;}
+  .right-panel{flex:1;}
+  .header h1{font-size:1rem;}
+}
+</style>
+<script>
+MathJax = {
+  tex: {inlineMath: [['$','$']], displayMath: [['$$','$$']]},
+  options: {skipHtmlTags: ['script','noscript','style','textarea','pre']}
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+
+<div class="header">
+  <h1>教員自己評価シート</h1>
+</div>
+
+<div class="main">
+  <div class="left-panel">
+    <h2>入力項目</h2>
+    <div class="form-area">
+
+      <div class="form-group">
+        <label>経験年数</label>
+        <select id="expYears">
+          <option value="">選択してください</option>
+          <option>1〜3年目</option>
+          <option>4〜10年目</option>
+          <option>11〜20年目</option>
+          <option>21年目以上</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>職位</label>
+        <select id="f35095">
+          <option value="">選択してください</option>
+          <option>教諭</option>
+          <option>主幹教諭</option>
+          <option>指導教諭</option>
+          <option>主任</option>
+          <option>管理職</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>学校種別</label>
+        <select id="schoolType">
+          <option value="">選択してください</option>
+          <option>小学校</option>
+          <option>中学校</option>
+          <option>高等学校</option>
+          <option>特別支援学校</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>年間目標</label>
+        <textarea id="f22101" placeholder="1. 全単元でICTを活用した授業を実践する 2. 不登校傾向の生徒への早期対応を強化する 3. 若手教員のメンターとして月1回の授業参観を実施する"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>実績</label>
+        <textarea id="f31051" placeholder="ICT活用授業を年間30回実施。不登校傾向の生徒3名について関係機関と連携し、2名が登校再開。若手2名のメンターとして授業参観と事後協議を各8回実施。"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>課題</label>
+        <textarea id="f8016" placeholder="ICT活用が特定の教科に偏っていた。保護者連携が不十分な場面があった。自身の授業研究の時間確保が難しかった。"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>次年度の方針</label>
+        <textarea id="f6259" placeholder="教科横断的なICT活用の推進。保護者面談の定期実施。校内研修の企画に携わりたい。"></textarea>
+      </div>
+
+
+
+    </div>
+    <div class="btn-area">
+      <button class="send-btn inactive" id="sendBtn" onclick="sendRequest()">送信する</button>
+      <button class="reset-btn" onclick="resetForm()">リセット</button>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="right-header">
+      <h2>AI 出力</h2>
+      <div class="right-actions">
+        <button onclick="copyOutput()" id="copyBtn">コピー</button>
+        <button onclick="saveOutput()">テキスト保存</button>
+        <button class="word-btn" onclick="exportToWord()">Word出力</button>
+      </div>
+    </div>
+    <div class="output-area" id="outputArea">
+      <div class="output-content" id="outputContent">
+        <span class="placeholder">左パネルで入力して「送信する」を押すと、ここに結果が表示されます。</span>
+      </div>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>生成中...</p>
+      </div>
+    </div>
+    <div class="action-bar" id="actionBar">
+      <button class="retry-btn" id="retryBtn" onclick="showRetryPopup()" style="display:none">指示をして修正する</button>
+      <button class="stop-btn" id="stopBtn" onclick="stopGeneration()">ストップ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var API_URL = 'app120.php';
+var outputText = '';
+var currentUid = '';
+
+
+function buildMessage() {
+  var msg = '';
+  var expYears = document.getElementById('expYears').value;
+  if (expYears) msg += '【経験年数】' + expYears + '\n';
+  var f35095 = document.getElementById('f35095').value;
+  if (f35095) msg += '【職位】' + f35095 + '\n';
+  var schoolType = document.getElementById('schoolType').value;
+  if (schoolType) msg += '【学校種別】' + schoolType + '\n';
+  var f22101 = document.getElementById('f22101').value.trim();
+  if (f22101) msg += '【年間目標】' + f22101 + '\n';
+  var f31051 = document.getElementById('f31051').value.trim();
+  if (f31051) msg += '【実績】' + f31051 + '\n';
+  var f8016 = document.getElementById('f8016').value.trim();
+  if (f8016) msg += '【課題】' + f8016 + '\n';
+  var f6259 = document.getElementById('f6259').value.trim();
+  if (f6259) msg += '【次年度の方針】' + f6259 + '\n';
+  return msg;
+}
+
+function sendRequest() {
+  var message = buildMessage();
+  if (!message) { alert('少なくとも1つの項目を入力してください'); return; }
+  outputText = '';
+  document.getElementById('outputContent').innerHTML = '';
+  doRequest({ message: message });
+}
+
+async function doRequest(payload) {
+  var sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+  sendBtn.textContent = '生成中...';
+  document.getElementById('actionBar').classList.add('active');
+  document.getElementById('retryBtn').style.display = 'none';
+  document.getElementById('loading').classList.add('active');
+  try {
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('loading').classList.remove('active');
+    var data = await res.json();
+    if (data.ok) {
+      currentUid = data.uid || '';
+      outputText = data.answer;
+      renderOutput();
+      document.getElementById('retryBtn').style.display = 'block';
+    } else {
+      document.getElementById('outputContent').innerHTML = '<span style="color:red;">[エラー] ' + esc(data.error || '不明なエラー') + '</span>';
+    }
+  } catch (e) {
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('outputContent').innerHTML = '<span style="color:red;">エラー: ' + esc(e.message) + '</span>';
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = '送信する';
+    var area = document.getElementById('outputArea');
+    area.scrollTop = area.scrollHeight;
+  }
+}
+
+
+
+function showRetryPopup() {
+  document.getElementById('retryModal').classList.add('active');
+  document.getElementById('retryInstruction').value = '';
+  setTimeout(function(){ document.getElementById('retryInstruction').focus(); }, 100);
+}
+function closeRetryPopup() {
+  document.getElementById('retryModal').classList.remove('active');
+}
+function submitRetry() {
+  var instruction = document.getElementById('retryInstruction').value.trim();
+  if (!instruction) return;
+  closeRetryPopup();
+  outputText = '';
+  document.getElementById('outputContent').innerHTML = '';
+  doRequest({ uid: currentUid, utterance: instruction });
+}
+
+function renderOutput() {
+  var el = document.getElementById('outputContent');
+  el.innerHTML = renderMarkdown(outputText);
+  var area = document.getElementById('outputArea');
+  area.scrollTop = area.scrollHeight;
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([el]).catch(function(){});
+  }
+}
+
+function renderMarkdown(text) {
+  var lines = text.split('\n');
+  var html = '';
+  var inTable = false;
+  var inUl = false;
+  var inOl = false;
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+
+    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (inOl) { html += '</ol>'; inOl = false; }
+      if (!inTable) {
+        var nextLine = (i + 1 < lines.length) ? lines[i + 1].trim() : '';
+        if (/^\|[\s\-:|]+\|$/.test(nextLine)) {
+          inTable = true;
+          html += '<table><thead><tr>';
+          parseCells(line).forEach(function(c) { html += '<th>' + inline(esc(c)) + '</th>'; });
+          html += '</tr></thead><tbody>';
+          i++;
+          continue;
+        }
+      }
+      if (inTable) {
+        html += '<tr>';
+        parseCells(line).forEach(function(c) { html += '<td>' + inline(esc(c)) + '</td>'; });
+        html += '</tr>';
+        continue;
+      }
+    } else if (inTable) {
+      html += '</tbody></table>';
+      inTable = false;
+    }
+
+    if (line.startsWith('#### ')) { closeLists(); html += '<h4>' + inline(esc(line.slice(5))) + '</h4>'; continue; }
+    if (line.startsWith('### ')) { closeLists(); html += '<h3>' + inline(esc(line.slice(4))) + '</h3>'; continue; }
+    if (line.startsWith('## ')) { closeLists(); html += '<h2>' + inline(esc(line.slice(3))) + '</h2>'; continue; }
+    if (line.startsWith('# ')) { closeLists(); html += '<h1>' + inline(esc(line.slice(2))) + '</h1>'; continue; }
+
+    if (/^[━]{3,}$/.test(line.trim()) || /^[-]{3,}$/.test(line.trim()) || /^[_]{3,}$/.test(line.trim())) {
+      closeLists(); html += '<hr>'; continue;
+    }
+
+    var ulMatch = line.match(/^[\s]*[-*・]\s+(.*)/);
+    if (ulMatch) {
+      if (inOl) { html += '</ol>'; inOl = false; }
+      if (!inUl) { html += '<ul>'; inUl = true; }
+      html += '<li>' + inline(esc(ulMatch[1])) + '</li>';
+      continue;
+    }
+
+    var olMatch = line.match(/^[\s]*(\d+)[.．]\s+(.*)/);
+    if (olMatch) {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (!inOl) { html += '<ol>'; inOl = true; }
+      html += '<li>' + inline(esc(olMatch[2])) + '</li>';
+      continue;
+    }
+
+    if (inUl && line.trim() === '') { html += '</ul>'; inUl = false; }
+    if (inOl && line.trim() === '') { html += '</ol>'; inOl = false; }
+
+    if (line.trim() === '') {
+      html += '<br>';
+    } else {
+      html += inline(esc(line)) + '<br>';
+    }
+  }
+
+  if (inTable) html += '</tbody></table>';
+  if (inUl) html += '</ul>';
+  if (inOl) html += '</ol>';
+
+  return html;
+
+  function closeLists() {
+    if (inUl) { html += '</ul>'; inUl = false; }
+    if (inOl) { html += '</ol>'; inOl = false; }
+  }
+}
+
+function parseCells(line) {
+  return line.split('|').slice(1, -1).map(function(c) { return c.trim(); });
+}
+
+function inline(text) {
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+  text = text.replace(/`(.+?)`/g, '<code>$1</code>');
+  return text;
+}
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML.replace(/&lt;br&gt;/gi, '<br>').replace(/&lt;br\s*\/&gt;/gi, '<br>');
+}
+
+
+function copyOutput() {
+  if (!outputText) return;
+  navigator.clipboard.writeText(outputText).then(function() {
+    var btn = document.getElementById('copyBtn');
+    btn.textContent = 'コピー済!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function saveOutput() {
+  if (!outputText) return;
+  var blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '教員自己評価シート.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportToWord() {
+  if (!outputText) return;
+  var content = document.getElementById('outputContent').innerHTML;
+  var wordHtml = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>'
+    + 'body{font-family:"Yu Gothic","Noto Sans JP",sans-serif;font-size:10.5pt;line-height:1.8;color:#333;}'
+    + 'table{border-collapse:collapse;width:100%;margin:8px 0;}'
+    + 'th,td{border:1px solid #333;padding:6px 10px;text-align:left;}'
+    + 'th{background:#e8e8e8;font-weight:bold;}'
+    + 'h1{font-size:18pt;margin:14px 0 6px;border-bottom:2px solid #333;padding-bottom:4px;}'
+    + 'h2{font-size:14pt;margin:12px 0 5px;}'
+    + 'h3{font-size:12pt;margin:10px 0 4px;}'
+    + 'hr{border:none;border-top:2px solid #333;margin:12px 0;}'
+    + 'ul,ol{margin:6px 0 6px 20px;}'
+    + '</style></head><body>' + content + '</body></html>';
+  var blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '教員自己評価シート.doc';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function resetForm() {
+  document.getElementById('expYears').value = '';
+  document.getElementById('f35095').value = '';
+  document.getElementById('schoolType').value = '';
+  document.getElementById('f22101').value = '';
+  document.getElementById('f31051').value = '';
+  document.getElementById('f8016').value = '';
+  document.getElementById('f6259').value = '';
+
+  outputText = '';
+  document.getElementById('outputContent').innerHTML = '<span class="placeholder">左パネルで入力して「送信する」を押すと、ここに結果が表示されます。</span>';
+  document.getElementById('actionBar').classList.remove('active');
+  checkForm();
+}
+
+function checkForm() {
+  var btn = document.getElementById('sendBtn');
+  var ok = !!(document.getElementById('expYears').value || document.getElementById('f35095').value || document.getElementById('schoolType').value);
+  btn.classList.toggle('inactive', !ok);
+}
+if (document.querySelector('.form-area')) {
+  document.querySelector('.form-area').addEventListener('input', checkForm);
+  document.querySelector('.form-area').addEventListener('change', checkForm);
+}
+</script>
+<div class="retry-modal" id="retryModal">
+  <div class="retry-modal-content">
+    <h3>修正指示を入力</h3>
+    <textarea id="retryInstruction" placeholder="修正してほしい内容を入力してください"></textarea>
+    <div class="retry-modal-btns">
+      <button class="retry-submit-btn" onclick="submitRetry()">修正する</button>
+      <button class="retry-cancel-btn" onclick="closeRetryPopup()">キャンセル</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

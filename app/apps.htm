@@ -12,6 +12,15 @@
 .apps-header{border-bottom:1px solid var(--solid-gray-300);padding:1.5rem 0 1rem;margin-bottom:1.5rem;}
 .apps-title{font-size:1.5rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
 .apps-subtitle{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-600);margin:0;}
+.apps-section-title{font-size:1.25rem;font-weight:700;margin:0 0 1rem;}
+.apps-section-title+.card-grid{margin-bottom:2rem;}
+
+/* iframe overlay */
+#iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:#fff;}
+#iframeOverlay.active{display:block;}
+#iframeOverlay iframe{width:100%;height:100%;border:none;}
+#backToMenu{position:fixed;top:8px;left:8px;z-index:10000;background:#ffd700;color:#000;border:2px solid #000;padding:6px 16px;font-size:0.85rem;font-weight:700;cursor:pointer;border-radius:4px;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+#backToMenu:hover{background:#ffe44d;}
 </style>
 </head>
 <body>
@@ -27,13 +36,22 @@
         <p class="apps-subtitle">業務に活用できるAIアプリの一覧です</p>
       </div>
 
+      <h2 class="apps-section-title">デジタル庁 提供AIアプリ</h2>
       <div class="card-grid" id="cardGrid"></div>
+
+      <h2 class="apps-section-title">教員専用AIアプリ</h2>
+      <div class="card-grid" id="cardGrid3"></div>
 
       <div class="page-footer">
         注意: AIの出力は必ずしも正確ではありません。重要な情報は必ずご自身で確認してください。
       </div>
     </div>
   </main>
+</div>
+
+<div id="iframeOverlay">
+  <button id="backToMenu" onclick="closeApp()">メニューに戻る</button>
+  <iframe id="appFrame"></iframe>
 </div>
 
 <script src="../shared/layout107.js"></script>
@@ -48,7 +66,34 @@ var cardIcons = {
   diagram:    '<rect x="8" y="2" width="8" height="4" rx="1"/><rect x="2" y="18" width="8" height="4" rx="1"/><rect x="14" y="18" width="8" height="4" rx="1"/><path d="M12 6v6M12 12H6v6M12 12h6v6"/>',
   transcribe: '<path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>',
   rag:        '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8v6M8 11h6"/>',
-  lawsy:      '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>'
+  lawsy:      '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
+  tchat:      '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>',
+  tmail:      '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/>',
+  tquiz:      '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  tedit:      '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>',
+  tplan:      '<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>',
+  tspeech:    '<path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>',
+  tworksheet: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+  tgrade:     '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',
+  tpptx:      '<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>',
+  tparent:    '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',
+  tseiseki:   '<path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>',
+  tanaume:    '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  ttensaku:   '<path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
+  tmokuhyo:   '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  tseikatsu:  '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+  tijime:     '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/>',
+  tfutoko:    '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  ttsushin:   '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/>',
+  thogosha:   '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',
+  tpta:       '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="11" x2="23" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/>',
+  tgyoji:     '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  trenshu:    '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>',
+  tanzen:     '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  tkenshu:    '<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>',
+  tjiko:      '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',
+  tshien:     '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  ttosho:     '<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>'
 };
 
 var cards = [
@@ -61,17 +106,62 @@ var cards = [
   { id: 'rag',        title: '行政実務用RAG',          desc: '独自のナレッジベース（Markdownドキュメント）からベクトル検索で関連情報を取得し、AIが根拠に基づいた回答を生成します。', href: 'rag.htm' },
   { id: 'lawsy',      title: '法令AI Lawsy',           desc: '法令に関する質問に対して、e-Gov法令APIから条文を検索し、質問タイプに応じた構造化レポートを生成します。', href: 'lawsy.htm' }
 ];
+var cards3 = [
+  { id: 'tchat',      title: 'AIチャット',             desc: '教育現場を支援するAIチャット。質問や相談にマルチターンで対応します。', href: '../app3/app1.htm' },
+  { id: 'tmail',      title: '教員用メール',           desc: '保護者・同僚・教育委員会への適切なメール文案をAIが作成します。', href: '../app3/app2.htm' },
+  { id: 'tquiz',      title: '問題と解答の作成',       desc: 'テーマや教材ファイルから、適切な難易度の問題と模範解答を自動生成します。', href: '../app3/app3.htm' },
+  { id: 'tedit',      title: '文章の修正・要約・翻訳', desc: 'テキストやファイルの修正・要約・翻訳をモード切替で実行します。', href: '../app3/app4.htm' },
+  { id: 'tplan',      title: '学習指導案の作成',       desc: '学習指導要領に基づき、目標・展開・評価基準を含む指導案を作成します。', href: '../app3/app5.htm' },
+  { id: 'tspeech',    title: '教員用スピーチ',         desc: '朝礼・式典・保護者会など場面に応じたスピーチ原稿を作成します。', href: '../app3/app6.htm' },
+  { id: 'tworksheet', title: '授業の課題・プリント作成', desc: '学年・教科に適した課題やワークシートを作成します。ファイル添付にも対応。', href: '../app3/app7.htm' },
+  { id: 'tgrade',     title: 'レポート採点',           desc: '提出レポートを観点別に評価し、具体的なフィードバックを提供します。', href: '../app3/app8.htm' },
+  { id: 'tpptx',      title: 'テキストからパワポ',     desc: 'テキストからスライド構成を自動生成し、PowerPointファイルを出力します。', href: '../app3/app9.htm' },
+  { id: 'tparent',    title: '保護者向け文書',         desc: '運動会案内・学級通信など12種類の保護者向け文書を自動作成します。', href: '../app3/app10.htm' },
+  { id: 'tshien',     title: '特別支援向け教材変換',   desc: '教材を児童・生徒の特性に合わせてわかりやすく変換します。ファイル添付にも対応。', href: '../app3/app27.htm' },
+  { id: 'tseiseki',   title: '成績一括分析レポート',   desc: '成績データを分析し、学級全体の傾向と個別フィードバックを含むレポートを作成します。', href: '../app3/app39.htm' },
+  { id: 'tanaume',    title: '穴埋め・一問一答自動生成', desc: '教材テキストから穴埋め問題と一問一答形式の問題を自動生成します。', href: '../app3/app43.htm' },
+  { id: 'ttensaku',   title: '作文・小論文添削',       desc: '作文・小論文を添削し、構成・表現・論理展開の改善点を提示します。', href: '../app3/app54.htm' },
+  { id: 'tmokuhyo',   title: '学級目標・ルール作成',   desc: '学年に適した学級目標やクラスルールの案を作成します。', href: '../app3/app56.htm' },
+  { id: 'tseikatsu',  title: '生活指導記録作成',       desc: '生活指導の記録を客観的かつ具体的に作成します。', href: '../app3/app58.htm' },
+  { id: 'tijime',     title: 'いじめ対応計画作成',     desc: 'いじめ対応の段階別対応策を含む計画を作成します。', href: '../app3/app59.htm' },
+  { id: 'tfutoko',    title: '不登校支援計画作成',     desc: '不登校児童・生徒の状況に応じた段階的な支援計画を作成します。', href: '../app3/app60.htm' },
+  { id: 'ttsushin',   title: '学級通信・クラスだより', desc: '保護者に向けた温かみのある学級通信を作成します。', href: '../app3/app68.htm' },
+  { id: 'thogosha',   title: '保護者会資料作成',       desc: '保護者会で配布する資料をわかりやすく作成します。', href: '../app3/app75.htm' },
+  { id: 'tpta',       title: 'PTA議事録作成',          desc: 'PTA会議の内容から正式な議事録を作成します。', href: '../app3/app77.htm' },
+  { id: 'tgyoji',     title: '行事企画書作成',         desc: '学校行事の企画書を目的・内容・準備事項を含めて作成します。', href: '../app3/app83.htm' },
+  { id: 'trenshu',    title: '練習メニュー作成',       desc: '部活動や体育の練習メニューを安全性と効果を考慮して作成します。', href: '../app3/app93.htm' },
+  { id: 'tanzen',     title: '部活動安全マニュアル',   desc: '事故防止と緊急時対応を含む部活動の安全マニュアルを作成します。', href: '../app3/app99.htm' },
+  { id: 'tkenshu',    title: '校内研修企画・運営計画', desc: '校内研修の企画と運営計画を目的・スケジュール込みで作成します。', href: '../app3/app116.htm' },
+  { id: 'tjiko',      title: '教員自己評価シート',     desc: '教員の自己評価シートのテンプレートと記入例を作成します。', href: '../app3/app120.htm' },
+  { id: 'ttosho',     title: '国立国会図書館サーチ',   desc: '国立国会図書館の蔵書をキーワードで検索。タイトル・著者・出版社での絞り込みに対応。', href: '../app3/app121.htm', direct: true }
+];
 
-var grid = document.getElementById('cardGrid');
-for (var i = 0; i < cards.length; i++) {
-  var c = cards[i];
-  var el = document.createElement('a');
-  el.className = 'card';
-  el.href = c.href;
-  var iconSvg = cardIcons[c.id] ? '<svg style="flex-shrink:0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + cardIcons[c.id] + '</svg>' : '';
-  el.innerHTML = '<div class="card-title">' + iconSvg + c.title + '</div><div class="card-desc">' + c.desc + '</div>';
-  grid.appendChild(el);
+function renderCards(list, gridEl, useIframe) {
+  for (var i = 0; i < list.length; i++) {
+    var c = list[i];
+    var el = document.createElement('a');
+    el.className = 'card';
+    var iconSvg = cardIcons[c.id] ? '<svg style="flex-shrink:0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + cardIcons[c.id] + '</svg>' : '';
+    el.innerHTML = '<div class="card-title">' + iconSvg + c.title + '</div><div class="card-desc">' + c.desc + '</div>';
+    if (useIframe && !c.direct) {
+      el.href = '#';
+      el.onclick = (function(url) { return function(e) { e.preventDefault(); openApp(url); }; })(c.href);
+    } else {
+      el.href = c.href;
+    }
+    gridEl.appendChild(el);
+  }
 }
+function openApp(url) {
+  document.getElementById('appFrame').src = url;
+  document.getElementById('iframeOverlay').classList.add('active');
+}
+function closeApp() {
+  document.getElementById('iframeOverlay').classList.remove('active');
+  document.getElementById('appFrame').src = '';
+}
+renderCards(cards, document.getElementById('cardGrid'), false);
+renderCards(cards3, document.getElementById('cardGrid3'), true);
 </script>
 </body>
 </html>

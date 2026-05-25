@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学習指導要領 テキストダウンロード</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans JP',sans-serif;background:#1a1a2e;color:#333;line-height:1.6;min-height:100vh;}
+
+/* ヘッダー */
+.header{background:linear-gradient(to right,#3a8a9c 0%,#53b5ca 40%,#7dcfb6 75%,#a8e6a3 100%);color:#fff;padding:12px 20px;display:flex;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.3);gap:12px;}
+.header-left{text-align:center;flex:1;}
+.header h1{font-size:1.4rem;font-weight:900;letter-spacing:0.08em;text-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.header p{font-size:0.78rem;opacity:0.8;margin-top:2px;font-weight:400;}
+.header-right{display:flex;gap:6px;flex-shrink:0;}
+.back-btn{background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:'Noto Sans JP',sans-serif;text-decoration:none;white-space:nowrap;}
+.back-btn:hover{background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.7);transform:translateY(-1px);}
+
+/* コンテナ */
+.container{max-width:1100px;margin:0 auto;padding:10px 16px 30px;}
+
+/* タブナビ */
+.tab-nav{display:flex;justify-content:center;gap:6px;padding:14px 0 8px;}
+.tab-btn{padding:10px 32px;border:none;border-radius:10px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:'Noto Sans JP',sans-serif;}
+.tab-btn:hover{background:rgba(255,255,255,0.2);color:#fff;}
+.tab-btn.active{background:linear-gradient(135deg,#533483,#e94560);color:#fff;box-shadow:0 3px 12px rgba(233,69,96,0.3);}
+
+/* タブコンテンツ */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* カードグリッド */
+.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+
+/* カード */
+.card{background:rgba(255,255,255,0.95);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(83,52,131,0.25);background:#fff;}
+.card-number{font-size:0.7rem;color:#888;font-weight:600;background:#f0f0f5;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:6px;width:fit-content;}
+.card-title{font-size:1.05rem;font-weight:900;color:#1a1a2e;margin-bottom:3px;}
+.card-desc{font-size:0.72rem;color:#999;margin-bottom:10px;flex-grow:1;}
+
+/* ダウンロードボタン */
+.btn-download{display:block;text-align:center;text-decoration:none;padding:9px 12px;border:none;border-radius:8px;font-size:0.82rem;font-weight:700;background:linear-gradient(135deg,#0f3460,#533483);color:#fff;transition:all 0.2s;cursor:pointer;font-family:'Noto Sans JP',sans-serif;box-shadow:0 2px 8px rgba(83,52,131,0.2);}
+.btn-download:hover{box-shadow:0 4px 14px rgba(83,52,131,0.4);transform:translateY(-1px);background:linear-gradient(135deg,#0f3460,#533483,#e94560);}
+
+/* フッター */
+.footer{text-align:center;padding:16px;color:rgba(255,255,255,0.4);font-size:0.72rem;margin-top:8px;}
+
+/* レスポンシブ */
+@media(max-width:700px){
+  .header{flex-wrap:wrap;}
+  .header h1{font-size:1.15rem;}
+  .tab-btn{padding:8px 18px;font-size:0.82rem;}
+  .subject-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
+  .card{padding:10px 12px;}
+  .card-title{font-size:0.92rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>学習指導要領 テキストダウンロード</h1>
+    <p>各校種の学習指導要領をプレーンテキスト（.txt）形式でダウンロードできます</p>
+  </div>
+  <div class="header-right">
+    <a href="../index.htm" class="back-btn">&#8592; プロンプト集に戻る</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="shougaku">小学校</button>
+    <button class="tab-btn" data-tab="chugaku">中学校</button>
+    <button class="tab-btn" data-tab="koukou">高等学校</button>
+  </div>
+
+  <!-- 小学校 -->
+  <div class="tab-content active" id="shougaku">
+    <div class="subject-grid">
+      <div class="card">
+        <span class="card-number">第１節</span>
+        <div class="card-title">国語</div>
+        <div class="card-desc">小学校 国語科</div>
+        <a href="shougaku/kokugo.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第２節</span>
+        <div class="card-title">社会</div>
+        <div class="card-desc">小学校 社会科</div>
+        <a href="shougaku/shakai.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第３節</span>
+        <div class="card-title">算数</div>
+        <div class="card-desc">小学校 算数科</div>
+        <a href="shougaku/sansuu.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第４節</span>
+        <div class="card-title">理科</div>
+        <div class="card-desc">小学校 理科</div>
+        <a href="shougaku/rika.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第５節</span>
+        <div class="card-title">生活</div>
+        <div class="card-desc">小学校 生活科</div>
+        <a href="shougaku/seikatsu.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第６節</span>
+        <div class="card-title">音楽</div>
+        <div class="card-desc">小学校 音楽科</div>
+        <a href="shougaku/ongaku.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第７節</span>
+        <div class="card-title">図画工作</div>
+        <div class="card-desc">小学校 図画工作科</div>
+        <a href="shougaku/zugakousaku.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第８節</span>
+        <div class="card-title">家庭</div>
+        <div class="card-desc">小学校 家庭科</div>
+        <a href="shougaku/katei.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第９節</span>
+        <div class="card-title">体育</div>
+        <div class="card-desc">小学校 体育科</div>
+        <a href="shougaku/taiiku.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第10節</span>
+        <div class="card-title">外国語</div>
+        <div class="card-desc">小学校 外国語科</div>
+        <a href="shougaku/gaikokugo.txt" download class="btn-download">ダウンロード</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 中学校 -->
+  <div class="tab-content" id="chugaku">
+    <div class="subject-grid">
+      <div class="card">
+        <span class="card-number">第１節</span>
+        <div class="card-title">国語</div>
+        <div class="card-desc">中学校 国語科</div>
+        <a href="chugaku/kokugo.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第２節</span>
+        <div class="card-title">社会</div>
+        <div class="card-desc">中学校 社会科</div>
+        <a href="chugaku/shakai.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第３節</span>
+        <div class="card-title">数学</div>
+        <div class="card-desc">中学校 数学科</div>
+        <a href="chugaku/suugaku.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第４節</span>
+        <div class="card-title">理科</div>
+        <div class="card-desc">中学校 理科</div>
+        <a href="chugaku/rika.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第５節</span>
+        <div class="card-title">音楽</div>
+        <div class="card-desc">中学校 音楽科</div>
+        <a href="chugaku/ongaku.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第６節</span>
+        <div class="card-title">美術</div>
+        <div class="card-desc">中学校 美術科</div>
+        <a href="chugaku/bijutsu.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第７節</span>
+        <div class="card-title">保健体育</div>
+        <div class="card-desc">中学校 保健体育科</div>
+        <a href="chugaku/hokentaiiku.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第８節</span>
+        <div class="card-title">技術・家庭</div>
+        <div class="card-desc">中学校 技術・家庭科</div>
+        <a href="chugaku/gijutsukatei.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">第９節</span>
+        <div class="card-title">外国語</div>
+        <div class="card-desc">中学校 外国語科</div>
+        <a href="chugaku/gaikokugo.txt" download class="btn-download">ダウンロード</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 高等学校 -->
+  <div class="tab-content" id="koukou">
+    <div class="subject-grid">
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">国語</div>
+        <div class="card-desc">高等学校 国語科</div>
+        <a href="koukou/kokugo.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">地理歴史</div>
+        <div class="card-desc">高等学校 地理歴史科</div>
+        <a href="koukou/chirirekishi.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">公民</div>
+        <div class="card-desc">高等学校 公民科</div>
+        <a href="koukou/koumin.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">数学</div>
+        <div class="card-desc">高等学校 数学科</div>
+        <a href="koukou/suugaku.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">理科</div>
+        <div class="card-desc">高等学校 理科</div>
+        <a href="koukou/rika.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">保健体育</div>
+        <div class="card-desc">高等学校 保健体育科</div>
+        <a href="koukou/hokentaiiku.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">芸術</div>
+        <div class="card-desc">高等学校 芸術科</div>
+        <a href="koukou/geijutsu.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">外国語</div>
+        <div class="card-desc">高等学校 外国語科</div>
+        <a href="koukou/gaikokugo.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">家庭</div>
+        <div class="card-desc">高等学校 家庭科</div>
+        <a href="koukou/katei.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">情報</div>
+        <div class="card-desc">高等学校 情報科</div>
+        <a href="koukou/jouhou.txt" download class="btn-download">ダウンロード</a>
+      </div>
+      <div class="card">
+        <span class="card-number">テキストデータ</span>
+        <div class="card-title">理数</div>
+        <div class="card-desc">高等学校 理数科</div>
+        <a href="koukou/risuu.txt" download class="btn-download">ダウンロード</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">学習指導要領 テキストダウンロードポータル</div>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -8,6 +8,8 @@
 function initLayout(opts) {
   var activePage = (opts && opts.activePage) || '';
   var basePath   = (opts && opts.basePath) || '../app/';
+  var app2Path   = basePath === '' ? '../app2/' : basePath.replace(/app\/$/, 'app2/');
+  var app3Path   = basePath === '' ? '../app3/' : basePath.replace(/app\/$/, 'app3/');
   var rootPath   = (opts && opts.rootPath) || '../';
 
   /* ---------- Nav Items ---------- */
@@ -38,6 +40,26 @@ function initLayout(opts) {
       icon: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8v6M8 11h6"/>' },
     { id: 'lawsy',      label: '法令AI Lawsy',             href: basePath + 'lawsy.htm',
       icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>' },
+    { id: 'tchat',      label: 'AIチャット（教員）',       href: app3Path + 'app1.htm',
+      icon: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
+    { id: 'tmail',      label: '教員用メール',             href: app3Path + 'app2.htm',
+      icon: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/>' },
+    { id: 'tquiz',      label: '問題と解答の作成',         href: app3Path + 'app3.htm',
+      icon: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>' },
+    { id: 'tedit',      label: '文章の修正・要約・翻訳',   href: app3Path + 'app4.htm',
+      icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>' },
+    { id: 'tplan',      label: '学習指導案の作成',         href: app3Path + 'app5.htm',
+      icon: '<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>' },
+    { id: 'tspeech',    label: '教員用スピーチ',           href: app3Path + 'app6.htm',
+      icon: '<path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>' },
+    { id: 'tworksheet', label: '課題・プリント作成',       href: app3Path + 'app7.htm',
+      icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' },
+    { id: 'tgrade',     label: 'レポート採点',             href: app3Path + 'app8.htm',
+      icon: '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+    { id: 'tpptx',      label: 'テキストからパワポ',       href: app3Path + 'app9.htm',
+      icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>' },
+    { id: 'tparent',    label: '保護者向け文書',           href: app3Path + 'app10.htm',
+      icon: '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>' },
     { id: 'apps',       label: 'AIアプリ',                 href: basePath + 'apps.htm',
       icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>' }
   ];
@@ -65,7 +87,7 @@ function initLayout(opts) {
     '</button>';
 
   // Logo
-  headerInner += '<a href="' + basePath + 'main.htm" class="app-logo">源内AI</a>';
+  headerInner += '<a href="' + basePath + 'main.htm" class="app-logo"><img src="' + rootPath + 'images/gennai.jpg" alt="源内AI" class="app-logo-img"></a>';
 
   // Desktop pill nav
   headerInner += '<nav class="header-nav" aria-label="メインナビゲーション">';
@@ -100,7 +122,7 @@ function initLayout(opts) {
 
   var mobileHtml =
     '<div class="mobile-dialog-header">' +
-      '<a href="' + basePath + 'main.htm" class="app-logo" style="font-size:1.125rem">源内AI</a>' +
+      '<a href="' + basePath + 'main.htm" class="app-logo"><img src="' + rootPath + 'images/gennai.jpg" alt="源内AI" class="app-logo-img" style="height:1.5rem"></a>' +
       '<button class="mobile-close-btn" id="gn107-mobile-close" aria-label="閉じる">' +
         '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
       '</button>' +

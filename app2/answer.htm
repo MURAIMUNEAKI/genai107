@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>議会答弁の作成 - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ヘッダー（GitHub UI準拠） */
+.gt-header{border-bottom:1px solid #000;padding:1rem 0 0.75rem;margin-bottom:1.5rem;}
+.gt-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:1024px){.gt-title{font-size:1.5rem;}}
+.gt-subtitle{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-600);margin:0;}
+
+/* 但書（GitHub Disclosure準拠） */
+.gt-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.gt-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.gt-notes h3{font-size:0.9375rem;font-weight:700;margin:0.75rem 0 0.25rem;}
+.gt-notes p{margin:0.25rem 0;}
+.gt-notes ul,.gt-notes ol{margin:0.25rem 0 0.25rem 1.5rem;}
+.gt-notes li{margin:0.125rem 0;}
+.gt-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:8px;padding:0.5rem 0.75rem;}
+.gt-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.gt-notes summary::before{content:'▶';font-size:0.625rem;transition:transform 0.2s;}
+.gt-notes details[open] summary::before{transform:rotate(90deg);}
+.gt-notes details>div{padding:0.5rem 0 0 1.25rem;}
+
+.result-container{margin-top:1.25rem;border:1px solid var(--solid-gray-420);border-radius:8px;padding:1rem;position:relative;}
+.result-container h2{font-size:1rem;font-weight:700;margin-bottom:0.75rem;}
+.result-placeholder{color:var(--solid-gray-536);font-size:0.875rem;}
+.result-copy-area{display:flex;justify-content:flex-end;margin-top:0.5rem;}
+
+/* 引用元 */
+.citations-container{margin-top:0.75rem;border:1px solid var(--solid-gray-300);border-radius:8px;padding:0.75rem 1rem;}
+.citations-title{font-size:0.875rem;font-weight:700;margin:0 0 0.5rem;color:var(--solid-gray-600);}
+.citation-item{padding:0.5rem 0;border-bottom:1px solid var(--solid-gray-200);font-size:0.8125rem;line-height:1.6;}
+.citation-item:last-child{border-bottom:none;}
+.citation-item-title{font-weight:700;font-size:0.8125rem;}
+.citation-item-score{color:var(--solid-gray-536);font-size:0.75rem;}
+.citation-item-content{color:var(--solid-gray-600);margin-top:0.25rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'answer'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:64rem">
+      <div class="gt-header">
+        <h1 class="gt-title">議会答弁の作成</h1>
+        <div class="gt-notes">
+          <h2>想定用途</h2>
+          <p>議会質問の要旨やテキストを入力し、AIが答弁案のドラフトを作成します。議会対応の効率化に役立ちます。</p>
+          <h3>アプリ個別の留意点</h3>
+          <p>本アプリは生成AIを使用しています。以下のリスクと対応をご理解ください：</p>
+          <details>
+            <summary>リスクの例と対応アクション</summary>
+            <div>
+              <p><strong>リスクの例：</strong></p>
+              <ul>
+                <li>ハルシネーション（でたらめ）：事実と異なる不正確な情報を生成するおそれ</li>
+                <li>最新性の欠如：古い情報に基づく回答を生成するおそれ</li>
+                <li>バイアス：偏った見解や政府の公式見解と異なる判断を生成するおそれ</li>
+                <li>著作権侵害：保護された著作物を不適切に生成するおそれ</li>
+                <li>倫理的問題：道徳的に問題のある判断や提案を生成するおそれ</li>
+                <li>再現性や説明可能性の欠如：同じ質問でも異なる回答を生成し、生成された内容の根拠も不明なおそれ</li>
+              </ul>
+              <p><strong>対応アクション：</strong></p>
+              <ol>
+                <li>常に出力内容を批判的に評価し、利用者自身で正確性・妥当性等を判断してください</li>
+                <li>機密性３情報や業務目的以外の私的利用の情報の入力は避けてください</li>
+                <li>必ず他の信頼できる情報源を確認してください</li>
+              </ol>
+            </div>
+          </details>
+          <h2>操作方法</h2>
+          <p>質問の要旨をテキストで入力し、実行ボタンを押してください。</p>
+          <details>
+            <summary>仕組み</summary>
+            <div>
+              <p>議会質問の要旨やテキストを元に、ナレッジベースから関連資料を検索し、AIが根拠に基づいた答弁案を作成します。回答の下に引用元も表示されます。</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="dads-label" for="questionText">質問の要旨 <span class="dads-required">必須</span></label>
+        <p class="dads-support">議会質問の要旨やテキストを入力してください</p>
+        <textarea class="dads-textarea" id="questionText" rows="6" placeholder="例: 本市における子育て支援策の現状と今後の方針について伺いたい。待機児童の解消に向けた具体的な取組と、保育士の確保策について市の見解を問う。"></textarea>
+      </div>
+
+      <div class="btn-area" style="justify-content:center">
+        <button class="dads-btn" id="genBtn" style="min-width:15rem">実行</button>
+      </div>
+
+      <div class="progress-indicator" id="progress">
+        <div class="progress-spinner"></div>
+        <span class="progress-label">実行中...</span>
+      </div>
+
+      <hr class="dads-divider">
+
+      <div class="result-container" id="resultContainer">
+        <h2>生成された答弁案</h2>
+        <div id="resultPlaceholder" class="result-placeholder">生成された答弁案がここに表示されます</div>
+        <div class="prose" id="resultContent" style="display:none"></div>
+        <div class="result-copy-area" id="copyArea" style="display:none">
+          <button class="copy-btn" id="copyBtn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            コピー
+          </button>
+        </div>
+      </div>
+
+      <div class="citations-container" id="citationsContainer" style="display:none">
+        <h3 class="citations-title">引用元</h3>
+        <div id="citationsList"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script src="../shared/markdown.js"></script>
+<script src="../shared/history-store.js"></script>
+<script>
+initLayout({ activePage: 'answer', basePath: '../app/' });
+
+var questionText = document.getElementById('questionText');
+var genBtn = document.getElementById('genBtn');
+var currentHistoryId = 'answer_' + Date.now();
+var resultContent = document.getElementById('resultContent');
+var resultPlaceholder = document.getElementById('resultPlaceholder');
+var progress = document.getElementById('progress');
+var copyBtn = document.getElementById('copyBtn');
+var copyArea = document.getElementById('copyArea');
+var citationsContainer = document.getElementById('citationsContainer');
+var citationsList = document.getElementById('citationsList');
+var lastCitations = null;
+
+/* ---------- ストリーミング（Dify プロキシ） ---------- */
+function streamChat(body, onChunk, onCitations, onDone, onError) {
+  fetch('../api2/dify-answer.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  }).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+    var fullText = '';
+    function read() {
+      return reader.read().then(function(result) {
+        if (result.done) { onDone(fullText); return; }
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line) continue;
+          try {
+            var j = JSON.parse(line);
+            if (j.citations) { onCitations(j.citations); }
+            if (j.text) { fullText += j.text; onChunk(j.text, fullText); }
+          } catch(e) {}
+        }
+        return read();
+      });
+    }
+    return read();
+  }).catch(function(err) { onError(err.message); });
+}
+
+/* ---------- 引用元表示 ---------- */
+function showCitations(citations) {
+  if (!citations || citations.length === 0) return;
+  lastCitations = citations;
+  citationsContainer.style.display = 'block';
+  citationsList.innerHTML = '';
+  for (var i = 0; i < citations.length; i++) {
+    var c = citations[i];
+    var item = document.createElement('div');
+    item.className = 'citation-item';
+    item.innerHTML =
+      '<div class="citation-item-title">' + escapeHtml(c.title) + '</div>' +
+      '<div class="citation-item-score">類似度: ' + (c.score ? Number(c.score).toFixed(3) : '-') + '</div>' +
+      '<div class="citation-item-content">' + escapeHtml(c.content || '') + '</div>';
+    citationsList.appendChild(item);
+  }
+}
+
+/* ---------- 実行 ---------- */
+genBtn.addEventListener('click', function() {
+  var inputText = questionText.value.trim();
+  if (!inputText) { questionText.focus(); return; }
+
+  var body = {
+    query: inputText,
+    conversation_id: ''
+  };
+
+  genBtn.disabled = true;
+  genBtn.textContent = '実行中...';
+  progress.classList.add('active');
+  resultPlaceholder.style.display = 'none';
+  resultContent.style.display = 'block';
+  resultContent.innerHTML = '';
+  copyArea.style.display = 'none';
+  citationsContainer.style.display = 'none';
+  citationsList.innerHTML = '';
+  lastCitations = null;
+
+  streamChat(body,
+    function(chunk, full) {
+      resultContent.innerHTML = renderMarkdown(cleanOutput(full));
+    },
+    function(citations) {
+      showCitations(citations);
+    },
+    function(full) {
+      resultContent.innerHTML = renderMarkdown(cleanOutput(full));
+      genBtn.disabled = false;
+      genBtn.textContent = '実行';
+      progress.classList.remove('active');
+      copyArea.style.display = 'flex';
+      HistoryStore.save({
+        id: currentHistoryId,
+        appType: 'answer',
+        title: inputText.substring(0, 50),
+        input: inputText,
+        result: cleanOutput(full),
+        citations: lastCitations
+      });
+      currentHistoryId = 'answer_' + Date.now();
+    },
+    function(err) {
+      resultContent.innerHTML = '<span class="text-error">' + escapeHtml(err) + '</span>';
+      genBtn.disabled = false;
+      genBtn.textContent = '実行';
+      progress.classList.remove('active');
+    }
+  );
+});
+
+function cleanOutput(text) {
+  var m = text.match(/<output>([\s\S]*?)<\/output>/);
+  return m ? m[1].trim() : text;
+}
+
+copyBtn.addEventListener('click', function() {
+  navigator.clipboard.writeText(resultContent.innerText).then(function() {
+    copyBtn.classList.add('copied');
+    var orig = copyBtn.innerHTML;
+    copyBtn.innerHTML = orig.replace('コピー', 'コピー済み');
+    setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = orig; }, 2000);
+  });
+});
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ---------- 履歴復元 ---------- */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    currentHistoryId = id;
+    HistoryStore.load(id).then(function(data) {
+      if (!data) return;
+      if (data.input) questionText.value = data.input;
+      if (data.result) {
+        resultPlaceholder.style.display = 'none';
+        resultContent.style.display = 'block';
+        resultContent.innerHTML = renderMarkdown(data.result);
+        copyArea.style.display = 'flex';
+      }
+      if (data.citations) { showCitations(data.citations); }
+    });
+  }
+})();
+</script>
+</body>
+</html>

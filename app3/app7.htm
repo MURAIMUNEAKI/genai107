@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>授業の課題・プリント作成</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{height:100%;}
+body{font-family:'Noto Sans JP',sans-serif;background:#1a1a2e;color:#333;line-height:1.6;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+body>:not(.header):not(.main):not(.retry-modal):not(script){position:absolute;width:0;height:0;overflow:hidden;}
+
+.header{background:linear-gradient(to right,#3a8a9c 0%,#53b5ca 40%,#7dcfb6 75%,#a8e6a3 100%);color:#fff;padding:10px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);flex-shrink:0;}
+.header h1{font-size:1.2rem;font-weight:900;letter-spacing:0.08em;text-shadow:0 2px 8px rgba(0,0,0,0.3);}
+
+.main{display:flex;flex:1;overflow:hidden;}
+
+/* 左パネル */
+.left-panel{width:40%;background:#eef6f6;display:flex;flex-direction:column;border-right:1px solid #e0e0e0;overflow:hidden;}
+.left-panel h2{font-size:1rem;font-weight:700;padding:14px 16px 8px;color:#533483;flex-shrink:0;}
+.form-area{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1;overflow-y:auto;}
+
+.form-group{display:flex;flex-direction:column;gap:3px;}
+.form-group label{font-size:0.82rem;font-weight:700;color:#444;}
+.form-group input,.form-group select,.form-group textarea{border:2px solid #d0d0d0;border-radius:8px;padding:8px 10px;font-size:0.88rem;font-family:inherit;transition:border-color 0.2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#533483;box-shadow:0 0 0 2px rgba(83,52,131,0.15);}
+.form-group textarea{resize:vertical;min-height:60px;}
+
+.check-group{display:flex;flex-wrap:wrap;gap:8px;}
+.check-group label{font-size:0.82rem;font-weight:400;display:flex;align-items:center;gap:4px;cursor:pointer;}
+.check-group input[type="checkbox"]{accent-color:#533483;}
+
+/* ファイルアップロード */
+.file-drop{border:2px dashed #bbb;border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fff;font-size:0.82rem;color:#888;}
+.file-drop:hover,.file-drop.dragover{border-color:#533483;background:#f3e8ff;color:#533483;}
+.file-drop input{display:none;}
+.file-list{display:flex;flex-direction:column;gap:4px;margin-top:6px;}
+.file-item{display:flex;align-items:center;gap:6px;background:#e8e8e8;border-radius:6px;padding:4px 8px;font-size:0.78rem;}
+.file-item .remove-file{background:none;border:none;color:#e94560;cursor:pointer;font-weight:700;font-size:0.9rem;padding:0 4px;}
+
+/* ボタン群 */
+.btn-area{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #e0e0e0;flex-shrink:0;background:#f0f0f0;}
+.send-btn{flex:1;background:linear-gradient(135deg,#0f3460,#533483,#e94560);color:#fff;border:none;border-radius:10px;padding:12px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.send-btn:hover{box-shadow:0 4px 16px rgba(83,52,131,0.3);transform:translateY(-1px);}
+.send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.send-btn.inactive{background:#ccc;color:#333;}
+.send-btn.inactive:hover{box-shadow:none;transform:none;}
+.reset-btn{background:#fff;color:#666;border:2px solid #ccc;border-radius:10px;padding:12px 20px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.reset-btn:hover{border-color:#e94560;color:#e94560;}
+
+/* 右パネル */
+.right-panel{width:60%;display:flex;flex-direction:column;background:#fff;}
+.right-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#fafafa;}
+.right-header h2{font-size:0.95rem;font-weight:700;color:#333;}
+.right-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.right-actions button{background:#fff;border:2px solid #d0d0d0;border-radius:8px;padding:6px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.right-actions button:hover{border-color:#533483;color:#533483;}
+.right-actions button.copied{background:#10b981;color:#fff;border-color:#10b981;}
+.word-btn{border-color:#2563eb !important;color:#2563eb !important;}
+.word-btn:hover{background:#2563eb !important;color:#fff !important;}
+
+.output-area{flex:1;overflow-y:auto;padding:16px;}
+.output-content{font-size:0.9rem;line-height:1.8;color:#333;min-height:100px;}
+.output-content .placeholder{color:#aaa;font-size:0.88rem;}
+
+/* ローディング */
+.loading{display:none;text-align:center;padding:40px;}
+.loading.active{display:block;}
+.spinner{width:36px;height:36px;border:4px solid #e0e0e0;border-top-color:#533483;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* 承認・ストップバー */
+.action-bar{display:none;padding:10px 16px;border-top:1px solid #eee;background:#fafafa;gap:8px;flex-shrink:0;}
+.action-bar.active{display:flex;}
+
+
+
+.stop-btn{background:#fff;color:#e94560;border:2px solid #e94560;border-radius:10px;padding:12px 24px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;}
+.stop-btn:hover{background:#e94560;color:#fff;}
+.stop-btn.visible{display:block;}
+.approve-btn{flex:1;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.approve-btn:hover{box-shadow:0 4px 16px rgba(16,185,129,0.3);transform:translateY(-1px);}
+.retry-btn{background:#fff;color:#f59e0b;border:2px solid #f59e0b;border-radius:10px;padding:12px 24px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.retry-btn:hover{background:#f59e0b;color:#fff;}
+.summary-btn{background:linear-gradient(to right,#1565c0,#42a5f5);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;}
+.summary-btn:hover{box-shadow:0 4px 16px rgba(21,101,192,0.3);transform:translateY(-1px);}
+.retry-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;}
+.retry-modal.active{display:flex;}
+.retry-modal-content{background:#fff;border-radius:16px;padding:24px;width:90%;max-width:500px;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.retry-modal-content h3{font-size:1rem;color:#333;margin-bottom:12px;}
+.retry-modal-content textarea{width:100%;min-height:100px;border:2px solid #d0d0d0;border-radius:8px;padding:10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;}
+.retry-modal-content textarea:focus{outline:none;border-color:#f59e0b;}
+.retry-modal-btns{display:flex;gap:8px;margin-top:12px;justify-content:flex-end;}
+.retry-submit-btn{background:#f59e0b;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.retry-submit-btn:hover{background:#d97706;}
+.retry-cancel-btn{background:#fff;color:#666;border:2px solid #ccc;border-radius:8px;padding:10px 24px;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.retry-cancel-btn:hover{border-color:#e94560;color:#e94560;}
+
+/* Markdown 整形出力 */
+.output-content h1{font-size:1.3rem;font-weight:900;margin:16px 0 8px;color:#1a1a2e;border-bottom:2px solid #533483;padding-bottom:4px;}
+.output-content h2{font-size:1.15rem;font-weight:700;margin:14px 0 6px;color:#533483;}
+.output-content h3{font-size:1.02rem;font-weight:700;margin:12px 0 4px;color:#0f3460;}
+.output-content h4{font-size:0.95rem;font-weight:700;margin:10px 0 3px;color:#444;}
+.output-content table{border-collapse:collapse;width:100%;margin:10px 0;font-size:0.85rem;}
+.output-content th,.output-content td{border:1px solid #ccc;padding:7px 10px;text-align:left;}
+.output-content th{background:#f0f0f5;font-weight:700;color:#333;}
+.output-content td{background:#fff;}
+.output-content tr:nth-child(even) td{background:#fafafa;}
+.output-content hr{border:none;border-top:2px solid #533483;margin:14px 0;}
+.output-content ul,.output-content ol{margin:6px 0 6px 20px;}
+.output-content li{margin:2px 0;}
+.output-content strong{font-weight:700;color:#1a1a2e;}
+.output-content em{font-style:italic;}
+.output-content code{background:#f0f0f5;padding:1px 5px;border-radius:4px;font-size:0.85em;font-family:monospace;}
+.output-content .md-separator{text-align:center;color:#533483;font-weight:700;margin:12px 0;letter-spacing:0.2em;}
+
+
+/* レスポンシブ */
+@media(max-width:700px){
+  .main{flex-direction:column;}
+  .left-panel,.right-panel{width:100%;}
+  .left-panel{max-height:50vh;border-right:none;border-bottom:1px solid #e0e0e0;}
+  .right-panel{flex:1;}
+  .header h1{font-size:1rem;}
+}
+</style>
+<script>
+MathJax = {
+  tex: {inlineMath: [['$','$']], displayMath: [['$$','$$']]},
+  options: {skipHtmlTags: ['script','noscript','style','textarea','pre']}
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+  <h1>授業の課題・プリント作成</h1>
+</div>
+
+<div class="main">
+  <!-- 左パネル：入力 -->
+  <div class="left-panel">
+    <h2>入力項目</h2>
+    <div class="form-area">
+
+      <div class="form-group">
+        <label>教科</label>
+        <select id="subject">
+          <option value="">選択してください</option>
+          <option>国語</option><option>数学</option><option>英語</option>
+          <option>理科</option><option>社会</option><option>音楽</option>
+          <option>美術</option><option>体育</option><option>技術</option>
+          <option>家庭科</option><option>道徳</option><option>総合的な学習</option>
+          <option>情報</option><option>その他</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>学年</label>
+        <select id="grade">
+          <option value="">選択してください</option>
+          <option>小学校1年</option><option>小学校2年</option><option>小学校3年</option>
+          <option>小学校4年</option><option>小学校5年</option><option>小学校6年</option>
+          <option>中学1年</option><option>中学2年</option><option>中学3年</option>
+          <option>高校1年</option><option>高校2年</option><option>高校3年</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>単元名</label>
+        <input type="text" id="unitName" placeholder="例: 二次関数のグラフ">
+      </div>
+
+      <div class="form-group">
+        <label>学習目標</label>
+        <textarea id="objective" placeholder="例: 二次関数のグラフの特徴を理解し、頂点や軸を求められるようにする"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>生徒の習熟度</label>
+        <select id="level">
+          <option value="">選択してください</option>
+          <option>基礎（つまずきが多い）</option>
+          <option>標準</option>
+          <option>発展（理解が早い）</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>作成物の種類</label>
+        <div class="check-group">
+          <label><input type="checkbox" value="プリント" checked> プリント</label>
+          <label><input type="checkbox" value="課題"> 課題</label>
+          <label><input type="checkbox" value="その他"> その他</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>追加要望</label>
+        <textarea id="request" placeholder="例: イラスト入りで視覚的に分かりやすくしてほしい"></textarea>
+      </div>
+
+    </div>
+    <div class="btn-area">
+      <button class="send-btn inactive" id="sendBtn" onclick="sendRequest()">送信する</button>
+      <button class="reset-btn" onclick="resetForm()">リセット</button>
+    </div>
+  </div>
+
+  <!-- 右パネル：出力 -->
+  <div class="right-panel">
+    <div class="right-header">
+      <h2>AI 出力</h2>
+      <div class="right-actions">
+        <button onclick="copyOutput()" id="copyBtn">コピー</button>
+        <button onclick="saveOutput()">テキスト保存</button>
+        <button class="word-btn" onclick="exportToWord()">Word出力</button>
+      </div>
+    </div>
+    <div class="output-area" id="outputArea">
+      <div class="output-content" id="outputContent">
+        <span class="placeholder">左パネルで入力して「送信する」を押すと、ここに結果が表示されます。</span>
+      </div>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>生成中...</p>
+      </div>
+    </div>
+    <div class="action-bar" id="actionBar">
+      
+      <button class="approve-btn" id="approveBtn" onclick="approveAndContinue()">承認する → 次のステップへ</button>
+      <button class="retry-btn" id="retryBtn" onclick="showRetryPopup()">指示をして修正する</button>
+      <button class="summary-btn" id="summaryBtn" onclick="compileSummary()">まとめ出力</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'app7.php';
+let uploadedFiles = [];
+let outputText = '';
+let currentUid = '';
+currentStep = 0;
+var MAX_STEPS = 3;
+stepIsRetry = false;
+let isStreaming = false;
+let summaryRequested = false;
+
+// ファイルアップロード
+const fileDrop = document.getElementById('fileDrop');
+const fileInput = document.getElementById('fileInput');
+if (fileDrop && fileInput) {
+fileDrop.addEventListener('click', () => fileInput.click());
+fileDrop.addEventListener('dragover', e => { e.preventDefault(); fileDrop.classList.add('dragover'); });
+fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
+fileDrop.addEventListener('drop', e => { e.preventDefault(); fileDrop.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', e => handleFiles(e.target.files));
+}
+
+
+// pdf.js ワーカー設定
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+// ブラウザ側PDFテキスト抽出
+async function extractPdfTextBrowser(file) {
+  try {
+    var arrayBuffer = await file.arrayBuffer();
+    var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    var text = '';
+    for (var i = 1; i <= pdf.numPages; i++) {
+      var page = await pdf.getPage(i);
+      var content = await page.getTextContent();
+      var pageText = content.items.map(function(item) { return item.str; }).join('');
+      text += pageText + '\n';
+    }
+    return text.trim();
+  } catch (e) {
+    console.error('PDF抽出エラー:', e);
+    return '';
+  }
+}
+
+function handleFiles(fileList) {
+  for (var i = 0; i < fileList.length; i++) {
+    var file = fileList[i];
+    if (file.size > 20 * 1024 * 1024) { alert(file.name + ' は20MBを超えています'); continue; }
+    (function(f) {
+      var ext = f.name.split('.').pop().toLowerCase();
+      if (ext === 'pdf' && typeof pdfjsLib !== 'undefined') {
+        // PDFはブラウザ側でテキスト抽出
+        extractPdfTextBrowser(f).then(function(pdfText) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            uploadedFiles.push({ name: f.name, mimeType: f.type || 'application/octet-stream', data: e.target.result.split(',')[1], pdfText: pdfText });
+            renderFileList();
+            checkForm();
+          };
+          reader.readAsDataURL(f);
+        });
+      } else {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedFiles.push({ name: f.name, mimeType: f.type || 'application/octet-stream', data: e.target.result.split(',')[1] });
+          renderFileList();
+          checkForm();
+        };
+        reader.readAsDataURL(f);
+      }
+    })(file);
+  }
+}
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      uploadedFiles.push({ name: file.name, mimeType: file.type || 'application/octet-stream', data: e.target.result.split(',')[1] });
+      renderFileList();
+    };
+function renderFileList() {
+  document.getElementById('fileList').innerHTML = uploadedFiles.map((f, i) =>
+    '<div class="file-item"><span>' + esc(f.name) + '</span><button class="remove-file" onclick="removeFile(' + i + ')">&times;</button></div>'
+  ).join('');
+}
+function removeFile(idx) { uploadedFiles.splice(idx, 1); renderFileList(); }
+
+// フォーム値を収集
+function buildMessage() {
+  const subject = document.getElementById('subject').value;
+  const grade = document.getElementById('grade').value;
+  const unitName = document.getElementById('unitName').value.trim();
+  const objective = document.getElementById('objective').value.trim();
+  const level = document.getElementById('level').value;
+  const request = document.getElementById('request').value.trim();
+  const types = [];
+  document.querySelectorAll('.check-group input[type="checkbox"]:checked').forEach(cb => types.push(cb.value));
+
+  let msg = '';
+  if (subject) msg += '【教科】' + subject + '\n';
+  if (grade) msg += '【学年】' + grade + '\n';
+  if (unitName) msg += '【単元名】' + unitName + '\n';
+  if (objective) msg += '【学習目標】' + objective + '\n';
+  if (level) msg += '【生徒の習熟度】' + level + '\n';
+  if (types.length) msg += '【作成物の種類】' + types.join('、') + '\n';
+  if (request) msg += '【追加要望】' + request + '\n';
+  return msg;
+}
+
+// 初回送信
+function sendRequest() {
+  const message = buildMessage();
+  if (!message && uploadedFiles.length === 0) { alert('少なくとも1つの項目を入力してください'); return; }
+
+  // ユーザーパーツ構築（テキスト + ファイル）
+  const userParts = [];
+  if (message) userParts.push({ text: message });
+  for (const f of uploadedFiles) {
+    userParts.push({ inlineData: { mimeType: f.mimeType, data: f.data } });
+  }
+
+  // 新規会話開始
+  outputText = '';
+  currentUid = '';
+  currentStep = 0;
+  stepIsRetry = false;
+  document.getElementById('outputContent').innerHTML = '';
+  doRequest({ message: message, files: uploadedFiles });
+}
+
+
+// ストリーミングリクエスト送信
+async function doRequest(payload) {
+  var sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+  sendBtn.textContent = '生成中...';
+  document.getElementById('actionBar').classList.add('active');
+  document.getElementById('approveBtn').style.display = 'none';
+  document.getElementById('retryBtn').style.display = 'none';
+  document.getElementById('loading').classList.add('active');
+  var outputArea = document.getElementById('outputArea');
+  outputArea.scrollTop = outputArea.scrollHeight;
+  try {
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('loading').classList.remove('active');
+    var data = await res.json();
+    if (data.ok) {
+      currentUid = data.uid || currentUid;
+      var answer = stripMarkdown(data.answer);
+      outputText += answer;
+      renderOutput();
+      if (!stepIsRetry) currentStep++;
+      stepIsRetry = false;
+      if (currentStep >= MAX_STEPS || /【ワークフロー完了】/.test(answer) || /【出力完了】/.test(answer)) {
+        document.getElementById('approveBtn').textContent = '\u2714 完了しました';
+        document.getElementById('approveBtn').style.display = 'block';
+        document.getElementById('approveBtn').style.background = '#6b7280';
+        document.getElementById('approveBtn').style.cursor = 'default';
+        document.getElementById('approveBtn').onclick = null;
+        document.getElementById('retryBtn').style.display = 'block';
+        if (summaryRequested) {
+          document.getElementById('summaryBtn').style.display = 'block';
+          document.getElementById('summaryBtn').style.background = '#6b7280';
+          document.getElementById('summaryBtn').style.cursor = 'default';
+          document.getElementById('summaryBtn').textContent = '出力済み';
+          document.getElementById('summaryBtn').onclick = null;
+        } else {
+          document.getElementById('summaryBtn').style.display = 'block';
+          document.getElementById('summaryBtn').style.background = '';
+          document.getElementById('summaryBtn').style.cursor = '';
+          document.getElementById('summaryBtn').textContent = 'まとめ出力';
+          document.getElementById('summaryBtn').onclick = compileSummary;
+        }
+      } else {
+        document.getElementById('approveBtn').textContent = '承認する \u2192 次のステップへ';
+        document.getElementById('approveBtn').style.display = 'block';
+        document.getElementById('approveBtn').style.background = '';
+        document.getElementById('approveBtn').style.cursor = '';
+        document.getElementById('approveBtn').onclick = approveAndContinue;
+        document.getElementById('retryBtn').style.display = 'block';
+        document.getElementById('summaryBtn').style.display = 'none';
+      }
+    } else {
+      document.getElementById('outputContent').innerHTML = '<span style="color:red;">[エラー] ' + esc(data.error || '不明なエラー') + '</span>';
+    }
+  } catch (e) {
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('outputContent').innerHTML = '<span style="color:red;">エラー: ' + esc(e.message) + '</span>';
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = '送信する';
+    var area = document.getElementById('outputArea');
+    area.scrollTop = area.scrollHeight;
+  }
+}
+
+// ストップ
+
+// 承認して次のステップへ
+function approveAndContinue() {
+  if (!currentUid) return;
+  outputText += '\n\n---\n\n';
+  doRequest({ utterance: '承認します。次のステップに進んでください。', uid: currentUid });
+}
+// まとめ出力
+function compileSummary() {
+  summaryRequested = true;
+  var summaryText = 'これまでの全ステップで出力した内容を最大限に活かし、完成文書としてまとめて出力してください。以下のルールに厳密に従ってください：\n\n'
+    +'【文書量・質に関するルール】\n'
+    +'1. 各ステップで出力した文章・データ・提案内容をすべて漏れなく盛り込むこと。要約や圧縮をせず、具体的な内容をそのまま活用する\n'
+    +'2. 各セクションは十分な分量で記述し、箇条書きだけでなく説明文も加えて読みやすい文書にする\n'
+    +'3. 全体の構成を整え、セクション間のつながりが自然で調和のとれた文章にする\n'
+    +'4. そのまま Word 保存やテキスト保存して実務で使える品質・分量の文書にする\n\n'
+    +'【除外するもの】\n'
+    +'5. 会話的な文章（質問、確認、提案の伺い、ステップの案内など）はすべて除外する\n'
+    +'6. ステップ番号やステップ区切りの表示は除外する\n\n'
+    +'【形式】\n'
+    +'7. 見出し・小見出しを適切に使い、構造化された読みやすい文書にする\n'
+    +'8. 最後に必ず「【出力完了】」と出力する';
+  outputText = '';
+  document.getElementById('outputContent').innerHTML = '';
+  doRequest({ utterance: summaryText, uid: currentUid });
+}
+
+
+// 指示をして修正する
+function showRetryPopup() {
+  document.getElementById('retryModal').classList.add('active');
+  document.getElementById('retryInstruction').value = '';
+  setTimeout(function(){ document.getElementById('retryInstruction').focus(); }, 100);
+}
+function closeRetryPopup() {
+  document.getElementById('retryModal').classList.remove('active');
+}
+function submitRetry() {
+  var instruction = document.getElementById('retryInstruction').value.trim();
+  if (!instruction) return;
+  var sep = '\n\n---\n\n';
+  var sepIdx = outputText.lastIndexOf(sep);
+  if (sepIdx >= 0) { outputText = outputText.substring(0, sepIdx + sep.length); } else { outputText = ''; }
+  closeRetryPopup();
+  stepIsRetry = true;
+  doRequest({ utterance: '以下の追加指示を反映して、このステップを修正してください：\n' + instruction, uid: currentUid });
+}
+
+// ===== Markdownレンダリング =====
+function renderOutput() {
+  const el = document.getElementById('outputContent');
+  el.innerHTML = renderMarkdown(outputText.replace(/【ワークフロー完了】/g,'').replace(/【出力完了】/g,''));
+  const area = document.getElementById('outputArea');
+  area.scrollTop = area.scrollHeight;
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([el]).catch(function(){});
+  }
+}
+
+function renderMarkdown(text) {
+  const lines = text.split('\n');
+  let html = '';
+  let inTable = false;
+  let inUl = false;
+  let inOl = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const line = raw;
+
+
+    // テーブル検出
+    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (inOl) { html += '</ol>'; inOl = false; }
+
+      if (!inTable) {
+        // 次の行がセパレータか確認
+        const nextLine = (i + 1 < lines.length) ? lines[i + 1].trim() : '';
+        if (/^\|[\s\-:|]+\|$/.test(nextLine)) {
+          inTable = true;
+          html += '<table><thead><tr>';
+          parseCells(line).forEach(c => { html += '<th>' + inline(esc(c)) + '</th>'; });
+          html += '</tr></thead><tbody>';
+          i++; // セパレータ行をスキップ
+          continue;
+        }
+      }
+      if (inTable) {
+        html += '<tr>';
+        parseCells(line).forEach(c => { html += '<td>' + inline(esc(c)) + '</td>'; });
+        html += '</tr>';
+        continue;
+      }
+    } else if (inTable) {
+      html += '</tbody></table>';
+      inTable = false;
+    }
+
+    // 見出し
+    if (line.startsWith('#### ')) {
+      closeLists(); html += '<h4>' + inline(esc(line.slice(5))) + '</h4>'; continue;
+    }
+    if (line.startsWith('### ')) {
+      closeLists(); html += '<h3>' + inline(esc(line.slice(4))) + '</h3>'; continue;
+    }
+    if (line.startsWith('## ')) {
+      closeLists(); html += '<h2>' + inline(esc(line.slice(3))) + '</h2>'; continue;
+    }
+    if (line.startsWith('# ')) {
+      closeLists(); html += '<h1>' + inline(esc(line.slice(2))) + '</h1>'; continue;
+    }
+
+    // 水平線（━━━ や ---）
+    if (/^[━]{3,}$/.test(line.trim()) || /^[-]{3,}$/.test(line.trim()) || /^[_]{3,}$/.test(line.trim())) {
+      closeLists(); html += '<hr>'; continue;
+    }
+
+    // 箇条書き（- / * / ・）
+    const ulMatch = line.match(/^[\s]*[-*・]\s+(.*)/);
+    if (ulMatch) {
+      if (inOl) { html += '</ol>'; inOl = false; }
+      if (!inUl) { html += '<ul>'; inUl = true; }
+      html += '<li>' + inline(esc(ulMatch[1])) + '</li>';
+      continue;
+    }
+
+    // 番号付きリスト
+    const olMatch = line.match(/^[\s]*(\d+)[.．]\s+(.*)/);
+    if (olMatch) {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (!inOl) { html += '<ol>'; inOl = true; }
+      html += '<li>' + inline(esc(olMatch[2])) + '</li>';
+      continue;
+    }
+
+    // リスト以外ならリストを閉じる
+    if (inUl && line.trim() === '') { html += '</ul>'; inUl = false; }
+    if (inOl && line.trim() === '') { html += '</ol>'; inOl = false; }
+
+    // 通常行
+    if (line.trim() === '') {
+      html += '<br>';
+    } else {
+      html += inline(esc(line)) + '<br>';
+    }
+  }
+
+  // 閉じ処理
+  if (inTable) html += '</tbody></table>';
+  if (inUl) html += '</ul>';
+  if (inOl) html += '</ol>';
+
+  return DOMPurify.sanitize(html);
+
+  function closeLists() {
+    if (inUl) { html += '</ul>'; inUl = false; }
+    if (inOl) { html += '</ol>'; inOl = false; }
+  }
+}
+
+function parseCells(line) {
+  return line.split('|').slice(1, -1).map(c => c.trim());
+}
+
+function inline(text) {
+  // Bold
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  text = text.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+  // Code
+  text = text.replace(/`(.+?)`/g, '<code>$1</code>');
+  return text;
+}
+
+// HTMLエスケープ
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML.replace(/&lt;br&gt;/gi, '<br>').replace(/&lt;br\s*\/&gt;/gi, '<br>');
+}
+
+function stripMarkdown(s) {
+    s = s.replace(/^#{1,6}\s+/gm, '');
+    s = s.replace(/\*\*\*(.+?)\*\*\*/g, '$1');
+    s = s.replace(/\*\*(.+?)\*\*/g, '$1');
+    s = s.replace(/\*(.+?)\*/g, '$1');
+    s = s.replace(/`([^`]+)`/g, '$1');
+    return s;
+}
+
+// コピー
+function copyOutput() {
+  if (!outputText) return;
+  const clean = outputText;
+  navigator.clipboard.writeText(clean).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'コピー済!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// テキスト保存
+function saveOutput() {
+  if (!outputText) return;
+  const clean = outputText;
+  const blob = new Blob([clean], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '授業課題_プリント.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// Word出力
+function exportToWord() {
+  if (!outputText) return;
+  const content = document.getElementById('outputContent').innerHTML;
+  const wordHtml = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>'
+    + 'body{font-family:"Yu Gothic","Noto Sans JP",sans-serif;font-size:10.5pt;line-height:1.8;color:#333;}'
+    + 'table{border-collapse:collapse;width:100%;margin:8px 0;}'
+    + 'th,td{border:1px solid #333;padding:6px 10px;text-align:left;}'
+    + 'th{background:#e8e8e8;font-weight:bold;}'
+    + 'h1{font-size:18pt;margin:14px 0 6px;border-bottom:2px solid #333;padding-bottom:4px;}'
+    + 'h2{font-size:14pt;margin:12px 0 5px;}'
+    + 'h3{font-size:12pt;margin:10px 0 4px;}'
+    + 'hr{border:none;border-top:2px solid #333;margin:12px 0;}'
+    + 'ul,ol{margin:6px 0 6px 20px;}'
+
+    + '</style></head><body>' + content + '</body></html>';
+  const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '授業課題_プリント.doc';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// リセット
+function resetForm() {
+  document.getElementById('subject').value = '';
+  document.getElementById('grade').value = '';
+  document.getElementById('unitName').value = '';
+  document.getElementById('objective').value = '';
+  document.getElementById('level').value = '';
+  document.getElementById('request').value = '';
+  document.querySelectorAll('.check-group input[type="checkbox"]').forEach(cb => cb.checked = cb.value === 'プリント');
+  uploadedFiles = [];
+  renderFileList();
+  outputText = '';
+  currentUid = '';
+  currentStep = 0;
+  stepIsRetry = false;
+  summaryRequested = false;
+  document.getElementById('summaryBtn').style.display = 'none';
+  document.getElementById('outputContent').innerHTML = '<span class="placeholder">左パネルで入力して「送信する」を押すと、ここに結果が表示されます。</span>';
+  document.getElementById('actionBar').classList.remove('active');
+}
+function checkForm(){var btn=document.getElementById("sendBtn");var ok=true;document.querySelectorAll(".form-area select:not([disabled])").forEach(function(s){if(s.querySelector('option[value=""]')&&!s.value)ok=false;});btn.classList.toggle("inactive",!ok);}if(document.querySelector(".form-area")){document.querySelector(".form-area").addEventListener("input",checkForm);document.querySelector(".form-area").addEventListener("change",checkForm);}
+</script>
+<div class="retry-modal" id="retryModal">
+  <div class="retry-modal-content">
+    <h3>追加指示を入力</h3>
+    <textarea id="retryInstruction" placeholder="修正してほしい内容を入力してください"></textarea>
+    <div class="retry-modal-btns">
+      <button class="retry-submit-btn" onclick="submitRetry()">修正する</button>
+      <button class="retry-cancel-btn" onclick="closeRetryPopup()">キャンセル</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

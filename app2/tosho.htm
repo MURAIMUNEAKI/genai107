@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国立国会図書館サーチ - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ヘッダー（GitHub UI準拠） */
+.gt-header{border-bottom:1px solid #000;padding:1rem 0 0.75rem;margin-bottom:1.5rem;}
+.gt-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:1024px){.gt-title{font-size:1.5rem;}}
+
+/* 但書 */
+.gt-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.gt-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.gt-notes p{margin:0.25rem 0;}
+.gt-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:8px;padding:0.5rem 0.75rem;}
+.gt-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.gt-notes summary::before{content:'\25B6';font-size:0.625rem;transition:transform 0.2s;}
+.gt-notes details[open] summary::before{transform:rotate(90deg);}
+.gt-notes details>div{padding:0.5rem 0 0 1.25rem;}
+.gt-notes ul{margin:0.25rem 0 0.25rem 1.5rem;}
+.gt-notes li{margin:0.125rem 0;}
+
+/* 検索フォーム横並び */
+.search-row{display:flex;gap:0.5rem;align-items:flex-end;}
+.search-row .dads-input{flex:1;}
+@media(max-width:640px){.search-row{flex-wrap:wrap;}.search-row .dads-input{width:100%;}}
+
+/* 結果ヘッダー */
+.results-info{margin-top:1.5rem;font-size:0.9375rem;font-weight:700;padding-bottom:0.5rem;border-bottom:1px solid var(--solid-gray-300);}
+.results-sub{font-size:0.8125rem;font-weight:400;color:var(--solid-gray-600);margin-top:0.25rem;}
+
+/* 書籍カード */
+.book-card{border:1px solid var(--solid-gray-300);border-radius:8px;padding:1rem;margin-top:0.75rem;transition:box-shadow 0.15s;}
+.book-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.book-card h3{font-size:0.9375rem;font-weight:700;line-height:1.5;margin:0 0 0.5rem;}
+.book-card h3 a{color:var(--blue-900);text-decoration:none;}
+.book-card h3 a:hover{text-decoration:underline;}
+.book-meta{font-size:0.8125rem;color:var(--solid-gray-600);line-height:1.8;}
+.book-meta span{display:inline-block;margin-right:1rem;}
+.book-meta .label{font-weight:700;color:var(--solid-gray-800);}
+.book-tags{margin-top:0.375rem;display:flex;flex-wrap:wrap;gap:0.375rem;}
+.book-tags .tag{font-size:0.75rem;padding:0.125rem 0.5rem;border-radius:9999px;background:var(--solid-gray-100);color:var(--solid-gray-800);}
+
+/* ページング */
+.paging{display:flex;justify-content:center;align-items:center;gap:0.75rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--solid-gray-200);}
+.paging button{padding:0.5rem 1rem;border:1px solid var(--solid-gray-420);border-radius:6px;background:#fff;font-size:0.8125rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.paging button:hover:not(:disabled){background:var(--solid-gray-50);}
+.paging button:disabled{opacity:0.4;cursor:not-allowed;}
+.paging .page-info{font-size:0.8125rem;color:var(--solid-gray-600);}
+
+/* 空状態 */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--solid-gray-536);}
+.empty-state .icon{font-size:2.5rem;margin-bottom:0.75rem;}
+.empty-state p{font-size:0.875rem;margin:0;line-height:1.7;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'tosho'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:64rem">
+      <div class="gt-header">
+        <h1 class="gt-title">国立国会図書館サーチ</h1>
+        <div class="gt-notes">
+          <h2>想定用途</h2>
+          <p>国立国会図書館の蔵書をキーワードで検索できます。タイトル・著者・出版社での絞り込みに対応しています。</p>
+          <details>
+            <summary>データソースと留意点</summary>
+            <div>
+              <ul>
+                <li>国立国会図書館サーチ（NDL Search）のSRU APIを使用しています。</li>
+                <li>APIキーは不要です（公開API）。</li>
+                <li>検索結果から国立国会図書館の書誌詳細ページへリンクできます。</li>
+              </ul>
+            </div>
+          </details>
+          <h2>操作方法</h2>
+          <p>キーワードを入力し、検索対象を選んで検索ボタンを押してください。</p>
+        </div>
+      </div>
+
+      <!-- 検索フォーム -->
+      <div class="form-group">
+        <label class="dads-label" for="keyword">検索キーワード <span class="dads-required">必須</span></label>
+        <input class="dads-input" type="text" id="keyword" placeholder="例: プログラミング入門" required>
+      </div>
+
+      <div class="form-group">
+        <label class="dads-label" for="field">検索対象</label>
+        <select class="dads-select" id="field">
+          <option value="title">タイトル</option>
+          <option value="creator">著者</option>
+          <option value="publisher">出版社</option>
+          <option value="anywhere">フリーワード</option>
+        </select>
+      </div>
+
+      <div class="btn-area" style="justify-content:center">
+        <button class="dads-btn" id="searchBtn" style="min-width:15rem">検索</button>
+      </div>
+
+      <!-- プログレス -->
+      <div class="progress-indicator" id="progress">
+        <div class="progress-spinner"></div>
+        <span class="progress-label">検索中...</span>
+      </div>
+
+      <!-- 結果エリア -->
+      <div id="resultsArea">
+        <div class="empty-state">
+          <div class="icon"></div>
+          <p>キーワードを入力して検索してください。<br>国立国会図書館の蔵書を検索できます。</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script>
+initLayout({ activePage: 'tosho', basePath: '../app/' });
+
+var perPage = 10;
+var currentPage = 1;
+var currentKeyword = '';
+var currentField = '';
+var totalResults = 0;
+
+var keywordEl = document.getElementById('keyword');
+var fieldEl = document.getElementById('field');
+var searchBtn = document.getElementById('searchBtn');
+var progressEl = document.getElementById('progress');
+var resultsArea = document.getElementById('resultsArea');
+
+/* ---------- イベント ---------- */
+searchBtn.addEventListener('click', function() { doSearch(1); });
+keywordEl.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); doSearch(1); }
+});
+
+/* ---------- CQL構築 ---------- */
+function buildCQL(keyword, field) {
+  var safe = keyword.replace(/"/g, '');
+  if (field === 'anywhere') {
+    return 'title="' + safe + '" OR creator="' + safe + '" OR publisher="' + safe + '"';
+  }
+  return field + '="' + safe + '"';
+}
+
+/* ---------- 検索実行 ---------- */
+function doSearch(page) {
+  var kw = keywordEl.value.trim();
+  if (!kw) { keywordEl.focus(); return; }
+
+  currentKeyword = kw;
+  currentField = fieldEl.value;
+  currentPage = page || 1;
+
+  searchBtn.disabled = true;
+  progressEl.classList.add('active');
+  resultsArea.innerHTML = '';
+
+  var cql = buildCQL(currentKeyword, currentField);
+  var startRecord = (currentPage - 1) * perPage + 1;
+
+  var params = new URLSearchParams({
+    operation: 'searchRetrieve',
+    query: cql,
+    maximumRecords: perPage,
+    startRecord: startRecord,
+    recordPacking: 'xml',
+    recordSchema: 'dcndl'
+  });
+
+  var url = 'https://ndlsearch.ndl.go.jp/api/sru?' + params.toString();
+
+  fetch(url).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.text();
+  }).then(function(xmlText) {
+    var results = parseNDLResponse(xmlText);
+    renderResults(results);
+  }).catch(function(err) {
+    resultsArea.innerHTML = '<div class="empty-state"><div class="icon">&#9888;&#65039;</div><p>検索に失敗しました。<br>' + escHtml(err.message) + '</p></div>';
+  }).finally(function() {
+    searchBtn.disabled = false;
+    progressEl.classList.remove('active');
+  });
+}
+
+/* ---------- XMLパース ---------- */
+function parseNDLResponse(xmlText) {
+  var clean = xmlText;
+  clean = clean.replace(/\s+xmlns(?::[a-zA-Z][\w]*)?\s*=\s*"[^"]*"/g, '');
+  clean = clean.replace(/\s+xmlns(?::[a-zA-Z][\w]*)?\s*=\s*'[^']*'/g, '');
+  clean = clean.replace(/<(\/?)([a-zA-Z][\w]*):([a-zA-Z])/g, '<$1$2_$3');
+  clean = clean.replace(/\s([a-zA-Z][\w]*):([a-zA-Z][\w]*)\s*=/g, ' $1_$2=');
+
+  var parser = new DOMParser();
+  var xml = parser.parseFromString(clean, 'text/xml');
+
+  if (xml.querySelector('parsererror')) { totalResults = 0; return []; }
+
+  var numEl = xml.getElementsByTagName('numberOfRecords')[0];
+  totalResults = numEl ? parseInt(numEl.textContent) || 0 : 0;
+
+  var allRecords = xml.getElementsByTagName('record');
+  var results = [];
+
+  for (var i = 0; i < allRecords.length; i++) {
+    var rec = allRecords[i];
+    var bib = rec.getElementsByTagName('dcndl_BibResource')[0];
+    if (!bib) continue;
+
+    var titleEl = bib.getElementsByTagName('dcterms_title')[0];
+    var title = titleEl ? titleEl.textContent.trim() : '(タイトル不明)';
+
+    var creators = [];
+    var creatorEls = bib.getElementsByTagName('dc_creator');
+    for (var c = 0; c < creatorEls.length; c++) {
+      var foafName = creatorEls[c].getElementsByTagName('foaf_name')[0];
+      var name = foafName ? foafName.textContent.trim() : creatorEls[c].textContent.trim();
+      if (name) creators.push(name);
+    }
+
+    var publisher = '';
+    var pubEl = bib.getElementsByTagName('dcterms_publisher')[0];
+    if (pubEl) {
+      var pubName = pubEl.getElementsByTagName('foaf_name')[0];
+      publisher = pubName ? pubName.textContent.trim() : pubEl.textContent.trim();
+    }
+
+    var date = '';
+    var dateEl = bib.getElementsByTagName('dcterms_date')[0];
+    if (!dateEl) dateEl = bib.getElementsByTagName('dcterms_issued')[0];
+    if (dateEl) date = dateEl.textContent.trim();
+
+    var isbn = '';
+    var idEls = bib.getElementsByTagName('dcterms_identifier');
+    for (var d = 0; d < idEls.length; d++) {
+      var val = idEls[d].textContent.trim();
+      if (/^[0-9X\-]{10,17}$/.test(val)) { isbn = val; break; }
+    }
+
+    var ndl_url = '';
+    var seeAlso = bib.getElementsByTagName('rdfs_seeAlso')[0];
+    if (seeAlso && seeAlso.getAttribute('rdf_resource')) {
+      ndl_url = seeAlso.getAttribute('rdf_resource');
+    }
+    if (!ndl_url) {
+      var about = bib.getAttribute('rdf_about');
+      if (about) ndl_url = about.replace(/#.*$/, '');
+    }
+
+    var subjects = [];
+    var subEls = bib.getElementsByTagName('dcterms_subject');
+    for (var s = 0; s < subEls.length && subjects.length < 3; s++) {
+      var sv = subEls[s].textContent.trim();
+      if (sv) subjects.push(sv);
+    }
+
+    results.push({
+      title: title, creator: creators.join(', '), publisher: publisher,
+      date: date, isbn: isbn, ndl_url: ndl_url, subject: subjects.join(', ')
+    });
+  }
+  return results;
+}
+
+/* ---------- 結果描画 ---------- */
+function renderResults(results) {
+  if (totalResults === 0 || results.length === 0) {
+    resultsArea.innerHTML = '<div class="empty-state"><div class="icon">&#128269;</div><p>「' + escHtml(currentKeyword) + '」に該当する資料は見つかりませんでした。</p></div>';
+    return;
+  }
+
+  var totalPages = Math.ceil(totalResults / perPage);
+  var from = (currentPage - 1) * perPage + 1;
+  var to = Math.min(currentPage * perPage, totalResults);
+
+  var html = '<div class="results-info">' +
+    '検索結果: ' + totalResults.toLocaleString() + ' 件' +
+    '<div class="results-sub">「' + escHtml(currentKeyword) + '」' + from + '〜' + to + ' 件を表示</div>' +
+    '</div>';
+
+  for (var i = 0; i < results.length; i++) {
+    var r = results[i];
+    html += '<div class="book-card"><h3>';
+    if (r.ndl_url) {
+      html += '<a href="' + escHtml(r.ndl_url) + '" target="_blank" rel="noopener">' + escHtml(r.title) + '</a>';
+    } else {
+      html += escHtml(r.title);
+    }
+    html += '</h3><div class="book-meta">';
+    if (r.creator) html += '<span><span class="label">著者:</span> ' + escHtml(r.creator) + '</span>';
+    if (r.publisher) html += '<span><span class="label">出版:</span> ' + escHtml(r.publisher) + '</span>';
+    if (r.date) html += '<span><span class="label">年:</span> ' + escHtml(r.date) + '</span>';
+    if (r.isbn) html += '<span><span class="label">ISBN:</span> ' + escHtml(r.isbn) + '</span>';
+    html += '</div>';
+    if (r.subject) {
+      html += '<div class="book-tags">';
+      var subs = r.subject.split(', ');
+      for (var j = 0; j < subs.length; j++) {
+        html += '<span class="tag">' + escHtml(subs[j]) + '</span>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  if (totalPages > 1) {
+    html += '<div class="paging">';
+    html += '<button onclick="doSearch(' + (currentPage - 1) + ')"' + (currentPage <= 1 ? ' disabled' : '') + '>&lt; 前へ</button>';
+    html += '<span class="page-info">' + currentPage + ' / ' + totalPages + ' ページ</span>';
+    html += '<button onclick="doSearch(' + (currentPage + 1) + ')"' + (currentPage >= totalPages ? ' disabled' : '') + '>次へ &gt;</button>';
+    html += '</div>';
+  }
+
+  resultsArea.innerHTML = html;
+
+  // 結果へスクロール
+  setTimeout(function() {
+    resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+/* ---------- HTMLエスケープ ---------- */
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文章の校正・要約 - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ヘッダー（GitHub UI準拠） */
+.gt-header{border-bottom:1px solid #000;padding:1rem 0 0.75rem;margin-bottom:1.5rem;}
+.gt-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:1024px){.gt-title{font-size:1.5rem;}}
+.gt-subtitle{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-600);margin:0;}
+
+/* 但書（GitHub Disclosure準拠） */
+.gt-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.gt-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.gt-notes h3{font-size:0.9375rem;font-weight:700;margin:0.75rem 0 0.25rem;}
+.gt-notes p{margin:0.25rem 0;}
+.gt-notes ul,.gt-notes ol{margin:0.25rem 0 0.25rem 1.5rem;}
+.gt-notes li{margin:0.125rem 0;}
+.gt-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:8px;padding:0.5rem 0.75rem;}
+.gt-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.gt-notes summary::before{content:'▶';font-size:0.625rem;transition:transform 0.2s;}
+.gt-notes details[open] summary::before{transform:rotate(90deg);}
+.gt-notes details>div{padding:0.5rem 0 0 1.25rem;}
+
+.upload-zone{border:2px dashed var(--solid-gray-420);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--blue-900);background:var(--blue-50);}
+.upload-zone svg{width:2.5rem;height:2.5rem;color:var(--solid-gray-536);margin-bottom:0.25rem;}
+.upload-zone p{color:var(--solid-gray-536);font-size:0.875rem;margin:0;}
+.upload-zone .file-info{color:var(--solid-gray-800);font-weight:700;margin-top:0.5rem;display:flex;align-items:center;justify-content:center;gap:0.75rem;}
+.upload-zone .file-info .remove-file{background:none;border:none;cursor:pointer;color:var(--error-1);font-size:0.8125rem;text-decoration:underline;}
+
+.result-container{margin-top:1.25rem;border:1px solid var(--solid-gray-420);border-radius:8px;padding:1rem;position:relative;}
+.result-container h2{font-size:1rem;font-weight:700;margin-bottom:0.75rem;}
+.result-placeholder{color:var(--solid-gray-536);font-size:0.875rem;}
+.result-copy-area{display:flex;justify-content:flex-end;margin-top:0.5rem;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'proofread'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:64rem">
+      <div class="gt-header">
+        <h1 class="gt-title">文章の校正・要約</h1>
+        <div class="gt-notes">
+          <h2>想定用途</h2>
+          <p>テキストやファイルを入力し、校正・推敲・要約をAIが行います。</p>
+          <h3>アプリ個別の留意点</h3>
+          <p>本アプリは生成AIを使用しています。以下のリスクと対応をご理解ください：</p>
+          <details>
+            <summary>リスクの例と対応アクション</summary>
+            <div>
+              <p><strong>リスクの例：</strong></p>
+              <ul>
+                <li>ハルシネーション（でたらめ）：事実と異なる不正確な情報を生成するおそれ</li>
+                <li>最新性の欠如：古い情報に基づく回答を生成するおそれ</li>
+                <li>バイアス：偏った見解や政府の公式見解と異なる判断を生成するおそれ</li>
+                <li>著作権侵害：保護された著作物を不適切に生成するおそれ</li>
+                <li>倫理的問題：道徳的に問題のある判断や提案を生成するおそれ</li>
+                <li>再現性や説明可能性の欠如：同じ質問でも異なる回答を生成し、生成された内容の根拠も不明なおそれ</li>
+              </ul>
+              <p><strong>対応アクション：</strong></p>
+              <ol>
+                <li>常に出力内容を批判的に評価し、利用者自身で正確性・妥当性等を判断してください</li>
+                <li>機密性３情報や業務目的以外の私的利用の情報の入力は避けてください</li>
+                <li>必ず他の信頼できる情報源を確認してください</li>
+              </ol>
+            </div>
+          </details>
+          <h2>操作方法</h2>
+          <p>モードを選択し、テキストを入力またはファイルをアップロードして実行ボタンを押してください。</p>
+          <details>
+            <summary>仕組み</summary>
+            <div>
+              <p>入力されたテキストまたはファイルの内容に対して、選択されたモード（校正・推敲・要約）に応じた処理をAIが行い、結果を返答します。</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="dads-label" for="modeSelect">モード <span class="dads-required">必須</span></label>
+        <p class="dads-support">処理の種類を選択してください</p>
+        <select class="dads-select" id="modeSelect" style="max-width:24rem">
+          <option value="proofread">校正（誤字・脱字・文法ミスの修正）</option>
+          <option value="refine">推敲（表現の改善・読みやすさの向上）</option>
+          <option value="summarize">要約（要点の抽出・要約文の作成）</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="dads-label" for="inputText">テキスト <span class="dads-required">必須</span></label>
+        <p class="dads-support">校正・推敲・要約したいテキストを入力してください（ファイルを添付する場合はテキスト入力は任意）</p>
+        <textarea class="dads-textarea" id="inputText" rows="6" placeholder="ここにテキストを入力してください"></textarea>
+      </div>
+
+      <!-- ファイルアップロード -->
+      <div class="form-group">
+        <label class="dads-label">ファイルを添付（任意）</label>
+        <p class="dads-support">対応形式: PDF, DOCX, PPTX, XLSX, TXT, CSV, 画像（20MB以下）</p>
+        <div class="upload-zone" id="uploadZone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          <p>ファイルを選択 またはこのエリア内にドラッグ＆ドロップ</p>
+          <div class="file-info" id="fileInfo" style="display:none">
+            <span id="fileName"></span>
+            <button class="remove-file" id="removeFile">解除</button>
+          </div>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.xlsx,.txt,.csv,.png,.jpg,.jpeg,.gif,.webp" style="display:none">
+      </div>
+
+      <div class="btn-area" style="justify-content:center">
+        <button class="dads-btn" id="execBtn" style="min-width:15rem">実行</button>
+      </div>
+
+      <div class="progress-indicator" id="progress">
+        <div class="progress-spinner"></div>
+        <span class="progress-label">実行中...</span>
+      </div>
+
+      <hr class="dads-divider">
+
+      <div class="result-container" id="resultContainer">
+        <h2>処理結果</h2>
+        <div id="resultPlaceholder" class="result-placeholder">処理結果がここに表示されます</div>
+        <div class="prose" id="resultContent" style="display:none"></div>
+        <div class="result-copy-area" id="copyArea" style="display:none">
+          <button class="copy-btn" id="copyBtn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            コピー
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script src="../shared/markdown.js"></script>
+<script src="../shared/history-store.js"></script>
+<script>
+initLayout({ activePage: 'proofread', basePath: '../app/' });
+
+var modeSelect = document.getElementById('modeSelect');
+var inputText = document.getElementById('inputText');
+var execBtn = document.getElementById('execBtn');
+var progress = document.getElementById('progress');
+var resultContent = document.getElementById('resultContent');
+var resultPlaceholder = document.getElementById('resultPlaceholder');
+var copyBtn = document.getElementById('copyBtn');
+var copyArea = document.getElementById('copyArea');
+var uploadZone = document.getElementById('uploadZone');
+var fileInput = document.getElementById('fileInput');
+var fileInfo = document.getElementById('fileInfo');
+var fileName = document.getElementById('fileName');
+var removeFile = document.getElementById('removeFile');
+var currentHistoryId = 'proofread_' + Date.now();
+
+/* ========== ファイルアップロード ========== */
+var uploadedFile = null; // { filename, originalName, mimeType, url }
+
+uploadZone.addEventListener('click', function(e) {
+  if (e.target.closest('.remove-file')) return;
+  fileInput.click();
+});
+fileInput.addEventListener('change', function() {
+  if (this.files[0]) handleFileSelect(this.files[0]);
+  this.value = '';
+});
+
+uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
+uploadZone.addEventListener('drop', function(e) {
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) handleFileSelect(e.dataTransfer.files[0]);
+});
+
+function handleFileSelect(file) {
+  if (file.size > 20 * 1024 * 1024) {
+    alert('ファイルサイズが20MBを超えています。');
+    return;
+  }
+  var sizeStr = file.size < 1024 ? file.size + 'B' : file.size < 1024 * 1024 ? (file.size / 1024).toFixed(1) + 'KB' : (file.size / 1024 / 1024).toFixed(1) + 'MB';
+  fileName.textContent = file.name + ' (' + sizeStr + ') アップロード中...';
+  fileInfo.style.display = 'flex';
+
+  var fd = new FormData();
+  fd.append('file', file);
+
+  fetch('../api2/file-upload.php', { method: 'POST', body: fd })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.error) {
+        alert('アップロードエラー: ' + data.error);
+        fileInfo.style.display = 'none';
+        uploadedFile = null;
+        return;
+      }
+      uploadedFile = {
+        filename: data.filename,
+        originalName: data.originalName,
+        mimeType: data.mimeType,
+        url: data.url
+      };
+      fileName.textContent = data.originalName + ' (' + sizeStr + ')';
+    })
+    .catch(function(err) {
+      alert('アップロードに失敗しました: ' + err.message);
+      fileInfo.style.display = 'none';
+      uploadedFile = null;
+    });
+}
+
+removeFile.addEventListener('click', function(e) {
+  e.stopPropagation();
+  if (uploadedFile && uploadedFile.filename) {
+    fetch('../api2/file-delete.php?file=' + encodeURIComponent(uploadedFile.filename), { method: 'DELETE' }).catch(function() {});
+  }
+  uploadedFile = null;
+  fileInfo.style.display = 'none';
+});
+
+/* ========== プロンプト構築 ========== */
+var PROMPTS = {
+  proofread: '以下のテキストの誤字・脱字・文法ミスを校正してください。修正箇所を明示し、修正後の全文を出力してください。出力は<output></output>のxmlタグで囲んでください。\n\n<input>\n{text}\n</input>',
+  refine: '以下のテキストの表現をより適切で読みやすい文章に推敲してください。変更理由も簡潔に付記してください。出力は<output></output>のxmlタグで囲んでください。\n\n<input>\n{text}\n</input>',
+  summarize: '以下のテキストを要約してください。重要なポイントを箇条書きでまとめた後、全体の要約文を作成してください。出力は<output></output>のxmlタグで囲んでください。\n\n<input>\n{text}\n</input>'
+};
+
+var MODE_LABELS = {
+  proofread: '校正',
+  refine: '推敲',
+  summarize: '要約'
+};
+
+/* ========== ストリーミング ========== */
+function streamChat(body, onChunk, onDone, onError) {
+  fetch('../api2/chat-stream.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  }).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+    var fullText = '';
+    function read() {
+      return reader.read().then(function(result) {
+        if (result.done) { onDone(fullText); return; }
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line) continue;
+          try {
+            var j = JSON.parse(line);
+            if (j.text) { fullText += j.text; onChunk(j.text, fullText); }
+          } catch(e) {}
+        }
+        return read();
+      });
+    }
+    return read();
+  }).catch(function(err) { onError(err.message); });
+}
+
+/* ========== 実行 ========== */
+execBtn.addEventListener('click', function() {
+  var text = inputText.value.trim();
+  var mode = modeSelect.value;
+
+  if (!text && !uploadedFile) {
+    inputText.focus();
+    return;
+  }
+
+  var prompt = PROMPTS[mode].replace('{text}', text || '（添付ファイルの内容を処理してください）');
+
+  var requestBody = {
+    messages: [{ role: 'user', content: prompt }],
+    model: 'gemini-3.1-flash-lite',
+    systemPrompt: 'あなたは文書を正確に分析し、指示に従って処理するプロフェッショナルな文書エディターです。'
+  };
+
+  if (uploadedFile) {
+    requestBody.files = [{
+      filename: uploadedFile.filename,
+      mimeType: uploadedFile.mimeType
+    }];
+  }
+
+  execBtn.disabled = true;
+  execBtn.textContent = '実行中...';
+  progress.classList.add('active');
+  resultPlaceholder.style.display = 'none';
+  resultContent.style.display = 'block';
+  resultContent.innerHTML = '';
+  copyArea.style.display = 'none';
+
+  streamChat(requestBody,
+    function(chunk, full) {
+      resultContent.innerHTML = renderMarkdown(cleanOutput(full));
+    },
+    function(full) {
+      resultContent.innerHTML = renderMarkdown(cleanOutput(full));
+      execBtn.disabled = false;
+      execBtn.textContent = '実行';
+      progress.classList.remove('active');
+      copyArea.style.display = 'flex';
+      HistoryStore.save({
+        id: currentHistoryId,
+        appType: 'proofread',
+        title: MODE_LABELS[mode] + ': ' + (text || (uploadedFile ? uploadedFile.originalName : '')).substring(0, 50),
+        input: text,
+        mode: mode,
+        fileName: uploadedFile ? uploadedFile.originalName : '',
+        result: cleanOutput(full)
+      });
+      currentHistoryId = 'proofread_' + Date.now();
+    },
+    function(err) {
+      resultContent.innerHTML = '<span class="text-error">' + escapeHtml(err) + '</span>';
+      execBtn.disabled = false;
+      execBtn.textContent = '実行';
+      progress.classList.remove('active');
+    }
+  );
+});
+
+/* ========== ユーティリティ ========== */
+function cleanOutput(text) {
+  var m = text.match(/<output>([\s\S]*?)<\/output>/);
+  return m ? m[1].trim() : text;
+}
+
+copyBtn.addEventListener('click', function() {
+  navigator.clipboard.writeText(resultContent.innerText).then(function() {
+    copyBtn.classList.add('copied');
+    var orig = copyBtn.innerHTML;
+    copyBtn.innerHTML = orig.replace('コピー', 'コピー済み');
+    setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = orig; }, 2000);
+  });
+});
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ---------- 履歴復元 ---------- */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    currentHistoryId = id;
+    HistoryStore.load(id).then(function(data) {
+      if (!data) return;
+      if (data.input) inputText.value = data.input;
+      if (data.mode) modeSelect.value = data.mode;
+      if (data.result) {
+        resultPlaceholder.style.display = 'none';
+        resultContent.style.display = 'block';
+        resultContent.innerHTML = renderMarkdown(data.result);
+        copyArea.style.display = 'flex';
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
