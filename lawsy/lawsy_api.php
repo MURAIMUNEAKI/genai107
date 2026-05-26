@@ -409,57 +409,51 @@ function scoreTitleMatch($queryName, $title) {
  */
 function getTypePrompt($queryType, $typeLabel) {
     $prompts = [
-        'definition' => <<<'P'
-【定義確認型 レポート構成】
-1. 定義の概要（法令名・条文番号を明記）
-2. 条文の正確な引用
-3. 定義の構成要素の分析
-4. 関連する用語・概念との比較
-5. 実務上の適用ポイント
-P,
-        'procedure' => <<<'P'
-【手続き確認型 レポート構成】
-1. 手続きの概要と根拠法令
-2. 手続きのステップ（時系列順に整理）
-3. 必要書類・添付書類の一覧
-4. 提出先・期限・手数料
-5. 注意事項・よくある不備
-P,
-        'comparison' => <<<'P'
-【比較検討型 レポート構成】
-1. 比較対象の概要
-2. 共通点の整理
-3. 相違点の比較表（Markdown表形式）
-4. 各制度の特徴・メリット・デメリット
-5. 適用場面の違い
-P,
-        'interpretation' => <<<'P'
-【解釈適用型 レポート構成】
-1. 該当条文の引用
-2. 条文の文理解釈
-3. 立法趣旨・制定経緯
-4. 通説的な解釈
-5. 具体的な適用事例
-6. 関連する判例・行政解釈
-P,
-        'policy' => <<<'P'
-【政策研究型 レポート構成】
-1. 政策の概要と根拠法令
-2. 立法の背景・社会的要因
-3. 政策目的と期待される効果
-4. 制定・改正の経緯（時系列）
-5. 関連政策との位置づけ
-6. 課題と今後の展望
-P,
-        'comprehensive' => <<<'P'
-【包括分析型 レポート構成】
-1. 関連法令の全体像マップ
-2. 各法令の概要と相互関係
-3. 基本法と個別法の関係性
-4. 横断的な規制・義務の整理
-5. 実務上の適用フロー
-6. 最近の法改正動向
-P,
+        'definition' =>
+            "【定義確認型 レポート構成】\n" .
+            "1. 定義の概要（法令名・条文番号を明記）\n" .
+            "2. 条文の正確な引用\n" .
+            "3. 定義の構成要素の分析\n" .
+            "4. 関連する用語・概念との比較\n" .
+            "5. 実務上の適用ポイント",
+        'procedure' =>
+            "【手続き確認型 レポート構成】\n" .
+            "1. 手続きの概要と根拠法令\n" .
+            "2. 手続きのステップ（時系列順に整理）\n" .
+            "3. 必要書類・添付書類の一覧\n" .
+            "4. 提出先・期限・手数料\n" .
+            "5. 注意事項・よくある不備",
+        'comparison' =>
+            "【比較検討型 レポート構成】\n" .
+            "1. 比較対象の概要\n" .
+            "2. 共通点の整理\n" .
+            "3. 相違点の比較表（Markdown表形式）\n" .
+            "4. 各制度の特徴・メリット・デメリット\n" .
+            "5. 適用場面の違い",
+        'interpretation' =>
+            "【解釈適用型 レポート構成】\n" .
+            "1. 該当条文の引用\n" .
+            "2. 条文の文理解釈\n" .
+            "3. 立法趣旨・制定経緯\n" .
+            "4. 通説的な解釈\n" .
+            "5. 具体的な適用事例\n" .
+            "6. 関連する判例・行政解釈",
+        'policy' =>
+            "【政策研究型 レポート構成】\n" .
+            "1. 政策の概要と根拠法令\n" .
+            "2. 立法の背景・社会的要因\n" .
+            "3. 政策目的と期待される効果\n" .
+            "4. 制定・改正の経緯（時系列）\n" .
+            "5. 関連政策との位置づけ\n" .
+            "6. 課題と今後の展望",
+        'comprehensive' =>
+            "【包括分析型 レポート構成】\n" .
+            "1. 関連法令の全体像マップ\n" .
+            "2. 各法令の概要と相互関係\n" .
+            "3. 基本法と個別法の関係性\n" .
+            "4. 横断的な規制・義務の整理\n" .
+            "5. 実務上の適用フロー\n" .
+            "6. 最近の法改正動向",
     ];
 
     return $prompts[$queryType] ?? $prompts['definition'];
@@ -643,12 +637,17 @@ function callGeminiSync($prompt, $apiKey, $model, $temperature = 0.3) {
  * Gemini SSEストリーミング出力
  */
 function streamGeminiSSE($userMessage, $systemPrompt, $apiKey, $model) {
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:streamGenerateContent?alt=sse";
+    $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':streamGenerateContent?alt=sse';
     $payload = json_encode([
         'system_instruction' => ['parts' => [['text' => $systemPrompt]]],
         'contents' => [['role' => 'user', 'parts' => [['text' => $userMessage]]]],
         'generationConfig' => ['temperature' => 0.3, 'maxOutputTokens' => 65536]
     ], JSON_UNESCAPED_UNICODE);
+
+    if ($payload === false) {
+        sendSSE(['error' => 'JSON encode error: ' . json_last_error_msg()]);
+        return;
+    }
 
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -659,7 +658,15 @@ function streamGeminiSSE($userMessage, $systemPrompt, $apiKey, $model) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
     $buffer = '';
-    curl_setopt($ch, CURLOPT_WRITEFUNCTION, function($ch, $data) use (&$buffer) {
+    $hasText = false;
+    $errBuf = '';
+
+    curl_setopt($ch, CURLOPT_WRITEFUNCTION, function($ch, $data) use (&$buffer, &$hasText, &$errBuf) {
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($code >= 400) {
+            $errBuf .= $data;
+            return strlen($data);
+        }
         $buffer .= $data;
         while (($pos = strpos($buffer, "\n")) !== false) {
             $line = substr($buffer, 0, $pos);
@@ -672,11 +679,13 @@ function streamGeminiSSE($userMessage, $systemPrompt, $apiKey, $model) {
                     foreach ($json['candidates'][0]['content']['parts'] as $part) {
                         if (isset($part['text'])) {
                             sendSSE(['text' => $part['text']]);
+                            $hasText = true;
                         }
                     }
                 }
                 if (isset($json['error'])) {
-                    sendSSE(['error' => 'APIエラー: ' . ($json['error']['message'] ?? '不明')]);
+                    $emsg = isset($json['error']['message']) ? $json['error']['message'] : 'unknown';
+                    sendSSE(['error' => 'API: ' . $emsg]);
                 }
             }
         }
@@ -684,21 +693,40 @@ function streamGeminiSSE($userMessage, $systemPrompt, $apiKey, $model) {
     });
 
     curl_exec($ch);
+    $finalCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-    // バッファ残り処理
-    if (trim($buffer) !== '' && strpos($buffer, 'data: ') === 0) {
-        $json = json_decode(substr(trim($buffer), 6), true);
+    if ($errBuf !== '') {
+        $ej = json_decode(trim($errBuf), true);
+        $msg = isset($ej['error']['message']) ? $ej['error']['message'] : '';
+        sendSSE(['error' => 'Gemini API HTTP ' . $finalCode . ': ' . $msg]);
+        curl_close($ch);
+        return;
+    }
+
+    $rem = trim($buffer);
+    if ($rem !== '' && strpos($rem, 'data: ') === 0) {
+        $json = json_decode(substr($rem, 6), true);
         if (isset($json['candidates'][0]['content']['parts'])) {
             foreach ($json['candidates'][0]['content']['parts'] as $part) {
                 if (isset($part['text'])) {
                     sendSSE(['text' => $part['text']]);
+                    $hasText = true;
                 }
             }
         }
     }
 
+    if ($rem !== '' && strpos($rem, 'data: ') !== 0) {
+        $ej = json_decode($rem, true);
+        if (isset($ej['error']['message'])) {
+            sendSSE(['error' => 'Gemini API: ' . $ej['error']['message']]);
+        }
+    }
+
     if (curl_errno($ch)) {
-        sendSSE(['error' => 'API通信エラー: ' . curl_error($ch)]);
+        sendSSE(['error' => 'cURL: ' . curl_error($ch)]);
+    } elseif (!$hasText) {
+        sendSSE(['error' => 'No response (HTTP ' . $finalCode . ', model=' . $model . ')']);
     }
     curl_close($ch);
 }
