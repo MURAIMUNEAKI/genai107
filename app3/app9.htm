@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>テキストからパワポ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{height:100%;}
+body{font-family:'Noto Sans JP',sans-serif;background:#1a1a2e;color:#333;line-height:1.6;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+body>:not(.header):not(.main):not(script){position:absolute;width:0;height:0;overflow:hidden;}
+
+.header{background:linear-gradient(to right,#3a8a9c 0%,#53b5ca 40%,#7dcfb6 75%,#a8e6a3 100%);color:#fff;padding:10px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);flex-shrink:0;}
+.header h1{font-size:1.2rem;font-weight:900;letter-spacing:0.08em;text-shadow:0 2px 8px rgba(0,0,0,0.3);}
+
+.main{display:flex;flex:1;overflow:hidden;}
+
+/* 左パネル */
+.left-panel{width:40%;background:#eef6f6;display:flex;flex-direction:column;border-right:1px solid #e0e0e0;overflow:hidden;}
+.left-panel h2{font-size:1rem;font-weight:700;padding:14px 16px 8px;color:#533483;flex-shrink:0;}
+.form-area{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1;overflow-y:auto;}
+.form-group{display:flex;flex-direction:column;gap:3px;flex:1;}
+.form-group label{font-size:0.82rem;font-weight:700;color:#444;}
+.form-group textarea{
+  flex:1;border:2px solid #d0d0d0;border-radius:8px;padding:8px 10px;
+  font-size:0.88rem;font-family:inherit;resize:none;color:#333;
+  min-height:80px;transition:border-color 0.2s;
+}
+.form-group textarea:focus{outline:none;border-color:#533483;box-shadow:0 0 0 2px rgba(83,52,131,0.15);}
+.textarea-hint{font-size:0.76rem;color:#999;margin-top:2px;}
+
+.btn-area{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #e0e0e0;flex-shrink:0;background:#f0f0f0;}
+.send-btn{flex:1;background:linear-gradient(135deg,#0f3460,#533483,#e94560);color:#fff;border:none;border-radius:10px;padding:12px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.send-btn:hover:not(:disabled){box-shadow:0 4px 16px rgba(83,52,131,0.3);transform:translateY(-1px);}
+.send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.reset-btn{background:#fff;color:#666;border:2px solid #ccc;border-radius:10px;padding:12px 20px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.reset-btn:hover{border-color:#e94560;color:#e94560;}
+
+/* 右パネル */
+.right-panel{width:60%;display:flex;flex-direction:column;background:#fff;}
+.right-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#fafafa;flex-wrap:wrap;gap:6px;}
+.right-header h2{font-size:0.95rem;font-weight:700;color:#333;}
+.right-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.color-label{font-size:0.78rem;color:#666;white-space:nowrap;}
+#colorScheme{font-size:0.78rem;border:2px solid #0ea5e9;border-radius:6px;padding:3px 8px;color:#fff;background:#0ea5e9;cursor:pointer;font-family:inherit;font-weight:700;}
+#colorScheme option{font-weight:700;padding:4px 8px;}
+.pptx-btn{background:linear-gradient(135deg,#0f3460,#533483,#e94560);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;white-space:nowrap;}
+.pptx-btn:hover:not(:disabled){box-shadow:0 3px 10px rgba(83,52,131,0.3);transform:translateY(-1px);}
+.pptx-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+.preview-area{flex:1;overflow-y:auto;padding:16px;}
+
+/* ローディング */
+.loading{display:none;text-align:center;padding:40px;}
+.loading.active{display:block;}
+.spinner{width:36px;height:36px;border:4px solid #e0e0e0;border-top-color:#533483;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading p{font-size:0.88rem;color:#666;}
+
+/* プレビューカード */
+.preview-placeholder{color:#aaa;font-size:0.88rem;text-align:center;padding:40px 16px;}
+.slide-card{
+  background:#fff;border:1px solid #e0e0e0;border-radius:10px;
+  padding:12px 14px;margin-bottom:10px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.slide-card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.slide-type-badge{background:#533483;color:#fff;border-radius:5px;padding:2px 8px;font-size:0.72rem;font-weight:700;white-space:nowrap;}
+.slide-card-title{font-size:0.9rem;font-weight:700;color:#333;}
+.slide-card-body{font-size:0.8rem;color:#555;line-height:1.6;}
+.slide-card-body ul{margin:4px 0 4px 16px;}
+.slide-card-body li{margin:1px 0;}
+.slide-card-body .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+.slide-card-body .col-label{font-size:0.75rem;font-weight:700;color:#533483;margin-bottom:2px;}
+.slide-card-body .kpi-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.slide-card-body .kpi-item{background:#f3e8ff;border-radius:6px;padding:4px 8px;font-size:0.78rem;}
+.slide-card-body .kpi-value{font-weight:700;color:#533483;font-size:1.1em;}
+.slide-card-body .card-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.slide-card-body .card-item{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:4px 8px;font-size:0.78rem;flex:1;min-width:100px;}
+.slide-card-body .card-heading{font-weight:700;color:#333;font-size:0.78rem;}
+.slide-card-body .card-desc{color:#777;}
+.slide-card-body .faq-item{margin-bottom:4px;}
+.slide-card-body .faq-q{font-weight:700;color:#533483;}
+.slide-card-body .faq-a{color:#555;margin-left:8px;}
+.slide-card-body .step-list{margin:4px 0;counter-reset:step;}
+.slide-card-body .step-item{display:flex;align-items:flex-start;gap:6px;margin-bottom:3px;}
+.slide-card-body .step-num{background:#533483;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;margin-top:2px;}
+.slide-card-body .timeline-item{display:flex;gap:8px;margin-bottom:3px;}
+.slide-card-body .timeline-date{color:#533483;font-weight:700;white-space:nowrap;font-size:0.78rem;}
+.slide-card-body .progress-item{margin-bottom:4px;}
+.slide-card-body .progress-label{display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:2px;}
+.slide-card-body .progress-bar-bg{background:#e0e0e0;border-radius:4px;height:6px;}
+.slide-card-body .progress-bar-fill{background:#533483;border-radius:4px;height:6px;}
+.slide-card-body .quote-text{font-style:italic;color:#333;font-size:0.85rem;border-left:3px solid #533483;padding-left:8px;margin:4px 0;}
+.slide-card-body .stats-row{display:flex;gap:10px;align-items:center;margin-top:4px;}
+.slide-card-body .stat-box{flex:1;background:#f3e8ff;border-radius:6px;padding:6px 8px;text-align:center;}
+.slide-card-body .stat-value{font-size:1.2em;font-weight:700;color:#533483;}
+.slide-card-body .stat-label{font-size:0.72rem;color:#777;}
+.slide-card-body .vs{font-weight:700;color:#999;font-size:0.85rem;}
+.slide-card-body .diagram-center{display:inline-block;background:#533483;color:#fff;border-radius:20px;padding:3px 10px;font-size:0.8rem;font-weight:700;margin-bottom:4px;}
+.slide-card-body table{width:100%;border-collapse:collapse;font-size:0.76rem;margin-top:4px;}
+.slide-card-body th{background:#f3e8ff;color:#333;padding:3px 6px;text-align:left;font-weight:700;}
+.slide-card-body td{border-top:1px solid #e0e0e0;padding:3px 6px;}
+.slide-card-body .illust-info{background:#fef9ee;border:1px solid #fde68a;border-radius:6px;padding:6px 8px;font-size:0.78rem;margin-top:4px;}
+.slide-card-body .illust-label{font-weight:700;color:#d97706;font-size:0.72rem;}
+
+/* 生成中オーバーレイ */
+.generating-overlay{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.6);z-index:9999;
+  align-items:center;justify-content:center;flex-direction:column;gap:24px;
+  backdrop-filter:blur(4px);
+}
+.generating-overlay.active{display:flex;}
+.generating-spinner{width:90px;height:90px;border:7px solid rgba(255,255,255,0.15);border-top-color:#e94560;border-right-color:#533483;border-radius:50%;animation:spin 0.8s linear infinite;}
+.generating-text{color:#fff;font-size:1.15rem;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,0.4);}
+
+@media(max-width:700px){
+  .main{flex-direction:column;}
+  .left-panel,.right-panel{width:100%;}
+  .left-panel{max-height:50vh;border-right:none;border-bottom:1px solid #e0e0e0;}
+  .right-panel{flex:1;}
+  .header h1{font-size:1rem;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+  <h1>テキストからパワポ</h1>
+</div>
+
+<div class="main">
+  <!-- 左パネル -->
+  <div class="left-panel">
+    <h2>パワポにしたい文章をコピーして貼り付け</h2>
+    <div class="form-area">
+      <div class="form-group">
+        <textarea id="inputText" placeholder="例：GIGAスクール構想の概要と課題、今後の方向性について。一人一台端末の活用状況、教員研修の重要性、家庭との連携、デジタル教科書の導入など。"></textarea>
+        <span class="textarea-hint">箇条書き・メモ・長文など、どんな形式でもOK。文字数に応じてスライド枚数が自動調整されます。</span>
+      </div>
+    </div>
+    <div class="btn-area">
+      <button class="send-btn" id="submitBtn" onclick="startGenerate()" disabled>スライド構成を作成</button>
+      <button class="reset-btn" onclick="resetAll()">リセット</button>
+    </div>
+  </div>
+
+  <!-- 右パネル -->
+  <div class="right-panel">
+    <div class="right-header">
+      <h2>スライドプレビュー</h2>
+      <div class="right-actions">
+        <span class="color-label">カラー:</span>
+        <select id="colorScheme">
+          <option value="blue">青色</option>
+          <option value="red">赤色</option>
+          <option value="yellow">黄色</option>
+          <option value="cyan">水色</option>
+          <option value="green">緑色</option>
+          <option value="black">黒色</option>
+        </select>
+        <button class="pptx-btn" id="pptxBtn" onclick="onPptxClick()" disabled>パワポ作成（.pptx）</button>
+      </div>
+    </div>
+    <div class="preview-area" id="previewArea">
+      <div class="preview-placeholder" id="previewPlaceholder">左パネルでテキストを入力し「スライド構成を作成」を押すと、ここにプレビューが表示されます。</div>
+      <div id="slidePreview"></div>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>AIがスライド構成を生成中...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 生成中オーバーレイ -->
+<div class="generating-overlay" id="generatingOverlay">
+  <div class="generating-spinner"></div>
+  <div class="generating-text" id="generatingText">パワポを生成中...</div>
+</div>
+
+<script>
+// ===== カラースキーム =====
+var COLOR_SCHEMES = {
+    blue:   { name:'青色',  PRIMARY:'0ea5e9', DARK:'0c4a6e', DARK2:'0369a1', DARK3:'075985', LIGHT:'93c5fd', BG:'f0f9ff', BORDER:'e2e8f0', TEXT:'1e293b', GRAY:'64748b', WHITE:'FFFFFF', COMPARE:'ea580c', COMPARE_BG:'fff7ed', ACCENTS:['0ea5e9','8b5cf6','10b981','f59e0b','ec4899'], GRAD_TOP:'1e3a5f', GRAD_BOTTOM:'0ea5e9' },
+    red:    { name:'赤色',  PRIMARY:'ef4444', DARK:'7f1d1d', DARK2:'991b1b', DARK3:'b91c1c', LIGHT:'fca5a5', BG:'fef2f2', BORDER:'e2e8f0', TEXT:'1e293b', GRAY:'64748b', WHITE:'FFFFFF', COMPARE:'2563eb', COMPARE_BG:'eff6ff', ACCENTS:['ef4444','3b82f6','10b981','f59e0b','8b5cf6'], GRAD_TOP:'5c1a1a', GRAD_BOTTOM:'ef4444' },
+    yellow: { name:'黄色',  PRIMARY:'d97706', DARK:'78350f', DARK2:'92400e', DARK3:'a16207', LIGHT:'fde68a', BG:'fffbeb', BORDER:'e2e8f0', TEXT:'1e293b', GRAY:'64748b', WHITE:'FFFFFF', COMPARE:'7c3aed', COMPARE_BG:'f5f3ff', ACCENTS:['d97706','3b82f6','10b981','ec4899','8b5cf6'], GRAD_TOP:'4a2508', GRAD_BOTTOM:'d97706' },
+    cyan:   { name:'水色',  PRIMARY:'06b6d4', DARK:'164e63', DARK2:'155e75', DARK3:'0e7490', LIGHT:'67e8f9', BG:'ecfeff', BORDER:'e2e8f0', TEXT:'1e293b', GRAY:'64748b', WHITE:'FFFFFF', COMPARE:'e11d48', COMPARE_BG:'fff1f2', ACCENTS:['06b6d4','8b5cf6','10b981','f59e0b','ec4899'], GRAD_TOP:'0f3443', GRAD_BOTTOM:'06b6d4' },
+    green:  { name:'緑色',  PRIMARY:'16a34a', DARK:'14532d', DARK2:'166534', DARK3:'15803d', LIGHT:'86efac', BG:'f0fdf4', BORDER:'e2e8f0', TEXT:'1e293b', GRAY:'64748b', WHITE:'FFFFFF', COMPARE:'dc2626', COMPARE_BG:'fef2f2', ACCENTS:['16a34a','3b82f6','f59e0b','ec4899','8b5cf6'], GRAD_TOP:'0a3318', GRAD_BOTTOM:'16a34a' },
+    black:  { name:'黒色',  PRIMARY:'4b5563', DARK:'111827', DARK2:'1f2937', DARK3:'374151', LIGHT:'9ca3af', BG:'f3f4f6', BORDER:'d1d5db', TEXT:'1e293b', GRAY:'6b7280', WHITE:'FFFFFF', COMPARE:'f59e0b', COMPARE_BG:'fffbeb', ACCENTS:['4b5563','3b82f6','10b981','f59e0b','ec4899'], GRAD_TOP:'000000', GRAD_BOTTOM:'4b5563', isDark:true }
+};
+
+var fullText = '';
+var abortController = null;
+
+document.getElementById('inputText').addEventListener('input', function() {
+    document.getElementById('submitBtn').disabled = !this.value.trim();
+});
+
+function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function stripMarkdown(s) {
+    s = s.replace(/^#{1,6}\s+/gm, '');
+    s = s.replace(/\*\*\*(.+?)\*\*\*/g, '$1');
+    s = s.replace(/\*\*(.+?)\*\*/g, '$1');
+    s = s.replace(/\*(.+?)\*/g, '$1');
+    s = s.replace(/`([^`]+)`/g, '$1');
+    return s;
+}
+
+// ===== スライドパーサー =====
+function parseSlides(text) {
+    var slides = [];
+    var blocks = text.split(/^---$/m);
+    for (var bi = 0; bi < blocks.length; bi++) {
+        var lines = blocks[bi].split('\n'), cleaned = [];
+        for (var li = 0; li < lines.length; li++) { var t = lines[li].trim(); if (t) cleaned.push(t); }
+        if (!cleaned.length) continue;
+        var slide = {}, currentSide = null;
+        for (var ci = 0; ci < cleaned.length; ci++) {
+            var line = cleaned[ci];
+            if (line.indexOf('type:') === 0) slide.type = line.substring(5).trim();
+            else if (line.indexOf('title:') === 0) slide.title = line.substring(6).trim();
+            else if (line.indexOf('subtitle:') === 0) slide.subtitle = line.substring(9).trim();
+            else if (line.indexOf('date:') === 0) slide.date = line.substring(5).trim();
+            else if (line.indexOf('left_title:') === 0) { slide.left_title = line.substring(11).trim(); currentSide = 'left'; if (!slide.left) slide.left = []; }
+            else if (line.indexOf('right_title:') === 0) { slide.right_title = line.substring(12).trim(); currentSide = 'right'; if (!slide.right) slide.right = []; }
+            else if (line.indexOf('- ') === 0) { var item = line.substring(2).trim(); if (currentSide === 'left') { if (!slide.left) slide.left = []; slide.left.push(item); } else if (currentSide === 'right') { if (!slide.right) slide.right = []; slide.right.push(item); } else { if (!slide.items) slide.items = []; slide.items.push(item); } }
+            else if (line.indexOf('step:') === 0) { if (!slide.steps) slide.steps = []; slide.steps.push(line.substring(5).trim()); }
+            else if (line.indexOf('event:') === 0) { if (!slide.events) slide.events = []; var ep = line.substring(6).trim().split('|'); slide.events.push({ date:(ep[0]||'').trim(), text:(ep[1]||'').trim() }); }
+            else if (line.indexOf('center:') === 0) slide.center = line.substring(7).trim();
+            else if (line.indexOf('card:') === 0) { if (!slide.cards) slide.cards = []; var cp = line.substring(5).trim().split('|'); slide.cards.push({ heading:(cp[0]||'').trim(), desc:(cp[1]||'').trim() }); }
+            else if (line.indexOf('header:') === 0) slide.header = line.substring(7).trim();
+            else if (line.indexOf('columns:') === 0) slide.columns = line.substring(8).trim().split('|').map(function(c){ return c.trim(); });
+            else if (line.indexOf('row:') === 0) { if (!slide.rows) slide.rows = []; slide.rows.push(line.substring(4).trim().split('|').map(function(c){ return c.trim(); })); }
+            else if (line.indexOf('progress:') === 0) { if (!slide.progresses) slide.progresses = []; var pp = line.substring(9).trim().split('|'); slide.progresses.push({ label:(pp[0]||'').trim(), value:parseInt(pp[1])||0 }); }
+            else if (line.indexOf('quote:') === 0) slide.quote = line.substring(6).trim();
+            else if (line.indexOf('author:') === 0) slide.author = line.substring(7).trim();
+            else if (line.indexOf('metric:') === 0) { if (!slide.metrics) slide.metrics = []; var mp = line.substring(7).trim().split('|'); slide.metrics.push({ label:(mp[0]||'').trim(), value:(mp[1]||'').trim(), unit:(mp[2]||'').trim() }); }
+            else if (line.indexOf('bcard:') === 0) { if (!slide.bcards) slide.bcards = []; var bp = line.substring(6).trim().split('|'); slide.bcards.push({ heading:(bp[0]||'').trim(), desc:(bp[1]||'').trim() }); }
+            else if (line.indexOf('q:') === 0) { if (!slide.faqs) slide.faqs = []; slide.faqs.push({ q: line.substring(2).trim(), a:'' }); }
+            else if (line.indexOf('a:') === 0) { if (slide.faqs && slide.faqs.length > 0) slide.faqs[slide.faqs.length-1].a = line.substring(2).trim(); }
+            else if (line.indexOf('left_label:') === 0) slide.left_label = line.substring(11).trim();
+            else if (line.indexOf('left_value:') === 0) slide.left_value = line.substring(11).trim();
+            else if (line.indexOf('right_label:') === 0) slide.right_label = line.substring(12).trim();
+            else if (line.indexOf('right_value:') === 0) slide.right_value = line.substring(12).trim();
+            else if (line.indexOf('description:') === 0) slide.description = line.substring(12).trim();
+            else if (line.indexOf('image_prompt:') === 0) slide.image_prompt = line.substring(13).trim();
+            else if (line.indexOf('caption:') === 0) slide.caption = line.substring(8).trim();
+        }
+        if (slide.type) slides.push(slide);
+    }
+    return slides;
+}
+
+// ===== HTMLプレビューレンダラー =====
+function renderPreview(container, text) {
+    var slides = parseSlides(text);
+    if (!slides.length) return;
+    var html = '';
+    for (var i = 0; i < slides.length; i++) {
+        var s = slides[i];
+        html += '<div class="slide-card"><div class="slide-card-header"><span class="slide-type-badge">'+esc(s.type||'')+'</span><span class="slide-card-title">'+esc(s.title||'')+'</span></div><div class="slide-card-body">';
+        switch (s.type) {
+            case 'title':
+                if (s.subtitle) html += '<div>'+esc(s.subtitle)+'</div>';
+                if (s.date) html += '<div style="color:#999;font-size:0.76rem;">'+esc(s.date)+'</div>';
+                break;
+            case 'agenda': case 'content':
+                if (s.items && s.items.length) { html += '<ul>'; for (var j=0;j<s.items.length;j++) html += '<li>'+esc(s.items[j])+'</li>'; html += '</ul>'; }
+                break;
+            case 'content2': case 'compare':
+                html += '<div class="two-col"><div><div class="col-label">'+esc(s.left_title||'左')+'</div>';
+                if (s.left && s.left.length) { html += '<ul>'; for (var j=0;j<s.left.length;j++) html += '<li>'+esc(s.left[j])+'</li>'; html += '</ul>'; }
+                html += '</div><div><div class="col-label">'+esc(s.right_title||'右')+'</div>';
+                if (s.right && s.right.length) { html += '<ul>'; for (var j=0;j<s.right.length;j++) html += '<li>'+esc(s.right[j])+'</li>'; html += '</ul>'; }
+                html += '</div></div>';
+                break;
+            case 'process':
+                if (s.steps && s.steps.length) { html += '<div class="step-list">'; for (var j=0;j<s.steps.length;j++) html += '<div class="step-item"><span class="step-num">'+(j+1)+'</span><span>'+esc(s.steps[j])+'</span></div>'; html += '</div>'; }
+                break;
+            case 'timeline':
+                if (s.events && s.events.length) { for (var j=0;j<s.events.length;j++) html += '<div class="timeline-item"><span class="timeline-date">'+esc(s.events[j].date)+'</span><span>'+esc(s.events[j].text)+'</span></div>'; }
+                break;
+            case 'diagram':
+                if (s.center) html += '<div><span class="diagram-center">'+esc(s.center)+'</span></div>';
+                if (s.items && s.items.length) { html += '<ul>'; for (var j=0;j<s.items.length;j++) html += '<li>'+esc(s.items[j])+'</li>'; html += '</ul>'; }
+                break;
+            case 'cards': case 'headerCards':
+                if (s.type==='headerCards' && s.header) html += '<div style="font-weight:700;color:#333;margin-bottom:4px;">'+esc(s.header)+'</div>';
+                if (s.cards && s.cards.length) { html += '<div class="card-row">'; for (var j=0;j<s.cards.length;j++) html += '<div class="card-item"><div class="card-heading">'+esc(s.cards[j].heading)+'</div><div class="card-desc">'+esc(s.cards[j].desc)+'</div></div>'; html += '</div>'; }
+                break;
+            case 'table':
+                if (s.columns && s.columns.length) { html += '<table><thead><tr>'; for (var j=0;j<s.columns.length;j++) html += '<th>'+esc(s.columns[j])+'</th>'; html += '</tr></thead><tbody>'; if (s.rows) { for (var j=0;j<s.rows.length;j++) { html += '<tr>'; for (var k=0;k<s.rows[j].length;k++) html += '<td>'+esc(s.rows[j][k])+'</td>'; html += '</tr>'; } } html += '</tbody></table>'; }
+                break;
+            case 'progress':
+                if (s.progresses && s.progresses.length) { for (var j=0;j<s.progresses.length;j++) { var p=s.progresses[j]; html += '<div class="progress-item"><div class="progress-label"><span>'+esc(p.label)+'</span><span>'+p.value+'%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:'+Math.min(100,p.value)+'%"></div></div></div>'; } }
+                break;
+            case 'quote':
+                if (s.quote) html += '<div class="quote-text">'+esc(s.quote)+'</div>';
+                if (s.author) html += '<div style="text-align:right;font-size:0.76rem;color:#999;">— '+esc(s.author)+'</div>';
+                break;
+            case 'kpi':
+                if (s.metrics && s.metrics.length) { html += '<div class="kpi-row">'; for (var j=0;j<s.metrics.length;j++) { var m=s.metrics[j]; html += '<div class="kpi-item"><span class="kpi-value">'+esc(m.value)+'</span><span style="font-size:0.72rem;color:#777;">'+esc(m.unit)+'</span><div style="font-size:0.72rem;color:#333;">'+esc(m.label)+'</div></div>'; } html += '</div>'; }
+                break;
+            case 'bulletCards':
+                if (s.bcards && s.bcards.length) { html += '<div class="card-row">'; for (var j=0;j<s.bcards.length;j++) html += '<div class="card-item"><div class="card-heading" style="display:flex;align-items:center;gap:4px;"><span class="step-num" style="flex-shrink:0;">'+(j+1)+'</span>'+esc(s.bcards[j].heading)+'</div><div class="card-desc">'+esc(s.bcards[j].desc)+'</div></div>'; html += '</div>'; }
+                break;
+            case 'faq':
+                if (s.faqs && s.faqs.length) { for (var j=0;j<s.faqs.length;j++) html += '<div class="faq-item"><div class="faq-q">Q. '+esc(s.faqs[j].q)+'</div><div class="faq-a">A. '+esc(s.faqs[j].a)+'</div></div>'; }
+                break;
+            case 'statsCompare':
+                html += '<div class="stats-row"><div class="stat-box"><div class="stat-value">'+esc(s.left_value||'')+'</div><div class="stat-label">'+esc(s.left_label||'')+'</div></div><div class="vs">VS</div><div class="stat-box"><div class="stat-value">'+esc(s.right_value||'')+'</div><div class="stat-label">'+esc(s.right_label||'')+'</div></div></div>';
+                if (s.description) html += '<div style="margin-top:4px;color:#777;font-size:0.78rem;">'+esc(s.description)+'</div>';
+                break;
+            case 'closing':
+                if (s.subtitle) html += '<div style="color:#777;">'+esc(s.subtitle)+'</div>';
+                break;
+            case 'illust':
+                html += '<div class="illust-info"><div class="illust-label">AI画像プロンプト</div>'+esc(s.image_prompt||'')+'</div>';
+                if (s.caption) html += '<div style="margin-top:4px;color:#777;">'+esc(s.caption)+'</div>';
+                break;
+        }
+        html += '</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+// ===== API呼び出し（同期JSON） =====
+async function startGenerate() {
+    var inputText = document.getElementById('inputText').value.trim();
+    if (!inputText) return;
+    fullText = '';
+    document.getElementById('previewPlaceholder').style.display = 'none';
+    document.getElementById('slidePreview').innerHTML = '';
+    document.getElementById('loading').classList.add('active');
+    document.getElementById('pptxBtn').disabled = true;
+    document.getElementById('submitBtn').disabled = true;
+
+    if (abortController) abortController.abort();
+    abortController = new AbortController();
+
+    try {
+        var res = await fetch('app9.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: inputText }),
+            signal: abortController.signal
+        });
+
+        if (!res.ok) {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('slidePreview').innerHTML = '<div style="color:red;padding:12px;">APIエラー (HTTP ' + res.status + ')</div>';
+            document.getElementById('submitBtn').disabled = false;
+            return;
+        }
+
+        var data = await res.json();
+        document.getElementById('loading').classList.remove('active');
+
+        if (data.ok) {
+            fullText = data.answer;
+            renderPreview(document.getElementById('slidePreview'), fullText);
+            if (parseSlides(fullText).length > 0) document.getElementById('pptxBtn').disabled = false;
+        } else {
+            document.getElementById('slidePreview').innerHTML = '<div style="color:red;padding:12px;">[エラー] ' + esc(data.error || '不明なエラー') + '</div>';
+        }
+    } catch (e) {
+        document.getElementById('loading').classList.remove('active');
+        if (e.name !== 'AbortError') {
+            document.getElementById('slidePreview').innerHTML = '<div style="color:red;padding:12px;">通信エラー: ' + esc(e.message) + '</div>';
+        }
+    }
+
+    abortController = null;
+    document.getElementById('submitBtn').disabled = false;
+}
+
+function resetAll() {
+    if (abortController) { abortController.abort(); abortController=null; }
+    fullText=''; document.getElementById('inputText').value=''; document.getElementById('slidePreview').innerHTML=''; document.getElementById('previewPlaceholder').style.display=''; document.getElementById('loading').classList.remove('active'); document.getElementById('pptxBtn').disabled=true; document.getElementById('submitBtn').disabled=true;
+}
+
+function onPptxClick() { if (!fullText) return; document.getElementById('pptxBtn').disabled=true; generatePptx(fullText); }
+
+// ===== Canvas グラデーション =====
+function makeGradientData(hex1,hex2) { var cv=document.createElement('canvas'); cv.width=1334; cv.height=750; var ctx=cv.getContext('2d'); var g=ctx.createLinearGradient(0,0,0,750); g.addColorStop(0,'#'+hex1); g.addColorStop(1,'#'+hex2); ctx.fillStyle=g; ctx.fillRect(0,0,1334,750); return cv.toDataURL('image/png'); }
+function addGradientBg(slide,hexTop,hexBottom) { slide.background={data:makeGradientData(hexTop,hexBottom)}; }
+function makeHorizontalGradientData(hexLeft,hexRight,w,h) { var cv=document.createElement('canvas'); cv.width=w; cv.height=h; var ctx=cv.getContext('2d'); var g=ctx.createLinearGradient(0,0,w,0); g.addColorStop(0,'#'+hexLeft); g.addColorStop(1,'#'+hexRight); ctx.fillStyle=g; ctx.fillRect(0,0,w,h); return cv.toDataURL('image/png'); }
+
+// ===== illustスライド画像プリロード =====
+function preloadIllustImages(slides, callback) {
+    var illustSlides = slides.filter(function(s){ return s.type==='illust' && s.image_prompt; });
+    if (!illustSlides.length) { callback({}); return; }
+    var imageDataMap={}, loaded=0, total=illustSlides.length;
+    var genText = document.getElementById('generatingText');
+    if (genText) genText.textContent='画像を生成中... (0/'+total+')';
+    for (var i=0;i<illustSlides.length;i++) {
+        (function(prompt) {
+            fetch('gazou.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({query:prompt})})
+            .then(function(r){ return r.json(); })
+            .then(function(d){ if (d.image) imageDataMap[prompt]=d.image; loaded++; if (genText) genText.textContent='画像を生成中... ('+loaded+'/'+total+')'; if (loaded===total) callback(imageDataMap); })
+            .catch(function(){ loaded++; if (loaded===total) callback(imageDataMap); });
+        })(illustSlides[i].image_prompt);
+    }
+}
+
+// ===== PPTX生成 =====
+function generatePptx(fullText) {
+    var overlay=document.getElementById('generatingOverlay'), genText=document.getElementById('generatingText');
+    overlay.classList.add('active');
+    genText.textContent='パワポを生成中...';
+    var slides = parseSlides(fullText);
+    if (!slides.length) {
+        overlay.classList.remove('active');
+        document.getElementById('pptxBtn').disabled=false;
+        alert('スライドが見つかりません。');
+        return;
+    }
+    slides = slides.filter(function(s){ return s.type!=='illust'; });
+    preloadIllustImages(slides, function(imageDataMap) {
+        genText.textContent='スライドを構築中...';
+        try {
+            buildPptx(slides, imageDataMap).then(function() {
+                overlay.classList.remove('active');
+                document.getElementById('pptxBtn').disabled=false;
+            }).catch(function(e) {
+                alert('PPTX生成エラー: '+e.message);
+                overlay.classList.remove('active');
+                document.getElementById('pptxBtn').disabled=false;
+            });
+        } catch(e) {
+            alert('PPTX生成エラー: '+e.message);
+            overlay.classList.remove('active');
+            document.getElementById('pptxBtn').disabled=false;
+        }
+    });
+}
+
+function buildPptx(slides, imageDataMap) {
+    var colorKey=document.getElementById('colorScheme').value||'blue';
+    var C=COLOR_SCHEMES[colorKey]||COLOR_SCHEMES.blue, F='Meiryo', isBlack=!!C.isDark;
+    var contentBg=isBlack?C.DARK3:C.WHITE, contentText=isBlack?C.WHITE:C.TEXT, cardBg=isBlack?C.DARK2:C.BG, cardBorder=isBlack?C.DARK3:C.BORDER, cardText=isBlack?C.WHITE:C.TEXT, cardHeading=isBlack?C.WHITE:C.DARK;
+    var pptx=new PptxGenJS(); pptx.layout='LAYOUT_WIDE';
+
+    function addTitleBar(slide,title) { var barImg=makeHorizontalGradientData(C.DARK2,C.PRIMARY,1334,115); slide.addImage({data:barImg,x:0,y:0,w:13.33,h:1.15}); slide.addText(title,{x:0.6,y:0.08,w:12.1,h:1.0,fontSize:24,fontFace:F,bold:true,color:C.WHITE,valign:'middle'}); }
+    function addPageNum(slide,n) { slide.addText(String(n),{x:12.3,y:7.0,w:0.7,h:0.3,fontSize:10,fontFace:F,color:isBlack?'6b7280':'94a3b8',align:'right'}); }
+
+    for (var idx=0;idx<slides.length;idx++) {
+        var s=slides[idx], slide=pptx.addSlide();
+        switch (s.type) {
+            case 'title':
+                addGradientBg(slide,C.GRAD_TOP,C.GRAD_BOTTOM);
+                slide.addText(s.title||'',{x:0.8,y:1.4,w:11.7,h:1.8,fontSize:30,fontFace:F,bold:true,color:C.WHITE,align:'center',valign:'middle',shrinkText:true});
+                slide.addShape(pptx.ShapeType.rect,{x:4.5,y:3.3,w:4.3,h:0.05,fill:{color:C.PRIMARY}});
+                if (s.subtitle) slide.addText(s.subtitle,{x:0.8,y:3.6,w:11.7,h:0.8,fontSize:20,fontFace:F,color:C.LIGHT,align:'center',valign:'middle'});
+                if (s.date) slide.addText(s.date,{x:0.8,y:4.6,w:11.7,h:0.6,fontSize:16,fontFace:F,color:C.LIGHT,align:'center'});
+                break;
+            case 'agenda':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'目次');
+                if (s.items&&s.items.length) { var ag=[]; for (var j=0;j<s.items.length;j++) ag.push({text:(j+1)+'.  '+s.items[j],options:{breakLine:true,paraSpaceAfter:12,bullet:false}}); slide.addText(ag,{x:1.5,y:1.6,w:10.3,h:5.2,fontSize:20,fontFace:F,color:contentText,valign:'top',lineSpacingMultiple:1.6}); }
+                addPageNum(slide,idx+1); break;
+            case 'content':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.items&&s.items.length) { var fs2=s.items.length>5?16:18; var ci2=[]; for (var j=0;j<s.items.length;j++) ci2.push({text:s.items[j],options:{bullet:{type:'bullet',color:C.ACCENTS[j%C.ACCENTS.length]},breakLine:true,paraSpaceAfter:10}}); slide.addText(ci2,{x:0.8,y:1.5,w:11.5,h:5.2,fontSize:fs2,fontFace:F,color:contentText,valign:'top',lineSpacingMultiple:1.5}); }
+                addPageNum(slide,idx+1); break;
+            case 'content2':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.left_title) slide.addText(s.left_title,{x:0.5,y:1.4,w:5.8,h:0.5,fontSize:16,fontFace:F,bold:true,color:C.PRIMARY});
+                if (s.left&&s.left.length) { var li2=[]; for (var j=0;j<s.left.length;j++) li2.push({text:s.left[j],options:{bullet:{type:'bullet',color:C.PRIMARY},breakLine:true,paraSpaceAfter:8}}); slide.addText(li2,{x:0.6,y:2.0,w:5.6,h:4.8,fontSize:16,fontFace:F,color:contentText,valign:'top',lineSpacingMultiple:1.4}); }
+                slide.addShape(pptx.ShapeType.rect,{x:6.55,y:1.4,w:0.03,h:5.5,fill:{color:cardBorder}});
+                if (s.right_title) slide.addText(s.right_title,{x:6.9,y:1.4,w:5.8,h:0.5,fontSize:16,fontFace:F,bold:true,color:C.COMPARE});
+                if (s.right&&s.right.length) { var ri2=[]; for (var j=0;j<s.right.length;j++) ri2.push({text:s.right[j],options:{bullet:{type:'bullet',color:C.COMPARE},breakLine:true,paraSpaceAfter:8}}); slide.addText(ri2,{x:7.0,y:2.0,w:5.6,h:4.8,fontSize:16,fontFace:F,color:contentText,valign:'top',lineSpacingMultiple:1.4}); }
+                addPageNum(slide,idx+1); break;
+            case 'compare':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                var lBg2=isBlack?C.DARK2:C.BG, rBg2=isBlack?C.DARK2:C.COMPARE_BG;
+                slide.addShape(pptx.ShapeType.roundRect,{x:0.4,y:1.5,w:6.0,h:5.3,rectRadius:0.1,fill:{color:lBg2},line:{color:C.PRIMARY,width:1.5}});
+                slide.addShape(pptx.ShapeType.roundRect,{x:6.9,y:1.5,w:6.0,h:5.3,rectRadius:0.1,fill:{color:rBg2},line:{color:C.COMPARE,width:1.5}});
+                if (s.left_title) slide.addText(s.left_title,{x:0.5,y:1.6,w:5.8,h:0.55,fontSize:17,fontFace:F,bold:true,color:C.PRIMARY,align:'center'});
+                if (s.left&&s.left.length) { var lc=[]; for (var j=0;j<s.left.length;j++) lc.push({text:s.left[j],options:{bullet:{type:'bullet',color:C.PRIMARY},breakLine:true,paraSpaceAfter:8}}); slide.addText(lc,{x:0.6,y:2.3,w:5.6,h:4.2,fontSize:15,fontFace:F,color:contentText,valign:'top',lineSpacingMultiple:1.4}); }
+                if (s.right_title) slide.addText(s.right_title,{x:7.0,y:1.6,w:5.8,h:0.55,fontSize:17,fontFace:F,bold:true,color:C.COMPARE,align:'center'});
+                if (s.right&&s.right.length) { var rc=[]; for (var j=0;j<s.right.length;j++) rc.push({text:s.right[j],options:{bullet:{type:'bullet',color:C.COMPARE},breakLine:true,paraSpaceAfter:8}}); slide.addText(rc,{x:7.1,y:2.3,w:5.6,h:4.2,fontSize:15,fontFace:F,color:contentText,valign:'top',lineSpacingMultiple:1.4}); }
+                slide.addText('VS',{x:5.9,y:3.2,w:1.53,h:1.1,fontSize:20,fontFace:F,bold:true,color:C.GRAY,align:'center',valign:'middle'});
+                addPageNum(slide,idx+1); break;
+            case 'process':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.steps&&s.steps.length) { var cnt=s.steps.length; var sw=Math.min(2.8,(12/cnt)-0.3); var tw=cnt*sw+(cnt-1)*0.3; var sx=(13.33-tw)/2; for (var j=0;j<cnt;j++) { var x2=sx+j*(sw+0.3); var ac=C.ACCENTS[j%C.ACCENTS.length]; slide.addShape(pptx.ShapeType.roundRect,{x:x2,y:2.0,w:sw,h:4.5,rectRadius:0.12,fill:{color:isBlack?C.DARK2:C.BG},line:{color:ac,width:2}}); slide.addShape(pptx.ShapeType.ellipse,{x:x2+sw/2-0.35,y:2.15,w:0.7,h:0.7,fill:{color:ac}}); slide.addText(String(j+1),{x:x2+sw/2-0.35,y:2.15,w:0.7,h:0.7,fontSize:16,fontFace:F,bold:true,color:C.WHITE,align:'center',valign:'middle'}); slide.addText(s.steps[j],{x:x2+0.1,y:3.1,w:sw-0.2,h:3.2,fontSize:14,fontFace:F,color:contentText,align:'center',valign:'top',wrap:true}); if (j<cnt-1) slide.addText('\u2192',{x:x2+sw,y:3.5,w:0.3,h:0.6,fontSize:18,fontFace:F,color:C.PRIMARY,align:'center',valign:'middle'}); } }
+                addPageNum(slide,idx+1); break;
+            case 'timeline':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.events&&s.events.length) { var cnt=s.events.length; slide.addShape(pptx.ShapeType.rect,{x:0.8,y:3.7,w:11.7,h:0.05,fill:{color:C.PRIMARY}}); var ew=11.7/cnt; for (var j=0;j<cnt;j++) { var ex=0.8+j*ew+ew/2; var ac=C.ACCENTS[j%C.ACCENTS.length]; slide.addShape(pptx.ShapeType.ellipse,{x:ex-0.18,y:3.55,w:0.36,h:0.36,fill:{color:ac}}); slide.addText(s.events[j].date||'',{x:ex-ew/2+0.05,y:2.8,w:ew-0.1,h:0.65,fontSize:13,fontFace:F,bold:true,color:C.PRIMARY,align:'center',valign:'bottom',shrinkText:true}); slide.addText(s.events[j].text||'',{x:ex-ew/2+0.05,y:4.1,w:ew-0.1,h:2.8,fontSize:13,fontFace:F,color:contentText,align:'center',valign:'top',wrap:true}); } }
+                addPageNum(slide,idx+1); break;
+            case 'diagram':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                var dcx=6.67,dcy=4.3; slide.addShape(pptx.ShapeType.ellipse,{x:dcx-1.2,y:dcy-0.7,w:2.4,h:1.4,fill:{color:C.PRIMARY}}); slide.addText(s.center||'',{x:dcx-1.2,y:dcy-0.7,w:2.4,h:1.4,fontSize:16,fontFace:F,bold:true,color:C.WHITE,align:'center',valign:'middle',wrap:true});
+                if (s.items&&s.items.length) { var cnt=s.items.length; var rad=2.0; for (var j=0;j<cnt;j++) { var ang=(2*Math.PI*j/cnt)-Math.PI/2; var nx=dcx+rad*Math.cos(ang); var ny=dcy+rad*Math.sin(ang); var ac=C.ACCENTS[j%C.ACCENTS.length]; var nw=2.0,nh=0.85; slide.addShape(pptx.ShapeType.rect,{x:nx-nw/2,y:ny-nh/2,w:nw,h:nh,fill:{color:isBlack?C.DARK2:C.BG},line:{color:ac,width:1.5}}); slide.addText(s.items[j],{x:nx-nw/2,y:ny-nh/2,w:nw,h:nh,fontSize:13,fontFace:F,color:contentText,align:'center',valign:'middle',wrap:true}); var lx1=dcx+1.2*Math.cos(ang),ly1=dcy+0.7*Math.sin(ang); var lx2=nx-1.0*Math.cos(ang),ly2=ny-0.425*Math.sin(ang); var ldw=Math.abs(lx2-lx1)||0.01,ldh=Math.abs(ly2-ly1)||0.01; slide.addShape(pptx.ShapeType.line,{x:Math.min(lx1,lx2),y:Math.min(ly1,ly2),w:ldw,h:ldh,line:{color:ac,width:1}}); } }
+                addPageNum(slide,idx+1); break;
+            case 'cards':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.cards&&s.cards.length) { var cnt=s.cards.length; var cw=Math.min(3.5,(12/cnt)-0.4); var tw=cnt*cw+(cnt-1)*0.4; var sx=(13.33-tw)/2; for (var j=0;j<cnt;j++) { var cx2=sx+j*(cw+0.4); var ac=C.ACCENTS[j%C.ACCENTS.length]; slide.addShape(pptx.ShapeType.roundRect,{x:cx2,y:1.6,w:cw,h:5.0,rectRadius:0.12,fill:{color:cardBg},line:{color:ac,width:2}}); slide.addText(s.cards[j].heading,{x:cx2+0.1,y:1.75,w:cw-0.2,h:0.8,fontSize:16,fontFace:F,bold:true,color:cardHeading,align:'center',valign:'middle',wrap:true}); slide.addShape(pptx.ShapeType.rect,{x:cx2+0.2,y:2.65,w:cw-0.4,h:0.03,fill:{color:ac}}); slide.addText(s.cards[j].desc,{x:cx2+0.12,y:2.8,w:cw-0.24,h:3.6,fontSize:14,fontFace:F,color:cardText,align:'left',valign:'top',wrap:true}); } }
+                addPageNum(slide,idx+1); break;
+            case 'headerCards':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.header) slide.addText(s.header,{x:0.5,y:1.35,w:12.3,h:0.8,fontSize:22,fontFace:F,bold:true,color:C.PRIMARY,align:'center',valign:'middle'});
+                if (s.cards&&s.cards.length) { var cnt=s.cards.length; var cw2=Math.min(3.5,(12/cnt)-0.4); var tw2=cnt*cw2+(cnt-1)*0.4; var sx2=(13.33-tw2)/2; for (var j=0;j<cnt;j++) { var cx3=sx2+j*(cw2+0.4); var ac=C.ACCENTS[j%C.ACCENTS.length]; slide.addShape(pptx.ShapeType.roundRect,{x:cx3,y:2.5,w:cw2,h:4.0,rectRadius:0.12,fill:{color:cardBg},line:{color:ac,width:2}}); slide.addText(s.cards[j].heading,{x:cx3+0.1,y:2.65,w:cw2-0.2,h:0.7,fontSize:15,fontFace:F,bold:true,color:cardHeading,align:'center',valign:'middle',wrap:true}); slide.addShape(pptx.ShapeType.rect,{x:cx3+0.2,y:3.45,w:cw2-0.4,h:0.03,fill:{color:ac}}); slide.addText(s.cards[j].desc,{x:cx3+0.12,y:3.6,w:cw2-0.24,h:2.7,fontSize:13,fontFace:F,color:cardText,align:'left',valign:'top',wrap:true}); } }
+                addPageNum(slide,idx+1); break;
+            case 'table':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.columns&&s.columns.length) { var cc=s.columns.length; var colW=11.5/cc; var colArr=[]; for (var j=0;j<cc;j++) colArr.push(colW); var tRows=[]; var hRow=[]; for (var j=0;j<cc;j++) hRow.push({text:s.columns[j],options:{bold:true,color:C.WHITE,fill:{color:C.PRIMARY},fontSize:14,fontFace:F,align:'center',valign:'middle'}}); tRows.push(hRow); if (s.rows) { for (var j=0;j<s.rows.length;j++) { var rd=[]; var rb=(j%2===0)?(isBlack?C.DARK2:C.BG):contentBg; for (var k=0;k<cc;k++) rd.push({text:(s.rows[j][k]||''),options:{fontSize:13,fontFace:F,color:contentText,fill:{color:rb},valign:'middle'}}); tRows.push(rd); } } slide.addTable(tRows,{x:0.9,y:1.6,w:11.5,colW:colArr,rowH:0.55}); }
+                addPageNum(slide,idx+1); break;
+            case 'progress':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.progresses&&s.progresses.length) { var cnt=s.progresses.length; var ih=Math.min(1.0,5.2/cnt); for (var j=0;j<cnt;j++) { var p=s.progresses[j]; var py=1.6+j*(ih+0.1); var ac=C.ACCENTS[j%C.ACCENTS.length]; slide.addText(p.label,{x:0.8,y:py,w:8.0,h:0.38,fontSize:15,fontFace:F,color:contentText,valign:'middle'}); slide.addText(p.value+'%',{x:9.0,y:py,w:1.5,h:0.38,fontSize:15,fontFace:F,bold:true,color:ac,align:'right',valign:'middle'}); slide.addShape(pptx.ShapeType.rect,{x:0.8,y:py+0.42,w:11.5,h:0.3,fill:{color:cardBorder}}); var fw=Math.max(0.1,11.5*Math.min(100,p.value)/100); slide.addShape(pptx.ShapeType.rect,{x:0.8,y:py+0.42,w:fw,h:0.3,fill:{color:ac}}); } }
+                addPageNum(slide,idx+1); break;
+            case 'quote':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                slide.addText('\u201C',{x:1.2,y:1.5,w:1.5,h:1.5,fontSize:80,fontFace:F,color:C.PRIMARY,align:'center',valign:'middle'});
+                if (s.quote) slide.addText(s.quote,{x:1.5,y:2.4,w:10.3,h:3.2,fontSize:20,fontFace:F,color:contentText,italic:true,align:'center',valign:'middle',wrap:true,lineSpacingMultiple:1.6});
+                if (s.author) slide.addText('\u2014 '+s.author,{x:1.5,y:5.8,w:10.3,h:0.6,fontSize:16,fontFace:F,color:C.GRAY,align:'right',valign:'middle'});
+                addPageNum(slide,idx+1); break;
+            case 'kpi':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.metrics&&s.metrics.length) { var cnt=s.metrics.length; var kw=Math.min(3.2,(12/cnt)-0.4); var tw3=cnt*kw+(cnt-1)*0.4; var sx3=(13.33-tw3)/2; for (var j=0;j<cnt;j++) { var kx=sx3+j*(kw+0.4); var ac=C.ACCENTS[j%C.ACCENTS.length]; slide.addShape(pptx.ShapeType.roundRect,{x:kx,y:1.8,w:kw,h:4.5,rectRadius:0.15,fill:{color:cardBg},line:{color:ac,width:2.5}}); slide.addShape(pptx.ShapeType.rect,{x:kx,y:1.8,w:kw,h:0.3,fill:{color:ac}}); var vs=(s.metrics[j].value||'')+(s.metrics[j].unit?' '+s.metrics[j].unit:''); slide.addText(vs,{x:kx+0.1,y:2.5,w:kw-0.2,h:1.6,fontSize:36,fontFace:F,bold:true,color:ac,align:'center',valign:'middle',shrinkText:true}); slide.addText(s.metrics[j].label,{x:kx+0.1,y:4.3,w:kw-0.2,h:1.7,fontSize:15,fontFace:F,color:cardText,align:'center',valign:'top',wrap:true}); } }
+                addPageNum(slide,idx+1); break;
+            case 'bulletCards':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.bcards&&s.bcards.length) { var cnt=s.bcards.length; var bw=Math.min(3.5,(12/cnt)-0.4); var tw4=cnt*bw+(cnt-1)*0.4; var sx4=(13.33-tw4)/2; for (var j=0;j<cnt;j++) { var bx=sx4+j*(bw+0.4); var ba=C.ACCENTS[j%C.ACCENTS.length]; slide.addShape(pptx.ShapeType.roundRect,{x:bx,y:1.6,w:bw,h:5.0,rectRadius:0.12,fill:{color:cardBg},line:{color:ba,width:1.5}}); slide.addShape(pptx.ShapeType.ellipse,{x:bx+bw/2-0.32,y:1.75,w:0.64,h:0.64,fill:{color:ba}}); slide.addText(String(j+1),{x:bx+bw/2-0.32,y:1.75,w:0.64,h:0.64,fontSize:14,fontFace:F,bold:true,color:C.WHITE,align:'center',valign:'middle'}); slide.addText(s.bcards[j].heading,{x:bx+0.1,y:2.55,w:bw-0.2,h:0.8,fontSize:15,fontFace:F,bold:true,color:cardHeading,align:'center',valign:'middle',wrap:true}); slide.addShape(pptx.ShapeType.rect,{x:bx+0.2,y:3.45,w:bw-0.4,h:0.03,fill:{color:ba}}); slide.addText(s.bcards[j].desc,{x:bx+0.12,y:3.6,w:bw-0.24,h:2.8,fontSize:13,fontFace:F,color:cardText,align:'left',valign:'top',wrap:true}); } }
+                addPageNum(slide,idx+1); break;
+            case 'faq':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                if (s.faqs&&s.faqs.length) { var cnt=s.faqs.length; var ih2=Math.min(2.0,5.2/cnt); for (var j=0;j<cnt;j++) { var fy=1.5+j*(ih2+0.1); var ac=C.ACCENTS[j%C.ACCENTS.length]; slide.addText('Q.',{x:0.5,y:fy,w:0.55,h:ih2/2,fontSize:16,fontFace:F,bold:true,color:ac,valign:'middle'}); slide.addText(s.faqs[j].q,{x:1.1,y:fy,w:11.2,h:ih2/2,fontSize:16,fontFace:F,bold:true,color:contentText,valign:'middle',wrap:true}); slide.addText('A.',{x:0.5,y:fy+ih2/2,w:0.55,h:ih2/2,fontSize:15,fontFace:F,bold:true,color:C.GRAY,valign:'middle'}); slide.addText(s.faqs[j].a,{x:1.1,y:fy+ih2/2,w:11.2,h:ih2/2,fontSize:15,fontFace:F,color:C.GRAY,valign:'middle',wrap:true}); } }
+                addPageNum(slide,idx+1); break;
+            case 'statsCompare':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.7,w:5.5,h:4.5,rectRadius:0.15,fill:{color:cardBg},line:{color:C.PRIMARY,width:2.5}});
+                slide.addText(s.left_label||'',{x:0.6,y:1.9,w:5.3,h:0.7,fontSize:18,fontFace:F,bold:true,color:C.PRIMARY,align:'center',valign:'middle'});
+                slide.addText(s.left_value||'',{x:0.6,y:2.7,w:5.3,h:2.2,fontSize:36,fontFace:F,bold:true,color:C.PRIMARY,align:'center',valign:'middle',shrinkText:true});
+                slide.addShape(pptx.ShapeType.roundRect,{x:7.3,y:1.7,w:5.5,h:4.5,rectRadius:0.15,fill:{color:isBlack?C.DARK2:C.COMPARE_BG},line:{color:C.COMPARE,width:2.5}});
+                slide.addText(s.right_label||'',{x:7.4,y:1.9,w:5.3,h:0.7,fontSize:18,fontFace:F,bold:true,color:C.COMPARE,align:'center',valign:'middle'});
+                slide.addText(s.right_value||'',{x:7.4,y:2.7,w:5.3,h:2.2,fontSize:36,fontFace:F,bold:true,color:C.COMPARE,align:'center',valign:'middle',shrinkText:true});
+                slide.addText('VS',{x:5.7,y:3.1,w:1.93,h:1.3,fontSize:24,fontFace:F,bold:true,color:C.GRAY,align:'center',valign:'middle'});
+                if (s.description) slide.addText(s.description,{x:0.8,y:6.4,w:11.5,h:0.7,fontSize:14,fontFace:F,color:C.GRAY,align:'center',valign:'middle',wrap:true});
+                addPageNum(slide,idx+1); break;
+            case 'closing':
+                addGradientBg(slide,C.GRAD_BOTTOM,C.GRAD_TOP);
+                slide.addText(s.title||'',{x:0.8,y:2.0,w:11.7,h:2.0,fontSize:32,fontFace:F,bold:true,color:C.WHITE,align:'center',valign:'middle',shrinkText:true});
+                slide.addShape(pptx.ShapeType.rect,{x:4.5,y:4.2,w:4.3,h:0.05,fill:{color:C.PRIMARY}});
+                if (s.subtitle) slide.addText(s.subtitle,{x:0.8,y:4.5,w:11.7,h:1.0,fontSize:18,fontFace:F,color:C.LIGHT,align:'center',valign:'middle'});
+                break;
+            case 'illust':
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||'');
+                var imgD=imageDataMap&&imageDataMap[s.image_prompt];
+                if (imgD) { slide.addImage({data:imgD,x:0.9,y:1.5,w:5.2,h:5.2}); }
+                else { slide.addShape(pptx.ShapeType.rect,{x:0.5,y:1.5,w:6.0,h:5.2,fill:{color:cardBg},line:{color:cardBorder,width:1}}); slide.addText('[画像なし]',{x:0.5,y:1.5,w:6.0,h:5.2,fontSize:16,fontFace:F,color:C.GRAY,align:'center',valign:'middle'}); }
+                if (s.caption) slide.addText(s.caption,{x:7.0,y:1.5,w:5.8,h:5.2,fontSize:18,fontFace:F,color:contentText,valign:'middle',wrap:true});
+                addPageNum(slide,idx+1); break;
+            default:
+                slide.background={color:contentBg}; addTitleBar(slide,s.title||s.type||''); addPageNum(slide,idx+1); break;
+        }
+    }
+    return pptx.writeFile({fileName:'テキストからパワポ.pptx'});
+}
+
+// ===== カラーセレクト表示 =====
+(function(){
+    var colorDisplay = {
+        blue:   { bg:'#0ea5e9', text:'#fff' },
+        red:    { bg:'#ef4444', text:'#fff' },
+        yellow: { bg:'#eab308', text:'#1e293b' },
+        cyan:   { bg:'#06b6d4', text:'#fff' },
+        green:  { bg:'#16a34a', text:'#fff' },
+        black:  { bg:'#374151', text:'#fff' }
+    };
+    var sel = document.getElementById('colorScheme');
+    for (var i = 0; i < sel.options.length; i++) {
+        var d = colorDisplay[sel.options[i].value];
+        if (d) { sel.options[i].style.backgroundColor = d.bg; sel.options[i].style.color = d.text; }
+    }
+    function updateSel() {
+        var d = colorDisplay[sel.value];
+        if (d) { sel.style.backgroundColor = d.bg; sel.style.color = d.text; sel.style.borderColor = d.bg; }
+    }
+    sel.addEventListener('change', updateSel);
+    updateSel();
+})();
+</script>
+</body>
+</html>

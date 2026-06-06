@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex,nofollow">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>法令AI Lawsy - 源内AI</title>
 <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -212,8 +212,10 @@ function executeLawsy(e) {
 
     function read() {
       return reader.read().then(function(result) {
-        if (result.done) { finishExecution(); return; }
-        buffer += decoder.decode(result.value, { stream: true });
+        if (result.done) { console.log('[LAWSY] stream done, outputText length:', outputText.length); finishExecution(); return; }
+        var chunk = decoder.decode(result.value, { stream: true });
+        console.log('[LAWSY] chunk:', chunk.substring(0, 300));
+        buffer += chunk;
         var lines = buffer.split('\n');
         buffer = lines.pop();
         for (var i = 0; i < lines.length; i++) {
@@ -222,6 +224,7 @@ function executeLawsy(e) {
           if (t.startsWith('data: ')) {
             try {
               var j = JSON.parse(t.slice(6));
+              console.log('[LAWSY] SSE event:', JSON.stringify(j).substring(0, 200));
               if (j.stage) {
                 updateStage(j.stage, 'active');
                 document.getElementById('progressLabel').textContent = j.label || 'Stage ' + j.stage;
@@ -237,7 +240,9 @@ function executeLawsy(e) {
               if (j.stage_done) {
                 updateStage(j.stage_done, 'done');
               }
-            } catch (e) {}
+            } catch (e) { console.error('[LAWSY] JSON parse error:', e, 'line:', t.substring(0, 200)); }
+          } else if (t) {
+            console.warn('[LAWSY] non-SSE line:', t.substring(0, 200));
           }
         }
         return read();
@@ -264,6 +269,8 @@ function finishExecution() {
   if (outputText) {
     document.getElementById('resultActions').style.display = 'flex';
     updateStage(5, 'done');
+  } else {
+    document.getElementById('resultContent').innerHTML = '<p style="color:var(--error-1);">AIからの応答がありませんでした。しばらく待ってから再度お試しください。</p>';
   }
 }
 
