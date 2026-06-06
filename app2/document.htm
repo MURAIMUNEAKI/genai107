@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>公文書作成 - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+.gt-header{border-bottom:1px solid #000;padding:1rem 0 0.75rem;margin-bottom:1.5rem;}
+.gt-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:1024px){.gt-title{font-size:1.5rem;}}
+.gt-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.gt-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.gt-notes h3{font-size:0.9375rem;font-weight:700;margin:0.75rem 0 0.25rem;}
+.gt-notes p{margin:0.25rem 0;}
+.gt-notes ul,.gt-notes ol{margin:0.25rem 0 0.25rem 1.5rem;}
+.gt-notes li{margin:0.125rem 0;}
+.gt-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:8px;padding:0.5rem 0.75rem;}
+.gt-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.gt-notes summary::before{content:'▶';font-size:0.625rem;transition:transform 0.2s;}
+.gt-notes details[open] summary::before{transform:rotate(90deg);}
+.gt-notes details>div{padding:0.5rem 0 0 1.25rem;}
+.result-container{margin-top:1.25rem;border:1px solid var(--solid-gray-420);border-radius:8px;padding:1rem;position:relative;}
+.result-container h2{font-size:1rem;font-weight:700;margin-bottom:0.75rem;}
+.result-placeholder{color:var(--solid-gray-536);font-size:0.875rem;}
+.result-copy-area{display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.5rem;}
+.revise-area{margin-top:0.75rem;padding:0.75rem;border:1px solid var(--solid-gray-300);border-radius:8px;background:var(--solid-gray-50,#f6f8fa);}
+.revise-area .form-group{margin-bottom:0.5rem;}
+.revise-area .btn-area{margin-top:0.5rem;}
+.btn-secondary{display:inline-flex;align-items:center;justify-content:center;padding:0.5rem 1rem;border-radius:8px;font-size:0.875rem;font-weight:500;cursor:pointer;background:#fff;color:var(--solid-gray-800);border:1px solid var(--solid-gray-420);font-family:inherit;line-height:1.5;}
+.btn-secondary:hover{background:var(--solid-gray-50,#f6f8fa);}
+.checkbox-label{display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.875rem;font-weight:500;}
+.checkbox-label input[type="checkbox"]{width:1rem;height:1rem;accent-color:var(--blue-900,#1a73e8);}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'document'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:64rem">
+      <div class="gt-header">
+        <h1 class="gt-title">公文書作成</h1>
+        <div class="gt-notes">
+          <h2>想定用途</h2>
+          <p>文書の種別と具体的内容を選択し、必要事項を入力することで、適切な書式の公文書案をAIが作成します。</p>
+          <h3>アプリ個別の留意点</h3>
+          <p>本アプリは生成AIを使用しています。以下のリスクと対応をご理解ください：</p>
+          <details>
+            <summary>リスクの例と対応アクション</summary>
+            <div>
+              <p><strong>リスクの例：</strong></p>
+              <ul>
+                <li>ハルシネーション（でたらめ）：事実と異なる不正確な情報を生成するおそれ</li>
+                <li>最新性の欠如：古い情報に基づく回答を生成するおそれ</li>
+                <li>バイアス：偏った見解や政府の公式見解と異なる判断を生成するおそれ</li>
+                <li>著作権侵害：保護された著作物を不適切に生成するおそれ</li>
+                <li>倫理的問題：道徳的に問題のある判断や提案を生成するおそれ</li>
+                <li>再現性や説明可能性の欠如：同じ質問でも異なる回答を生成し、生成された内容の根拠も不明なおそれ</li>
+              </ul>
+              <p><strong>対応アクション：</strong></p>
+              <ol>
+                <li>常に出力内容を批判的に評価し、利用者自身で正確性・妥当性等を判断してください</li>
+                <li>機密性３情報や業務目的以外の私的利用の情報の入力は避けてください</li>
+                <li>必ず他の信頼できる情報源を確認してください</li>
+              </ol>
+            </div>
+          </details>
+          <h2>操作方法</h2>
+          <p>文書の種別と具体的内容を選択し、宛先・発信者等の情報を入力して実行ボタンを押してください。生成後は「修正」ボタンで微調整も可能です。</p>
+          <details>
+            <summary>仕組み</summary>
+            <div>
+              <p>入力された文書種別・宛先・発信者・補足情報等を元に、公文書の書式に準拠した文書案をAIが作成して返答します。生成後に修正指示を入力することで、内容の微調整も行えます。</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="dads-label" for="docType">文書の種別 <span class="dads-required">必須</span></label>
+        <select class="dads-select" id="docType" required>
+          <option value="">-- 選択してください --</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="subTypeGroup" style="display:none">
+        <label class="dads-label" for="docSubType">具体的内容 <span class="dads-required">必須</span></label>
+        <select class="dads-select" id="docSubType" required>
+          <option value="">-- 選択してください --</option>
+        </select>
+      </div>
+
+      <div id="dynamicFields" style="display:none">
+        <div class="form-group">
+          <label class="dads-label" for="docTo">宛先 <span class="dads-required">必須</span></label>
+          <input class="dads-input" type="text" id="docTo" required>
+        </div>
+        <div class="form-group">
+          <label class="dads-label" for="docFrom">発信者（部署・職名・氏名）<span class="dads-required">必須</span></label>
+          <input class="dads-input" type="text" id="docFrom" placeholder="例: ○○市総務部長 山田太郎" required>
+        </div>
+        <div class="form-group">
+          <label class="dads-label" for="docDate">日付 <span class="dads-required">必須</span></label>
+          <input class="dads-input" type="date" id="docDate" required>
+        </div>
+        <div class="form-group" id="docNumGroup">
+          <label class="dads-label" for="docNum">文書番号</label>
+          <input class="dads-input" type="text" id="docNum" placeholder="例: ○○総第123号">
+        </div>
+        <div class="form-group" id="greetingGroup">
+          <label class="checkbox-label">
+            <input type="checkbox" id="docGreeting">
+            時候の挨拶を含める
+          </label>
+        </div>
+        <div class="form-group" id="recordGroup">
+          <label class="dads-label" for="docRecord">記書き項目</label>
+          <textarea class="dads-textarea" id="docRecord" rows="4" placeholder="例:&#10;1 日時 令和○年○月○日（○）午後○時から&#10;2 場所 ○○会議室&#10;3 議題 ○○について"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="dads-label" for="docDetail">補足情報・要旨 <span class="dads-required">必須</span></label>
+          <textarea class="dads-textarea" id="docDetail" rows="5" placeholder="文書に含めたい具体的な内容や要旨を入力してください" required></textarea>
+        </div>
+      </div>
+
+      <div class="btn-area" style="justify-content:center">
+        <button class="dads-btn" id="genBtn" style="min-width:15rem">実行</button>
+      </div>
+
+      <div class="progress-indicator" id="progress">
+        <div class="progress-spinner"></div>
+        <span class="progress-label">実行中...</span>
+      </div>
+
+      <hr class="dads-divider">
+
+      <div class="result-container" id="resultContainer">
+        <h2>生成された公文書案</h2>
+        <div id="resultPlaceholder" class="result-placeholder">生成された公文書案がここに表示されます</div>
+        <div class="prose" id="resultContent" style="display:none"></div>
+        <div class="result-copy-area" id="copyArea" style="display:none">
+          <button class="copy-btn" id="reviseBtn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            修正
+          </button>
+          <button class="copy-btn" id="copyBtn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            コピー
+          </button>
+        </div>
+        <div class="revise-area" id="reviseArea" style="display:none">
+          <div class="form-group">
+            <label class="dads-label" for="reviseInput">修正指示</label>
+            <textarea class="dads-textarea" id="reviseInput" rows="3" placeholder="例: 日付を変更してください / 敬称を修正してください / 記書きに項目を追加してください"></textarea>
+          </div>
+          <div class="btn-area" style="gap:0.5rem;justify-content:flex-start">
+            <button class="dads-btn" id="reviseExecBtn" style="min-width:8rem">修正実行</button>
+            <button class="btn-secondary" id="reviseCancelBtn" style="min-width:8rem">キャンセル</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-footer">
+        注意: AIの出力は必ずしも正確ではありません。重要な情報は必ずご自身で確認してください。
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script src="../shared/markdown.js"></script>
+<script src="../shared/history-store.js"></script>
+<script>
+initLayout({ activePage: 'document', basePath: '../app/' });
+
+/* ========== データ定義 ========== */
+var docTypes = {
+  '通知書': [
+    '住民税納税通知書','固定資産税納税通知書','介護保険料特別徴収決定通知書',
+    '児童手当支給決定通知書','保育所入所承諾通知書','委員委嘱通知書',
+    '行政処分の事前通知書','市有財産売却落札者決定通知書'
+  ],
+  '照会書': [
+    '受給資格に係る事実関係の照会','滞納処分に伴う財産照会書',
+    '生活保護法に基づく資産・収入照会書','他自治体への施策実施状況照会',
+    '審議会等委員就任要請に係る諾否の照会'
+  ],
+  '回答書': [
+    '行政要望に対する回答書','制度運用に関する市民からの質問への回答',
+    '開示請求に係る部分開示決定理由説明書','他自治体からの事務照会に対する回答',
+    '国・県からの照会事項に対する回答'
+  ],
+  '依頼書（勧告・要請）': [
+    '統計調査への協力依頼','委員の推薦依頼','提出書類の督促状',
+    '条例違反に基づく是正勧告書','災害時物資供給等の協力要請',
+    'イベント後援名義使用申請承認書'
+  ],
+  '訓令': [
+    '処務規程','公文規程','勤務時間・休暇等取扱訓令',
+    '個人情報保護法等施行に伴う事務取扱訓令'
+  ],
+  '通達': [
+    '手当支給要領改正に伴う留意事項','予算編成方針及び地方財政見通し',
+    '省エネルギー対策及びクールビズ実施','情報セキュリティ基本方針改定に伴う運用徹底'
+  ],
+  '指令': [
+    '道路占用許可指令書','開発行為許可指令書',
+    '農地転用許可指令書','補助金交付決定指令書'
+  ],
+  '依命通達': [
+    '人事異動に伴う事務引継の徹底','公金適正管理・予算執行の徹底',
+    '総合計画策定推進・部課連携'
+  ],
+  '進達・進達書': [
+    '生活保護費国庫負担金交付申請書','指定文化財に関する意見書',
+    '財政健全化計画の知事への進達','指定医療機関指定申請書'
+  ],
+  '復命書': [
+    '行政視察復命書','中央研修受講復命書','災害派遣業務実施復命書',
+    '立入検査復命書','会議出席復命書'
+  ],
+  '依頼・協議書': [
+    '関係課協議（合議）','予算要求提出依頼','広報誌掲載依頼',
+    '地下埋設物調査協力依頼','システム一時停止への協力依頼'
+  ],
+  '回覧': [
+    '研修受講対象者への周知','職員互助会イベント案内',
+    '人事評価提出期限の課内回覧','時間外勤務縮減キャンペーン'
+  ],
+  '開催通知・招集通知': [
+    '総合計画審議会開催通知','議会定例会招集通知',
+    'プロジェクトチーム会議開催','総合防災訓練連絡会議開催通知',
+    '表彰式開催案内及び出席要請'
+  ]
+};
+
+var typeSettings = {
+  '通知書':             { placeholder: '○○ 様',        docNum: true,  greeting: false, record: true },
+  '照会書':             { placeholder: '○○市長 殿',    docNum: true,  greeting: true,  record: true },
+  '回答書':             { placeholder: '○○ 様',        docNum: true,  greeting: true,  record: true },
+  '依頼書（勧告・要請）': { placeholder: '○○ 様',      docNum: true,  greeting: true,  record: true },
+  '訓令':               { placeholder: '各部課長 殿',   docNum: true,  greeting: false, record: true },
+  '通達':               { placeholder: '各部課長 殿',   docNum: true,  greeting: false, record: true },
+  '指令':               { placeholder: '申請者 ○○ 殿', docNum: true,  greeting: false, record: true },
+  '依命通達':           { placeholder: '各部課長 殿',   docNum: true,  greeting: false, record: true },
+  '進達・進達書':       { placeholder: '○○県知事 殿',  docNum: true,  greeting: true,  record: true },
+  '復命書':             { placeholder: '○○市長',       docNum: false, greeting: false, record: true },
+  '依頼・協議書':       { placeholder: '○○課長 殿',    docNum: true,  greeting: false, record: true },
+  '回覧':               { placeholder: '各位',          docNum: false, greeting: false, record: false },
+  '開催通知・招集通知': { placeholder: '委員各位',      docNum: true,  greeting: true,  record: true }
+};
+
+/* ========== DOM参照 ========== */
+var docType       = document.getElementById('docType');
+var docSubType    = document.getElementById('docSubType');
+var subTypeGroup  = document.getElementById('subTypeGroup');
+var dynamicFields = document.getElementById('dynamicFields');
+var docTo         = document.getElementById('docTo');
+var docFrom       = document.getElementById('docFrom');
+var docDate       = document.getElementById('docDate');
+var docNum        = document.getElementById('docNum');
+var docNumGroup   = document.getElementById('docNumGroup');
+var docGreeting   = document.getElementById('docGreeting');
+var greetingGroup = document.getElementById('greetingGroup');
+var docRecord     = document.getElementById('docRecord');
+var recordGroup   = document.getElementById('recordGroup');
+var docDetail     = document.getElementById('docDetail');
+var genBtn        = document.getElementById('genBtn');
+var progress      = document.getElementById('progress');
+var resultContent = document.getElementById('resultContent');
+var resultPlaceholder = document.getElementById('resultPlaceholder');
+var copyArea      = document.getElementById('copyArea');
+var copyBtn       = document.getElementById('copyBtn');
+var reviseBtn     = document.getElementById('reviseBtn');
+var reviseArea    = document.getElementById('reviseArea');
+var reviseInput   = document.getElementById('reviseInput');
+var reviseExecBtn = document.getElementById('reviseExecBtn');
+var reviseCancelBtn = document.getElementById('reviseCancelBtn');
+var currentHistoryId = 'document_' + Date.now();
+var lastGeneratedText = '';
+
+/* ========== 初期化 ========== */
+var typeKeys = Object.keys(docTypes);
+for (var i = 0; i < typeKeys.length; i++) {
+  var opt = document.createElement('option');
+  opt.value = typeKeys[i];
+  opt.textContent = typeKeys[i];
+  docType.appendChild(opt);
+}
+
+var today = new Date();
+docDate.value = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+
+/* ========== 種別変更 ========== */
+docType.addEventListener('change', function() {
+  var type = docType.value;
+  docSubType.innerHTML = '<option value="">-- 選択してください --</option>';
+  if (type && docTypes[type]) {
+    var items = docTypes[type];
+    for (var i = 0; i < items.length; i++) {
+      var o = document.createElement('option');
+      o.value = items[i];
+      o.textContent = items[i];
+      docSubType.appendChild(o);
+    }
+    subTypeGroup.style.display = '';
+  } else {
+    subTypeGroup.style.display = 'none';
+  }
+  dynamicFields.style.display = 'none';
+});
+
+/* ========== サブタイプ変更 ========== */
+docSubType.addEventListener('change', function() {
+  var type = docType.value;
+  var sub = docSubType.value;
+  if (!type || !sub) { dynamicFields.style.display = 'none'; return; }
+  var s = typeSettings[type];
+  if (!s) return;
+  docTo.placeholder = s.placeholder;
+  docNumGroup.style.display = s.docNum ? '' : 'none';
+  docGreeting.checked = s.greeting;
+  recordGroup.style.display = s.record ? '' : 'none';
+  dynamicFields.style.display = '';
+});
+
+/* ========== 和暦変換 ========== */
+function toWareki(isoDate) {
+  var p = isoDate.split('-');
+  var y = parseInt(p[0]), m = parseInt(p[1]), d = parseInt(p[2]);
+  var r = y - 2018;
+  return '令和' + (r === 1 ? '元' : r) + '年' + m + '月' + d + '日';
+}
+
+/* ========== NDJSONストリーミング ========== */
+function streamChat(body, onChunk, onDone, onError) {
+  fetch('../api2/chat-stream.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  }).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+    var fullText = '';
+    function read() {
+      return reader.read().then(function(result) {
+        if (result.done) { onDone(fullText); return; }
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line) continue;
+          try {
+            var j = JSON.parse(line);
+            if (j.text) { fullText += j.text; onChunk(j.text, fullText); }
+          } catch(e) {}
+        }
+        return read();
+      });
+    }
+    return read();
+  }).catch(function(err) { onError(err.message); });
+}
+
+/* ========== 実行 ========== */
+genBtn.addEventListener('click', function() {
+  var type = docType.value;
+  var sub  = docSubType.value;
+  var to   = docTo.value.trim();
+  var from = docFrom.value.trim();
+  var date = docDate.value;
+  var detail = docDetail.value.trim();
+
+  if (!type)   { docType.focus(); return; }
+  if (!sub)    { docSubType.focus(); return; }
+  if (!to)     { docTo.focus(); return; }
+  if (!from)   { docFrom.focus(); return; }
+  if (!date)   { docDate.focus(); return; }
+  if (!detail) { docDetail.focus(); return; }
+
+  var num = docNum.value.trim();
+  var greeting = docGreeting.checked;
+  var record = docRecord.value.trim();
+  var wareki = toWareki(date);
+  var s = typeSettings[type];
+
+  var prompt = '以下の情報に基づいて、' + type + '（' + sub + '）を作成してください。\n出力は<output></output>のxmlタグで囲んでください。\n\n<input>\n<文書種別>' + type + '</文書種別>\n<具体的内容>' + sub + '</具体的内容>\n<宛先>' + to + '</宛先>\n<発信者>' + from + '</発信者>\n<日付>' + wareki + '</日付>';
+  if (s.docNum && num) prompt += '\n<文書番号>' + num + '</文書番号>';
+  prompt += '\n<時候の挨拶>' + (greeting ? 'はい（季節に応じた適切な挨拶を入れてください）' : 'いいえ') + '</時候の挨拶>';
+  if (s.record && record) prompt += '\n<記書き項目>\n' + record + '\n</記書き項目>';
+  prompt += '\n<補足情報>' + detail + '</補足情報>\n</input>';
+
+  var systemPrompt = 'あなたは日本の地方自治体における公文書作成の専門家です。公用文作成の基準に準拠し、正確な書式、適切な敬称、公文書特有の表現を用いて文書を作成してください。\n以下のルールを厳守してください：\n1. 文書の種別に応じた適切な書式・構成で作成する\n2. 宛先・発信者・日付・文書番号を正しく配置する\n3. 時候の挨拶が指定された場合、季節に応じた適切な挨拶を使用する\n4. 記書きが指定された場合、「記」で始め「以上」で終える形式を使用する\n5. 行政文書として実際に使用できる品質で作成する';
+
+  genBtn.disabled = true;
+  genBtn.textContent = '実行中...';
+  progress.classList.add('active');
+  resultPlaceholder.style.display = 'none';
+  resultContent.style.display = 'block';
+  resultContent.innerHTML = '';
+  copyArea.style.display = 'none';
+  reviseArea.style.display = 'none';
+
+  streamChat({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'gemini-3.1-flash-lite',
+    systemPrompt: systemPrompt,
+    temperature: 0.5
+  },
+  function(chunk, full) {
+    resultContent.innerHTML = renderMarkdown(cleanOutput(full));
+  },
+  function(full) {
+    lastGeneratedText = cleanOutput(full);
+    resultContent.innerHTML = renderMarkdown(lastGeneratedText);
+    genBtn.disabled = false;
+    genBtn.textContent = '実行';
+    progress.classList.remove('active');
+    copyArea.style.display = 'flex';
+    HistoryStore.save({
+      id: currentHistoryId,
+      appType: 'document',
+      title: type + '：' + sub,
+      input: type,
+      context: sub,
+      style: '',
+      result: lastGeneratedText
+    });
+    currentHistoryId = 'document_' + Date.now();
+  },
+  function(err) {
+    resultContent.innerHTML = '<span class="text-error">' + escapeHtml(err) + '</span>';
+    genBtn.disabled = false;
+    genBtn.textContent = '実行';
+    progress.classList.remove('active');
+  });
+});
+
+/* ========== 修正機能 ========== */
+reviseBtn.addEventListener('click', function() {
+  reviseArea.style.display = '';
+  reviseInput.focus();
+});
+
+reviseCancelBtn.addEventListener('click', function() {
+  reviseArea.style.display = 'none';
+  reviseInput.value = '';
+});
+
+reviseExecBtn.addEventListener('click', function() {
+  var instruction = reviseInput.value.trim();
+  if (!instruction) { reviseInput.focus(); return; }
+  if (!lastGeneratedText) return;
+
+  var prompt = '以下の公文書案を修正指示に従って修正してください。修正箇所以外は変更しないでください。出力は<output></output>のxmlタグで囲んでください。\n\n<現在の文書>\n' + lastGeneratedText + '\n</現在の文書>\n\n<修正指示>\n' + instruction + '\n</修正指示>';
+
+  reviseExecBtn.disabled = true;
+  reviseExecBtn.textContent = '修正中...';
+  progress.classList.add('active');
+
+  streamChat({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'gemini-3.1-flash-lite',
+    systemPrompt: 'あなたは日本の地方自治体における公文書作成の専門家です。指示に従い、公文書を正確に修正してください。',
+    temperature: 0.5
+  },
+  function(chunk, full) {
+    resultContent.innerHTML = renderMarkdown(cleanOutput(full));
+  },
+  function(full) {
+    lastGeneratedText = cleanOutput(full);
+    resultContent.innerHTML = renderMarkdown(lastGeneratedText);
+    reviseExecBtn.disabled = false;
+    reviseExecBtn.textContent = '修正実行';
+    progress.classList.remove('active');
+    reviseArea.style.display = 'none';
+    reviseInput.value = '';
+  },
+  function(err) {
+    resultContent.innerHTML = '<span class="text-error">' + escapeHtml(err) + '</span>';
+    reviseExecBtn.disabled = false;
+    reviseExecBtn.textContent = '修正実行';
+    progress.classList.remove('active');
+  });
+});
+
+/* ========== <output>タグ抽出 ========== */
+function cleanOutput(text) {
+  var m = text.match(/<output>([\s\S]*?)<\/output>/);
+  return m ? m[1].trim() : text;
+}
+
+/* ========== コピー ========== */
+copyBtn.addEventListener('click', function() {
+  navigator.clipboard.writeText(resultContent.innerText).then(function() {
+    copyBtn.classList.add('copied');
+    var orig = copyBtn.innerHTML;
+    copyBtn.innerHTML = orig.replace('コピー', 'コピー済み');
+    setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = orig; }, 2000);
+  });
+});
+
+function escapeHtml(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* ========== 履歴復元 ========== */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    currentHistoryId = id;
+    HistoryStore.load(id).then(function(data) {
+      if (!data) return;
+      if (data.result) {
+        lastGeneratedText = data.result;
+        resultPlaceholder.style.display = 'none';
+        resultContent.style.display = 'block';
+        resultContent.innerHTML = renderMarkdown(data.result);
+        copyArea.style.display = 'flex';
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>文章を生成 - 源内AI</title>
+<title>メール文案・作成 - 源内AI</title>
 <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/dads107.css">
@@ -37,16 +37,16 @@
 <body>
 <script src="../shared/auth.js"></script>
 <script>checkAuth();</script>
-<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'bunsho'}));</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'email'}));</script>
 
 <div class="app-shell">
   <main class="app-main">
     <div class="main-content" style="max-width:64rem">
       <div class="gt-header">
-        <h1 class="gt-title">文章を生成</h1>
+        <h1 class="gt-title">メール文案・作成</h1>
         <div class="gt-notes">
           <h2>想定用途</h2>
-          <p>ビジネスメールや記事などの文章をAIが代行して作成することができます。文書のドラフティングに役立ちます。</p>
+          <p>メールのタイトルと要件を入力し、スタイルを選択することで、適切なメール文案をAIが作成します。</p>
           <h3>アプリ個別の留意点</h3>
           <p>本アプリは生成AIを使用しています。以下のリスクと対応をご理解ください：</p>
           <details>
@@ -69,29 +69,34 @@
               </ol>
             </div>
           </details>
-          <h3>入力例</h3>
-          <p>文章の元になる情報のところに生成したい文章のキーワード等と、例を参考に文章の形式に入力された情報を自然言語で入力してください。</p>
           <h2>操作方法</h2>
-          <p>必要な情報を入力し、実行ボタンを押します。情報が多すぎる場合は処理が著しく重くなる場合がありますので、その場合は情報を減らして入力してください。</p>
+          <p>メールのタイトル、内容、スタイルを入力して実行ボタンを押してください。</p>
           <details>
             <summary>仕組み</summary>
             <div>
-              <p>Gemini の機能を活用し、文章の元になる情報および文章の形式に入力された情報を元に文章を生成するよう入力プロンプトに指示し、生成AIが生成した文章を返答させています。</p>
+              <p>入力されたメールのタイトル・内容・スタイルを元に、適切な形式のメール文案をAIが作成して返答します。</p>
             </div>
           </details>
         </div>
       </div>
 
       <div class="form-group">
-        <label class="dads-label" for="infoText">文章の元になる情報 <span class="dads-required">必須</span></label>
-        <p class="dads-support">生成したい文章の元となる情報を入力してください</p>
-        <textarea class="dads-textarea" id="infoText" rows="4" placeholder="例: 来月の全体会議の案内メールを作成したい。日時は6月15日14時から。場所はA会議室。議題は上半期の振り返り。"></textarea>
+        <label class="dads-label" for="emailTitle">メールのタイトル <span class="dads-required">必須</span></label>
+        <input class="dads-input" type="text" id="emailTitle" placeholder="例: 6月全体会議のご案内" required>
       </div>
 
       <div class="form-group">
-        <label class="dads-label" for="contextText">文章の形式 <span style="font-size:0.75rem;font-weight:400;color:var(--solid-gray-536)">※任意</span></label>
-        <p class="dads-support">例：マークダウン、ブログ、ビジネスメールなど</p>
-        <textarea class="dads-textarea" id="contextText" rows="2" placeholder="例: 丁寧な口調のビジネスメール"></textarea>
+        <label class="dads-label" for="emailContent">メールの内容 <span class="dads-required">必須</span></label>
+        <textarea class="dads-textarea" id="emailContent" rows="5" placeholder="例: 来月の全体会議の案内。日時は6月15日14時から。場所はA会議室。出席確認をお願いしたい。" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="dads-label" for="emailStyle">スタイル <span class="dads-required">必須</span></label>
+        <select class="dads-select" id="emailStyle" required>
+          <option value="gov">行政文書</option>
+          <option value="polite">丁寧に</option>
+          <option value="casual">カジュアル</option>
+        </select>
       </div>
 
       <div class="btn-area" style="justify-content:center">
@@ -106,8 +111,8 @@
       <hr class="dads-divider">
 
       <div class="result-container" id="resultContainer">
-        <h2>生成された文章</h2>
-        <div id="resultPlaceholder" class="result-placeholder">生成された文章がここに表示されます</div>
+        <h2>生成されたメール文案</h2>
+        <div id="resultPlaceholder" class="result-placeholder">生成されたメール文案がここに表示されます</div>
         <div class="prose" id="resultContent" style="display:none"></div>
         <div class="result-copy-area" id="copyArea" style="display:none">
           <button class="copy-btn" id="copyBtn">
@@ -122,31 +127,71 @@
 
 <script src="../shared/layout107.js"></script>
 <script src="../shared/markdown.js"></script>
-<script src="../shared/api-client.js"></script>
 <script src="../shared/history-store.js"></script>
 <script>
-initLayout({ activePage: 'generate', basePath: '' });
+initLayout({ activePage: 'email', basePath: '../app/' });
 
-var infoText = document.getElementById('infoText');
-var contextText = document.getElementById('contextText');
+var emailTitle = document.getElementById('emailTitle');
+var emailContent = document.getElementById('emailContent');
+var emailStyle = document.getElementById('emailStyle');
 var genBtn = document.getElementById('genBtn');
-var currentHistoryId = 'generate_' + Date.now();
+var currentHistoryId = 'email_' + Date.now();
 var resultContent = document.getElementById('resultContent');
 var resultPlaceholder = document.getElementById('resultPlaceholder');
 var progress = document.getElementById('progress');
 var copyBtn = document.getElementById('copyBtn');
 var copyArea = document.getElementById('copyArea');
 
-genBtn.addEventListener('click', function() {
-  var info = infoText.value.trim();
-  if (!info) { infoText.focus(); return; }
+/* ---------- スタイル別プロンプト ---------- */
+var styleMap = {
+  gov:    '以下の情報に基づいて、行政機関の公式文書として適切な格式のメール文を作成してください。',
+  polite: '以下の情報に基づいて、丁寧で敬意を込めたビジネスメール文を作成してください。',
+  casual: '以下の情報に基づいて、親しみやすいカジュアルなメール文を作成してください。'
+};
 
-  // GitHub参照: XML構造プロンプト
-  var context = contextText.value.trim();
-  var prompt = '<input></input>の情報から<作成する文書の形式></作成する文書の形式>で与える指示に従って、指示された形式の文章のみを出力してください。それ以外の文言は一切出力してはいけません。出力は<output></output>のxmlタグで囲んでください。\n\n<input>\n' + info + '\n</input>';
-  if (context) {
-    prompt += '\n\n<作成する文書の形式>\n' + context + '\n</作成する文書の形式>';
-  }
+/* ---------- NDJSON ストリーミング ---------- */
+function streamChat(body, onChunk, onDone, onError) {
+  fetch('../api2/chat-stream.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  }).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+    var fullText = '';
+    function read() {
+      return reader.read().then(function(result) {
+        if (result.done) { onDone(fullText); return; }
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line) continue;
+          try {
+            var j = JSON.parse(line);
+            if (j.text) { fullText += j.text; onChunk(j.text, fullText); }
+          } catch(e) {}
+        }
+        return read();
+      });
+    }
+    return read();
+  }).catch(function(err) { onError(err.message); });
+}
+
+/* ---------- 実行 ---------- */
+genBtn.addEventListener('click', function() {
+  var title = emailTitle.value.trim();
+  var content = emailContent.value.trim();
+  if (!title) { emailTitle.focus(); return; }
+  if (!content) { emailContent.focus(); return; }
+
+  var style = emailStyle.value;
+  var styleInstruction = styleMap[style];
+  var prompt = styleInstruction + '件名と本文を含めてください。出力は<output></output>のxmlタグで囲んでください。\n\n<input>\n件名: ' + title + '\n内容: ' + content + '\n</input>';
 
   genBtn.disabled = true;
   genBtn.textContent = '実行中...';
@@ -156,44 +201,46 @@ genBtn.addEventListener('click', function() {
   resultContent.innerHTML = '';
   copyArea.style.display = 'none';
 
-  ApiClient.streamChat({
+  streamChat({
     messages: [{ role: 'user', content: prompt }],
     model: 'gemini-3.1-flash-lite',
-    systemPrompt: 'あなたは指示に従って文章を作成するライターです。それぞれの回答は必ず1000字以上で詳細かつ丁寧に作成してください。',
-    onChunk: function(chunk, full) {
-      resultContent.innerHTML = renderMarkdown(cleanOutput(full));
-    },
-    onDone: function(full) {
-      resultContent.innerHTML = renderMarkdown(cleanOutput(full));
-      genBtn.disabled = false;
-      genBtn.textContent = '実行';
-      progress.classList.remove('active');
-      copyArea.style.display = 'flex';
-      HistoryStore.save({
-        id: currentHistoryId,
-        appType: 'generate',
-        title: info.substring(0, 50),
-        input: info,
-        context: context,
-        result: cleanOutput(full)
-      });
-      currentHistoryId = 'generate_' + Date.now();
-    },
-    onError: function(err) {
-      resultContent.innerHTML = '<span class="text-error">' + escapeHtml(err) + '</span>';
-      genBtn.disabled = false;
-      genBtn.textContent = '実行';
-      progress.classList.remove('active');
-    }
+    systemPrompt: 'あなたはメール文の作成を支援するプロフェッショナルなビジネスライターです。'
+  },
+  function(chunk, full) {
+    resultContent.innerHTML = renderMarkdown(cleanOutput(full));
+  },
+  function(full) {
+    resultContent.innerHTML = renderMarkdown(cleanOutput(full));
+    genBtn.disabled = false;
+    genBtn.textContent = '実行';
+    progress.classList.remove('active');
+    copyArea.style.display = 'flex';
+    HistoryStore.save({
+      id: currentHistoryId,
+      appType: 'email',
+      title: title.substring(0, 50),
+      input: title,
+      context: content,
+      style: style,
+      result: cleanOutput(full)
+    });
+    currentHistoryId = 'email_' + Date.now();
+  },
+  function(err) {
+    resultContent.innerHTML = '<span class="text-error">' + escapeHtml(err) + '</span>';
+    genBtn.disabled = false;
+    genBtn.textContent = '実行';
+    progress.classList.remove('active');
   });
 });
 
+/* ---------- <output>タグ抽出 ---------- */
 function cleanOutput(text) {
-  // <output>タグがあれば中身を抽出
   var m = text.match(/<output>([\s\S]*?)<\/output>/);
   return m ? m[1].trim() : text;
 }
 
+/* ---------- コピー ---------- */
 copyBtn.addEventListener('click', function() {
   navigator.clipboard.writeText(resultContent.innerText).then(function() {
     copyBtn.classList.add('copied');
@@ -215,8 +262,9 @@ function escapeHtml(s) {
     currentHistoryId = id;
     HistoryStore.load(id).then(function(data) {
       if (!data) return;
-      if (data.input) infoText.value = data.input;
-      if (data.context) contextText.value = data.context;
+      if (data.input) emailTitle.value = data.input;
+      if (data.context) emailContent.value = data.context;
+      if (data.style) emailStyle.value = data.style;
       if (data.result) {
         resultPlaceholder.style.display = 'none';
         resultContent.style.display = 'block';

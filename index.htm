@@ -34,7 +34,7 @@
       <div class="login-title">源内AI by デジタル庁</div>
       <div class="login-subtitle">v1.0.7</div>
 
-      <div style="margin-bottom:1.25rem;font-weight:700;color:#1a1a1c;font-size:1rem;line-height:1.8"><a href="https://digital-supporter.net/join/" target="_blank" rel="noopener" style="color:#0017c1;text-decoration:underline">会員（無料）</a>に登録してから、<br><span style="font-size:1.5rem">パスワード <span style="color:#c62828;font-weight:700">kaiin</span></span> を入力してください。</div>
+      <div style="margin-bottom:1.25rem;font-weight:700;color:#1a1a1c;font-size:1rem;line-height:1.8"><a href="https://digital-supporter.net/join/" target="_blank" rel="noopener" style="color:#0017c1;text-decoration:underline">会員（無料）</a>に登録してから、<br><span style="font-size:1.5rem">パスワード <span style="color:#c62828;font-weight:700">kaiin</span></span><br>を入力してください。</div>
 
       <div class="login-field">
         <input type="password" id="pw" class="login-input" placeholder="パスワードを入力" autocomplete="current-password">
@@ -49,7 +49,7 @@
       </div>
 
       <div class="notice">
-        このAIは、デジタル庁の公開ソースコードのAIのため、たしかに開発コストは0円でした。しかし、みなさんが使うAPI費用は日本の行政DXをリードする627自治体と104社で構成する日本DX応援団の各会費から支出をして会員向けに無料提供しています。<br>
+        このAIは、デジタル庁の公開ソースコードのAIのため、たしかに開発コストは0円でした。しかし、みなさんが使うAPI費用は日本の行政DXをリードする<strong style="color:#1a1a1c">819自治体</strong>と104社で構成する日本DX応援団の各会費から支出をして会員向けに無料提供しています。<br>
         そのため、会員自治体の職員と法人会員の社員以外の方は、無料会員でも良いので<a href="https://digital-supporter.net/join/" target="_blank" rel="noopener">必ず登録してください</a>。
       </div>
     </div>
@@ -57,7 +57,7 @@
 
   <script>
     if (sessionStorage.getItem('gennai_auth') === 'true') {
-      window.location.href = 'app/main.htm';
+      window.location.href = 'app/apps.htm';
     }
 
     var pw = document.getElementById('pw');
@@ -91,7 +91,7 @@
       .then(function(data) {
         if (data.success) {
           sessionStorage.setItem('gennai_auth', 'true');
-          window.location.href = 'app/main.htm';
+          window.location.href = 'app/apps.htm';
         } else {
           errBox.textContent = 'パスワードが正しくありません';
           errBox.style.display = 'block';

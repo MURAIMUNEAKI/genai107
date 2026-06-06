@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>補助金制度調査 - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ヘッダー（GitHub UI準拠） */
+.gt-header{border-bottom:1px solid #000;padding:1rem 0 0.75rem;margin-bottom:1.5rem;}
+.gt-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0 0 0.25rem;}
+@media(min-width:1024px){.gt-title{font-size:1.5rem;}}
+
+/* 但書 */
+.gt-notes{font-size:0.875rem;line-height:1.7;color:var(--solid-gray-800);margin-top:1rem;}
+.gt-notes h2{font-size:1rem;font-weight:700;margin:1rem 0 0.25rem;}
+.gt-notes h3{font-size:0.9375rem;font-weight:700;margin:0.75rem 0 0.25rem;}
+.gt-notes p{margin:0.25rem 0;}
+.gt-notes ul,.gt-notes ol{margin:0.25rem 0 0.25rem 1.5rem;}
+.gt-notes li{margin:0.125rem 0;}
+.gt-notes details{margin:0.75rem 0;border:1px solid var(--solid-gray-300);border-radius:8px;padding:0.5rem 0.75rem;}
+.gt-notes summary{cursor:pointer;font-weight:700;font-size:0.875rem;list-style:none;display:flex;align-items:center;gap:0.5rem;}
+.gt-notes summary::before{content:'\25B6';font-size:0.625rem;transition:transform 0.2s;}
+.gt-notes details[open] summary::before{transform:rotate(90deg);}
+.gt-notes details>div{padding:0.5rem 0 0 1.25rem;}
+
+/* クイックタグ */
+.quick-tags{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+.tag-btn{padding:0.5rem 0.75rem;border:1px solid var(--solid-gray-420);border-radius:6px;background:#fff;font-size:0.8125rem;cursor:pointer;transition:all 0.15s;min-width:4.5rem;text-align:center;}
+.tag-btn:hover{background:var(--solid-gray-50);border-color:var(--solid-gray-600);}
+.tag-btn.active{background:var(--blue-900);color:#fff;border-color:var(--blue-900);}
+
+/* フィルター */
+.filters-row{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem;align-items:flex-end;}
+.filter-item{display:flex;flex-direction:column;gap:0.25rem;min-width:10rem;flex:1;}
+.filter-item label{font-size:0.8125rem;font-weight:700;color:var(--solid-gray-600);}
+.filter-item select{padding:0.5rem;border:1px solid var(--solid-gray-420);border-radius:6px;font-size:0.875rem;font-family:inherit;background:#fff;}
+.toggle-advanced-btn{background:none;border:none;color:var(--blue-900);font-size:0.8125rem;cursor:pointer;padding:0.5rem 0;text-decoration:underline;align-self:flex-end;}
+.advanced-filters{display:none;margin-top:0.75rem;}
+.advanced-filters.open{display:flex;flex-wrap:wrap;gap:1rem;}
+
+/* 検索結果件数 */
+.results-info{margin-top:1.5rem;font-size:0.9375rem;font-weight:700;}
+
+/* 結果カード */
+.subsidy-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1rem;}
+@media(min-width:768px){.subsidy-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1200px){.subsidy-grid{grid-template-columns:repeat(3,1fr);}}
+
+.subsidy-card{border:1px solid var(--solid-gray-300);border-radius:8px;padding:1rem;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s;display:flex;flex-direction:column;gap:0.5rem;}
+.subsidy-card:hover{border-color:var(--blue-900);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.subsidy-card .card-top{display:flex;align-items:center;gap:0.5rem;}
+.status-badge{font-size:0.75rem;font-weight:700;padding:0.125rem 0.5rem;border-radius:9999px;flex-shrink:0;}
+.status-open{background:#dcfce7;color:#166534;}
+.status-closed{background:var(--solid-gray-100);color:var(--solid-gray-600);}
+.subsidy-card h3{font-size:0.9375rem;font-weight:700;line-height:1.5;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.subsidy-card .card-meta{font-size:0.8125rem;color:var(--solid-gray-600);display:flex;flex-direction:column;gap:0.25rem;}
+.subsidy-card .card-amount{font-size:0.875rem;font-weight:700;color:var(--blue-900);margin-top:auto;padding-top:0.5rem;}
+
+/* モーダル */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:12px;max-width:48rem;width:100%;max-height:85vh;overflow-y:auto;padding:1.5rem;position:relative;}
+.modal-close{position:absolute;top:0.75rem;right:0.75rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--solid-gray-600);width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:6px;}
+.modal-close:hover{background:var(--solid-gray-100);}
+.modal-box h2{font-size:1.25rem;font-weight:700;margin-bottom:0.5rem;padding-right:2rem;}
+.modal-box .detail-section{margin-top:1rem;}
+.modal-box .detail-section h3{font-size:1rem;font-weight:700;margin-bottom:0.25rem;border-bottom:1px solid var(--solid-gray-200);padding-bottom:0.25rem;}
+.modal-box .detail-section p{font-size:0.875rem;line-height:1.7;margin:0.25rem 0;}
+.detail-tags{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem;}
+.detail-tags .tag{font-size:0.75rem;padding:0.25rem 0.625rem;border-radius:9999px;background:var(--solid-gray-100);color:var(--solid-gray-800);}
+.detail-link{display:inline-flex;align-items:center;gap:0.25rem;color:var(--blue-900);font-size:0.875rem;font-weight:700;margin-top:0.5rem;}
+
+/* エラー */
+.error-msg{margin-top:1rem;padding:0.75rem 1rem;border-radius:8px;background:#fef2f2;color:#991b1b;font-size:0.875rem;display:none;}
+.error-msg.visible{display:block;}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'subsidy'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:72rem">
+      <div class="gt-header">
+        <h1 class="gt-title">補助金制度調査</h1>
+        <div class="gt-notes">
+          <h2>想定用途</h2>
+          <p>キーワードで補助金・助成金を検索し、募集状況・補助額・申請期限などを一覧で確認できます。</p>
+          <h3>データソース</h3>
+          <p>本アプリは経済産業省の<strong>jGrants（補助金申請システム）</strong>の公開APIからリアルタイムでデータを取得しています。</p>
+          <details>
+            <summary>留意点</summary>
+            <div>
+              <ul>
+                <li>jGrantsに掲載されている補助金のみが検索対象です。すべての補助金制度が網羅されているわけではありません。</li>
+                <li>募集状況・金額・期限は変更される場合があります。申請前に必ず公式ページで最新情報をご確認ください。</li>
+                <li>検索キーワードは2文字以上で入力してください（APIの仕様制限）。</li>
+              </ul>
+            </div>
+          </details>
+          <h2>操作方法</h2>
+          <p>クイックタグをクリックするか、キーワードを入力して検索ボタンを押してください。カードをクリックすると詳細が表示されます。</p>
+        </div>
+      </div>
+
+      <!-- クイックタグ -->
+      <div class="quick-tags" id="quickTags">
+        <button class="tag-btn" data-keyword="中小企業">中小企業</button>
+        <button class="tag-btn" data-keyword="創業">創業</button>
+        <button class="tag-btn" data-keyword="IT導入">IT導入</button>
+        <button class="tag-btn" data-keyword="DX">DX</button>
+        <button class="tag-btn" data-keyword="省エネ">省エネ</button>
+        <button class="tag-btn" data-keyword="設備投資">設備投資</button>
+        <button class="tag-btn" data-keyword="人材育成">人材育成</button>
+        <button class="tag-btn" data-keyword="雇用">雇用</button>
+        <button class="tag-btn" data-keyword="販路開拓">販路開拓</button>
+        <button class="tag-btn" data-keyword="観光">観光</button>
+        <button class="tag-btn" data-keyword="農業">農業</button>
+        <button class="tag-btn" data-keyword="子育て">子育て</button>
+        <button class="tag-btn" data-keyword="介護">介護</button>
+        <button class="tag-btn" data-keyword="住宅">住宅</button>
+        <button class="tag-btn" data-keyword="防災">防災</button>
+      </div>
+
+      <!-- 検索入力 -->
+      <div class="form-group">
+        <label class="dads-label" for="keyword">キーワード <span class="dads-required">必須</span></label>
+        <div style="display:flex;gap:0.5rem">
+          <input class="dads-input" type="text" id="keyword" placeholder="例: DX, 省エネ, 観光, 中小企業" required style="flex:1">
+          <button class="dads-btn" id="searchBtn" style="min-width:6rem">検索</button>
+        </div>
+      </div>
+
+      <!-- フィルター -->
+      <div class="filters-row">
+        <div class="filter-item">
+          <label for="acceptance">募集状況</label>
+          <select id="acceptance">
+            <option value="1">募集中のみ</option>
+            <option value="0">すべて</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="sort">並び順</label>
+          <select id="sort">
+            <option value="created_date">作成日順</option>
+            <option value="acceptance_start_datetime">募集開始日順</option>
+            <option value="acceptance_end_datetime">募集終了日順</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="order">順序</label>
+          <select id="order">
+            <option value="DESC">新しい順</option>
+            <option value="ASC">古い順</option>
+          </select>
+        </div>
+        <button class="toggle-advanced-btn" id="toggleAdvanced">詳細条件を表示</button>
+      </div>
+
+      <div class="advanced-filters" id="advancedFilters">
+        <div class="filter-item">
+          <label for="targetArea">対象地域</label>
+          <select id="targetArea">
+            <option value="">指定なし</option>
+            <option value="全国">全国</option>
+            <option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option>
+            <option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option>
+            <option value="福島県">福島県</option><option value="茨城県">茨城県</option><option value="栃木県">栃木県</option>
+            <option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option>
+            <option value="東京都">東京都</option><option value="神奈川県">神奈川県</option><option value="新潟県">新潟県</option>
+            <option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option>
+            <option value="山梨県">山梨県</option><option value="長野県">長野県</option><option value="岐阜県">岐阜県</option>
+            <option value="静岡県">静岡県</option><option value="愛知県">愛知県</option><option value="三重県">三重県</option>
+            <option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option>
+            <option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option>
+            <option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option>
+            <option value="広島県">広島県</option><option value="山口県">山口県</option><option value="徳島県">徳島県</option>
+            <option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option>
+            <option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option>
+            <option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option>
+            <option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="employees">従業員数</label>
+          <select id="employees">
+            <option value="">指定なし</option>
+            <option value="5名以下">5名以下</option>
+            <option value="20名以下">20名以下</option>
+            <option value="21名以上">21名以上</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- プログレス -->
+      <div class="progress-indicator" id="progress">
+        <div class="progress-spinner"></div>
+        <span class="progress-label">検索中...</span>
+      </div>
+
+      <!-- エラー -->
+      <div class="error-msg" id="errorMsg"></div>
+
+      <!-- 結果件数 -->
+      <div class="results-info" id="resultsInfo" style="display:none">
+        検索結果: <span id="countValue">0</span> 件
+      </div>
+
+      <!-- 結果グリッド -->
+      <div class="subsidy-grid" id="resultsGrid"></div>
+    </div>
+  </main>
+</div>
+
+<!-- 詳細モーダル -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script>
+initLayout({ activePage: 'subsidy', basePath: '../app/' });
+
+var PROXY_URL = '../api2/jgrants-proxy.php';
+var BASE_URL = 'https://api.jgrants-portal.go.jp/exp';
+
+var keywordInput = document.getElementById('keyword');
+var searchBtn = document.getElementById('searchBtn');
+var acceptanceSelect = document.getElementById('acceptance');
+var sortSelect = document.getElementById('sort');
+var orderSelect = document.getElementById('order');
+var toggleAdvancedBtn = document.getElementById('toggleAdvanced');
+var advancedFilters = document.getElementById('advancedFilters');
+var progressEl = document.getElementById('progress');
+var errorMsg = document.getElementById('errorMsg');
+var resultsInfo = document.getElementById('resultsInfo');
+var countValue = document.getElementById('countValue');
+var resultsGrid = document.getElementById('resultsGrid');
+var modalOverlay = document.getElementById('modalOverlay');
+var modalClose = document.getElementById('modalClose');
+var modalBody = document.getElementById('modalBody');
+
+/* ---------- クイックタグ ---------- */
+var tagBtns = document.querySelectorAll('.tag-btn');
+for (var t = 0; t < tagBtns.length; t++) {
+  tagBtns[t].addEventListener('click', function() {
+    for (var b = 0; b < tagBtns.length; b++) tagBtns[b].classList.remove('active');
+    this.classList.add('active');
+    keywordInput.value = this.getAttribute('data-keyword');
+    searchSubsidies();
+  });
+}
+keywordInput.addEventListener('input', function() {
+  for (var b = 0; b < tagBtns.length; b++) tagBtns[b].classList.remove('active');
+});
+
+/* ---------- 検索実行 ---------- */
+searchBtn.addEventListener('click', function() { searchSubsidies(); });
+keywordInput.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') searchSubsidies();
+});
+
+/* ---------- 詳細条件トグル ---------- */
+var isAdvancedOpen = false;
+toggleAdvancedBtn.addEventListener('click', function() {
+  isAdvancedOpen = !isAdvancedOpen;
+  advancedFilters.classList.toggle('open', isAdvancedOpen);
+  toggleAdvancedBtn.textContent = isAdvancedOpen ? '詳細条件を隠す' : '詳細条件を表示';
+});
+
+/* ---------- モーダル ---------- */
+modalClose.addEventListener('click', function() { modalOverlay.classList.remove('open'); });
+modalOverlay.addEventListener('click', function(e) {
+  if (e.target === modalOverlay) modalOverlay.classList.remove('open');
+});
+
+/* ---------- API検索 ---------- */
+function searchSubsidies() {
+  var kw = keywordInput.value.trim();
+  if (!kw) { keywordInput.focus(); return; }
+  if (kw.length < 2) { showError('検索キーワードは2文字以上で入力してください（APIの仕様制限）。'); return; }
+
+  hideError();
+  progressEl.classList.add('active');
+  resultsGrid.innerHTML = '';
+  resultsInfo.style.display = 'none';
+
+  var params = new URLSearchParams();
+  params.append('keyword', kw);
+  params.append('sort', sortSelect.value);
+  params.append('order', orderSelect.value);
+  params.append('acceptance', acceptanceSelect.value);
+
+  if (isAdvancedOpen) {
+    var area = document.getElementById('targetArea').value;
+    if (area) params.append('target_area_search', area);
+    var emp = document.getElementById('employees').value;
+    if (emp) params.append('target_number_of_employees', emp);
+  }
+
+  params.append('page', '1');
+  params.append('count', '100');
+
+  var targetUrl = BASE_URL + '/v1/public/subsidies?' + params.toString();
+  var proxyUrl = PROXY_URL + '?url=' + encodeURIComponent(targetUrl);
+
+  fetch(proxyUrl).then(function(res) {
+    if (!res.ok) throw new Error('APIエラー (HTTP ' + res.status + ')');
+    return res.json();
+  }).then(function(data) {
+    renderResults(data);
+  }).catch(function(err) {
+    showError(err.message);
+  }).finally(function() {
+    progressEl.classList.remove('active');
+  });
+}
+
+/* ---------- 結果描画 ---------- */
+function renderResults(data) {
+  if (!data.result || data.result.length === 0) {
+    resultsInfo.style.display = 'block';
+    countValue.textContent = '0';
+    resultsGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--solid-gray-536);padding:2rem 0;">該当する補助金が見つかりませんでした。</p>';
+    return;
+  }
+
+  var total = (data.metadata && data.metadata.resultset && data.metadata.resultset.count) || data.result.length;
+  countValue.textContent = total;
+  resultsInfo.style.display = 'block';
+
+  var html = '';
+  for (var i = 0; i < data.result.length; i++) {
+    var item = data.result[i];
+    var accepting = isAccepting(item.acceptance_end_datetime);
+    var statusCls = accepting ? 'status-open' : 'status-closed';
+    var statusTxt = accepting ? '募集中' : '募集終了';
+    var title = escapeHtml(item.title || '名称不明');
+    var maxLimit = item.subsidy_max_limit ? formatCurrency(item.subsidy_max_limit) : '上限不明';
+    var area = escapeHtml(item.target_area_search || '全国');
+    var deadline = item.acceptance_end_datetime ? formatDate(item.acceptance_end_datetime) : '不明';
+
+    html += '<div class="subsidy-card" data-id="' + item.id + '">' +
+      '<div class="card-top"><span class="status-badge ' + statusCls + '">' + statusTxt + '</span></div>' +
+      '<h3>' + title + '</h3>' +
+      '<div class="card-meta">' +
+        '<span>地域: ' + area + '</span>' +
+        '<span>締切: ' + deadline + '</span>' +
+      '</div>' +
+      '<div class="card-amount">' + maxLimit + '</div>' +
+    '</div>';
+  }
+  resultsGrid.innerHTML = html;
+
+  // カードクリックイベント
+  var cards = resultsGrid.querySelectorAll('.subsidy-card');
+  for (var c = 0; c < cards.length; c++) {
+    cards[c].addEventListener('click', function() {
+      openDetail(this.getAttribute('data-id'));
+    });
+  }
+
+  // 結果へスクロール
+  setTimeout(function() {
+    resultsInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+/* ---------- 詳細モーダル ---------- */
+function openDetail(id) {
+  modalBody.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--solid-gray-536);">読み込み中...</div>';
+  modalOverlay.classList.add('open');
+
+  var targetUrl = BASE_URL + '/v2/public/subsidies/id/' + id;
+  var proxyUrl = PROXY_URL + '?url=' + encodeURIComponent(targetUrl);
+
+  fetch(proxyUrl).then(function(res) {
+    if (!res.ok) throw new Error('詳細情報の取得に失敗しました');
+    return res.json();
+  }).then(function(data) {
+    if (!data.result || data.result.length === 0) throw new Error('データが見つかりません');
+    renderDetailModal(data.result[0]);
+  }).catch(function(err) {
+    modalBody.innerHTML = '<p style="color:#991b1b;">' + escapeHtml(err.message) + '</p>';
+  });
+}
+
+function renderDetailModal(item) {
+  var title = escapeHtml(item.title || '名称不明');
+  var catchPhrase = escapeHtml(item.subsidy_catch_phrase || '');
+  var detail = item.detail || '詳細情報はありません。';
+  var purpose = escapeHtml(item.use_purpose || '未指定');
+  var industry = escapeHtml(item.industry || '未指定');
+  var employees = escapeHtml(item.target_number_of_employees || '未指定');
+  var maxLimit = item.subsidy_max_limit ? formatCurrency(item.subsidy_max_limit) : '-';
+  var rate = escapeHtml(item.subsidy_rate || '-');
+  var frontUrl = item.front_subsidy_detail_page_url || '';
+
+  var linkHtml = frontUrl ? '<a href="' + escapeHtml(frontUrl) + '" target="_blank" rel="noopener noreferrer" class="detail-link">公式ページで見る &rarr;</a>' : '';
+
+  modalBody.innerHTML =
+    '<h2>' + title + '</h2>' +
+    (catchPhrase ? '<p style="color:var(--solid-gray-600);margin-top:0.25rem;">' + catchPhrase + '</p>' : '') +
+    '<div class="detail-tags">' +
+      '<span class="tag">' + purpose + '</span>' +
+      '<span class="tag">' + industry + '</span>' +
+      '<span class="tag">従業員: ' + employees + '</span>' +
+    '</div>' +
+    '<div class="detail-section"><h3>概要</h3><div>' + detail + '</div></div>' +
+    '<div class="detail-section"><h3>補助条件</h3>' +
+      '<p><strong>補助率:</strong> ' + rate + '</p>' +
+      '<p><strong>上限額:</strong> ' + maxLimit + '</p>' +
+    '</div>' +
+    (linkHtml ? '<div class="detail-section">' + linkHtml + '</div>' : '');
+}
+
+/* ---------- ヘルパー ---------- */
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.classList.add('visible');
+}
+function hideError() {
+  errorMsg.classList.remove('visible');
+}
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatCurrency(amount) {
+  try { return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(amount); }
+  catch(e) { return amount + '円'; }
+}
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr);
+  return d.getFullYear() + '/' + ('0'+(d.getMonth()+1)).slice(-2) + '/' + ('0'+d.getDate()).slice(-2);
+}
+function isAccepting(endDateStr) {
+  if (!endDateStr) return false;
+  return new Date(endDateStr) > new Date();
+}
+</script>
+</body>
+</html>

@@ -35,7 +35,7 @@ a{color:var(--blue-900);text-decoration:underline;text-underline-offset:3px;}
 a:hover{color:var(--blue-1000);}
 
 /* --- App Shell: Flexbox縦積み（サイドバーなし） --- */
-.app-shell{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:clip;}
+.app-shell{display:flex;flex-direction:column;height:100vh;width:100%;overflow:clip;}
 
 /* --- Header: sticky top, genai-web風 --- */
 .app-header{
@@ -54,6 +54,7 @@ a:hover{color:var(--blue-1000);}
   color:var(--solid-gray-800);text-decoration:none;flex-shrink:0;
 }
 .app-logo:hover{text-decoration:none;color:var(--blue-900);}
+.app-logo-img{height:2rem;width:auto;display:block;object-fit:contain;}
 
 /* Desktop Nav (pill links) */
 .header-nav{display:none;align-items:center;gap:0.25rem;margin-left:1.5rem;}

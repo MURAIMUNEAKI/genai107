@@ -8,6 +8,7 @@
 function initLayout(opts) {
   var activePage = (opts && opts.activePage) || '';
   var basePath   = (opts && opts.basePath) || '../app/';
+  var app2Path   = basePath === '' ? '../app2/' : basePath.replace(/app\/$/, 'app2/');
   var rootPath   = (opts && opts.rootPath) || '../';
 
   /* ---------- Nav Items ---------- */
@@ -20,8 +21,6 @@ function initLayout(opts) {
 
   /* ---------- Mobile Menu Items (full list) ---------- */
   var mobileItems = [
-    { id: 'main',       label: 'ホーム',                  href: basePath + 'main.htm',
-      icon: '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
     { id: 'chat',       label: 'チャット',                 href: basePath + 'chat.htm',
       icon: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
     { id: 'generate',   label: '文章を生成',               href: basePath + 'generate.htm',
@@ -38,6 +37,24 @@ function initLayout(opts) {
       icon: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8v6M8 11h6"/>' },
     { id: 'lawsy',      label: '法令AI Lawsy',             href: basePath + 'lawsy.htm',
       icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>' },
+    { id: 'proofread',  label: '文章の校正・要約',         href: app2Path + 'proofread.htm',
+      icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>' },
+    { id: 'email',      label: 'メール文案・作成',         href: app2Path + 'email.htm',
+      icon: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/>' },
+    { id: 'document',   label: '公文書作成',               href: app2Path + 'document.htm',
+      icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="12" y2="9"/>' },
+    { id: 'answer',     label: '議会答弁の作成',           href: app2Path + 'answer.htm',
+      icon: '<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5A8.48 8.48 0 0121 11.5z"/>' },
+    { id: 'subsidy',    label: '補助金制度調査',           href: app2Path + 'subsidy.htm',
+      icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>' },
+    { id: 'tosho',      label: '国立国会図書館サーチ',     href: app2Path + 'tosho.htm',
+      icon: '<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>' },
+    { id: 'govbot',     label: '総務省 相談Govbot',        href: app2Path + 'govbot.htm',
+      icon: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/>' },
+    { id: 'seisakuhyouka', label: '政策評価AI',            href: app2Path + 'seisakuhyouka.htm',
+      icon: '<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/>' },
+    { id: 'kaigo',      label: '厚労省 介護保険QA',        href: app2Path + 'kaigo.htm',
+      icon: '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>' },
     { id: 'apps',       label: 'AIアプリ',                 href: basePath + 'apps.htm',
       icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>' }
   ];
@@ -65,7 +82,7 @@ function initLayout(opts) {
     '</button>';
 
   // Logo
-  headerInner += '<a href="' + basePath + 'main.htm" class="app-logo">源内AI</a>';
+  headerInner += '<a href="' + basePath + 'apps.htm" class="app-logo"><img src="' + rootPath + 'images/gennai.jpg" alt="源内AI" class="app-logo-img"></a>';
 
   // Desktop pill nav
   headerInner += '<nav class="header-nav" aria-label="メインナビゲーション">';
@@ -100,7 +117,7 @@ function initLayout(opts) {
 
   var mobileHtml =
     '<div class="mobile-dialog-header">' +
-      '<a href="' + basePath + 'main.htm" class="app-logo" style="font-size:1.125rem">源内AI</a>' +
+      '<a href="' + basePath + 'apps.htm" class="app-logo"><img src="' + rootPath + 'images/gennai.jpg" alt="源内AI" class="app-logo-img" style="height:1.5rem"></a>' +
       '<button class="mobile-close-btn" id="gn107-mobile-close" aria-label="閉じる">' +
         '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
       '</button>' +

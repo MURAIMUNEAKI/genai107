@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>厚労省 介護保険QA - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+.gt-header{padding:0.25rem 0 0.15rem;margin-bottom:0;display:flex;align-items:baseline;gap:0.75rem;flex-wrap:wrap;}
+.gt-title{font-size:1rem;font-weight:700;line-height:1.3;margin:0;}
+.gt-subtitle{font-size:1rem;font-weight:700;line-height:1.3;color:var(--solid-gray-600);margin:0;}
+
+.kaigo-frame-wrap{margin-top:0.25rem;border:1px solid var(--solid-gray-420);border-radius:8px;overflow:hidden;}
+.kaigo-frame{width:100%;height:calc(100vh - 7.5rem);border:none;display:block;}
+@media(max-width:768px){.kaigo-frame{height:calc(100vh - 7rem);}}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'kaigo'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="main-content" style="max-width:90rem">
+      <div class="gt-header">
+        <h1 class="gt-title">厚労省 介護保険QA</h1>
+        <p class="gt-subtitle">厚生労働省の介護保険制度に関するQAを答えます</p>
+      </div>
+
+      <div class="kaigo-frame-wrap">
+        <iframe class="kaigo-frame" src="kaigo9.htm" title="厚労省 介護保険QA"></iframe>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../shared/layout107.js"></script>
+<script>
+initLayout({ activePage: 'kaigo', basePath: '../app/' });
+</script>
+</body>
+</html>
