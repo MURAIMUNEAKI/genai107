@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運営指導コンプライアンス審査 - 源内 for Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--solid-gray-50:#f8f8fb;--solid-gray-100:#f1f1f4;--solid-gray-300:#d8d8db;--solid-gray-420:#b4b4b7;--solid-gray-536:#8a8a8d;--solid-gray-600:#6e6e71;--solid-gray-800:#1a1a1c;--blue-50:#eff5ff;--blue-100:#dbe8fb;--blue-200:#c5d7fb;--blue-900:#0017c1;--blue-1000:#000fa8;--blue-1200:#000b7a;--error-1:#d32f2f;--yellow-300:#ffcc00;--red-800:#b71c1c;--header-height:3.5rem}
+@media(min-width:1024px){:root{--header-height:3.75rem}}
+*{margin:0;padding:0;box-sizing:border-box}html{height:100%}
+body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:var(--solid-gray-800);height:100%;overflow:hidden;background:#e8f4fc}
+
+.app-shell{display:grid;height:100vh;width:100vw;grid-template-rows:auto minmax(0,1fr);overflow:clip}
+.app-header{display:flex;align-items:center;height:var(--header-height);border-bottom:1px solid var(--solid-gray-420);background:#fff;padding:0 1rem}
+.app-logo{font-size:1.125rem;font-weight:700;color:#111827;text-decoration:none}
+@media(min-width:1024px){.app-logo{font-size:1.375rem}}
+
+.app-main{overflow-y:auto;scrollbar-gutter:stable}
+.split{display:flex;flex-direction:column;min-height:100%}
+@media(min-width:768px){.split{flex-direction:row;height:100%}}
+.split-left{flex:4;padding:1.5rem;overflow-y:auto;background:#e8f4fc}
+@media(min-width:768px){.split-left{border-right:1px solid var(--solid-gray-420)}}
+.split-right{flex:6;padding:1.5rem;overflow:hidden;background:#e8f4fc;display:flex;flex-direction:column;gap:.75rem}
+
+.exapp-title{font-size:1.25rem;font-weight:700;margin-bottom:.5rem}
+@media(min-width:1024px){.exapp-title{font-size:1.5rem}}
+.exapp-usage{font-size:.875rem;color:var(--solid-gray-600);margin-bottom:1rem}
+
+.form-field{display:flex;flex-direction:column;gap:.375rem;margin-bottom:1.25rem}
+.dads-label{font-size:1rem;font-weight:700;color:var(--solid-gray-800)}
+.dads-required{font-size:.875rem;font-weight:400;color:var(--red-800);margin-left:.5rem}
+.dads-optional{font-size:.875rem;font-weight:400;color:var(--solid-gray-600);margin-left:.5rem}
+.dads-support{font-size:.875rem;color:var(--solid-gray-600)}
+.dads-textarea{width:100%;border-radius:8px;border:2px solid #000;padding:1rem;font-size:1rem;line-height:1.7;font-family:inherit;resize:vertical;min-height:80px;background:#fff}
+.dads-textarea:focus{outline:4px solid #000;outline-offset:.125rem;box-shadow:0 0 0 .125rem var(--yellow-300)}
+.dads-select{width:100%;appearance:none;border-radius:8px;border:2px solid #000;background:#fff;padding:.6875rem 2.5rem .6875rem 1rem;font-size:1rem;font-family:inherit;height:3rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%231a1a1c' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem}
+
+.file-drop{border:2px dashed var(--solid-gray-420);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:background .15s,border-color .15s}
+.file-drop:hover,.file-drop.dragover{background:var(--blue-50);border-color:var(--blue-900)}
+.file-drop input{display:none}
+.file-name{font-size:.875rem;color:var(--blue-900);font-weight:700;margin-top:.5rem}
+
+.sample-box{background:#fff;border:1px solid var(--solid-gray-300);border-radius:8px;padding:.875rem 1rem;margin-bottom:1.25rem}
+.sample-box summary{font-weight:700;cursor:pointer;font-size:.9375rem}
+.sample-list{list-style:none;margin:.625rem 0 0;padding:0;display:flex;flex-direction:column;gap:.375rem}
+.sample-list a{color:var(--blue-900);font-size:.875rem;text-decoration:none;font-weight:700}
+.sample-list a:hover{text-decoration:underline}
+.sample-list .tag{display:inline-block;font-size:.7rem;font-weight:700;color:#fff;border-radius:4px;padding:.0625rem .375rem;margin-right:.375rem;vertical-align:middle}
+.tag-good{background:#16a34a}.tag-mid{background:#d97706}.tag-bad{background:#dc2626}.tag-tpl{background:#475569}
+
+.btn-area{display:flex;justify-content:center;margin-top:1rem}
+.dads-btn{min-width:12rem;min-height:3rem;border-radius:8px;padding:.75rem 1rem;font-size:1rem;font-weight:700;background:var(--blue-900);color:#fff;border:none;cursor:pointer;font-family:inherit;transition:background .15s}
+.dads-btn:hover{background:var(--blue-1000);text-decoration:underline}
+.dads-btn:disabled{background:var(--solid-gray-300);color:var(--solid-gray-50);cursor:not-allowed;text-decoration:none}
+.action-btn{min-height:2.75rem;border-radius:8px;padding:.5rem 1.25rem;font-size:.9375rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:background .15s}
+.action-btn:hover{text-decoration:underline}
+.btn-copy{background:#16a34a;color:#fff}.btn-copy:hover{background:#15803d}
+.btn-txt{background:#2563eb;color:#fff}.btn-txt:hover{background:#1d4ed8}
+.btn-word{background:#7c3aed;color:#fff}.btn-word:hover{background:#6d28d9}
+
+.result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.result-box{flex:1;border-radius:8px;border:1px solid var(--solid-gray-420);padding:1rem;min-height:80px;background:#fff;overflow-y:auto}
+.result-placeholder{color:var(--solid-gray-536)}
+
+.prose{overflow-wrap:anywhere;line-break:strict}
+.prose h1{font-size:1.5rem;font-weight:700;margin:1rem 0 .5rem;padding-bottom:.5rem;border-bottom:1px solid var(--solid-gray-420)}
+.prose h2{font-size:1.25rem;font-weight:700;margin:1rem 0 .375rem}
+.prose h3{font-size:1.125rem;font-weight:700;margin:.75rem 0 .25rem}
+.prose p{margin:.5rem 0}.prose ul,.prose ol{margin:.5rem 0 .5rem 1.5rem}.prose li{margin:.125rem 0}
+.prose strong{font-weight:700}.prose code{background:var(--solid-gray-100);padding:.0625rem .3125rem;border-radius:4px;font-size:.85em}
+.prose table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:.875rem}
+.prose th,.prose td{border:1px solid var(--solid-gray-300);padding:.5rem .75rem;text-align:left}
+.prose th{background:var(--solid-gray-100);font-weight:700}
+
+.back-btn{padding:6px 24px;background:#ffd600;color:#1a1a2e;font-weight:700;font-size:14px;border:2px solid #e6c200;border-radius:999px;cursor:pointer;font-family:inherit;margin-right:1rem}
+.back-btn:hover{background:#ffca00}
+
+.spinner{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(232,244,252,.85);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem}
+.spinner.active{display:flex}
+.spinner-circle{width:5rem;height:5rem;border:6px solid var(--solid-gray-300);border-top-color:var(--blue-900);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-label{font-size:1.25rem;font-weight:700;color:var(--solid-gray-800)}
+
+.criteria-btn{padding:.45rem 1rem;background:#fff;border:2px solid var(--blue-900);color:var(--blue-900);border-radius:8px;font-weight:700;font-size:.875rem;cursor:pointer;font-family:inherit;white-space:nowrap}
+.criteria-btn:hover{background:var(--blue-50);text-decoration:underline}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.active{display:flex}
+.modal-box{background:#fff;width:90vw;height:90vh;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--solid-gray-300);background:var(--blue-50)}
+.modal-head h3{font-size:1.25rem;font-weight:700;color:var(--blue-1200)}
+.modal-close{background:none;border:none;font-size:1.75rem;line-height:1;cursor:pointer;color:var(--solid-gray-600)}
+.modal-close:hover{color:var(--solid-gray-800)}
+.modal-body{flex:1;overflow-y:auto;padding:1.5rem}
+.modal-note{font-size:.85rem;color:var(--solid-gray-600);margin-bottom:1rem}
+.criteria-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.criteria-table th,.criteria-table td{border:1px solid var(--solid-gray-300);padding:.6rem .75rem;text-align:left;vertical-align:top}
+.criteria-table thead th{background:var(--solid-gray-100);font-weight:700;position:sticky;top:0;z-index:1}
+.criteria-table td.center{text-align:center}
+.criteria-table tfoot td{background:var(--solid-gray-50);font-weight:700}
+.pts{width:4.5rem;text-align:center;border:2px solid var(--blue-200);border-radius:6px;padding:.35rem;font-size:1rem;font-family:inherit}
+.pts:focus{outline:3px solid var(--yellow-300);border-color:var(--blue-900)}
+.modal-foot{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:1rem;padding:1rem 1.5rem;border-top:1px solid var(--solid-gray-300)}
+.apply-btn{min-width:9rem;min-height:2.75rem;padding:.6rem 1.5rem;background:var(--blue-900);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit;flex:none}
+.apply-btn:hover{background:var(--blue-1000);text-decoration:underline}
+.apply-msg{display:none;color:#d32f2f;font-weight:700;font-size:1.25rem;text-align:right}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <button class="back-btn" onclick="goBack()">メニューに戻る</button>
+    <span class="app-logo">運営指導コンプライアンス審査</span>
+  </header>
+  <main class="app-main">
+    <div class="split">
+      <div class="split-left">
+        <h1 class="exapp-title">運営指導コンプライアンス審査</h1>
+        <p class="exapp-usage">運営規程・重要事項説明書・各種マニュアル等をアップロードすると、運営指導（実地指導）の標準確認項目に基づく9つの審査項目で法令適合性を採点し、是正すべき不備を詳細レポートで出力します（2024年義務化の虐待防止・BCP・身体拘束適正化・感染症対策を重点確認）。</p>
+
+        <details class="sample-box">
+          <summary>サンプル書類をダウンロード（PDF5種類＋作成用Word）</summary>
+          <p style="color:var(--error-1);font-weight:700;font-size:.875rem;margin:.5rem 0 0;">※それぞれの事業所種別に合わせて審査してください。</p>
+          <ul class="sample-list">
+            <li><a href="samples/rules_facility_1.pdf" download target="_top"><span class="tag tag-good">優良</span>① 特別養護老人ホーム（介護）／運営規程・重説・体制が完全適合（A評価想定）</a></li>
+            <li><a href="samples/rules_facility_2.pdf" download target="_top"><span class="tag tag-mid">要改善</span>② 通所介護（デイ）／運営規程と重説で食費が不一致（850円・700円）</a></li>
+            <li><a href="samples/rules_facility_3.pdf" download target="_top"><span class="tag tag-good">優良</span>③ 生活介護（障害福祉）／虐待防止・BCP等の体制が適合</a></li>
+            <li><a href="samples/rules_facility_4.pdf" download target="_top"><span class="tag tag-bad">重大</span>④ 認可保育所（児童）／感染症の発生時訓練が未実施・記録なし</a></li>
+            <li><a href="samples/rules_facility_5.pdf" download target="_top"><span class="tag tag-mid">要改善</span>⑤ 認知症GH（地域密着型）／事故の行政報告ルート・様式が未整備</a></li>
+            <li><a href="samples/rules_facility.docx" download target="_top"><span class="tag tag-tpl">作成用</span>⑥ サンプル作成用Word（空欄ひな形・ご自身の運営書類づくりに）</a></li>
+          </ul>
+        </details>
+
+        <form id="appForm" onsubmit="execute(event)">
+          <div class="form-field">
+            <label class="dads-label" for="docType">事業所の種別<span class="dads-required">※必須</span></label>
+            <select class="dads-select" id="docType">
+              <option value="kaigo">介護保険サービス事業所</option>
+              <option value="shogai">障害福祉サービス事業所</option>
+              <option value="hoiku">保育所・認定こども園</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="dads-label">ファイルから取り込み<span class="dads-optional">※任意</span></label>
+            <span class="dads-support">PDF・Word(.docx)・PowerPoint(.pptx)・テキストから本文を自動で読み取ります</span>
+            <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInput').click()">
+              <p>ファイルを選択またはドラッグ&ドロップ</p>
+              <p style="font-size:.8rem;color:var(--solid-gray-536)">PDF / DOCX / PPTX / TXT（20MBまで）</p>
+              <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.txt" onchange="handleFile(this)">
+            </div>
+            <div class="file-name" id="fileName" style="display:none"></div>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="inputText">審査対象の書類テキスト<span class="dads-required">※必須</span></label>
+            <span class="dads-support">上のファイル取り込みで自動入力されます。直接貼り付け・編集も可能です</span>
+            <textarea class="dads-textarea" id="inputText" placeholder="運営規程・重要事項説明書・各種マニュアル・研修記録等をここに貼り付け..." required style="min-height:200px"></textarea>
+          </div>
+          <div class="btn-area">
+            <button type="submit" class="dads-btn" id="submitBtn">審査する</button>
+          </div>
+          <div class="btn-area" id="actionArea" style="display:none;margin-top:.75rem;gap:.75rem;flex-wrap:wrap">
+            <button type="button" class="action-btn btn-copy" onclick="copyResult()">コピー</button>
+            <button type="button" class="action-btn btn-txt" onclick="downloadText()">テキスト保存</button>
+            <button type="button" class="action-btn btn-word" onclick="exportWord()">Word出力</button>
+          </div>
+        </form>
+      </div>
+      <div class="split-right">
+        <div class="result-header">
+          <h2 style="font-size:1.125rem;font-weight:700">審査結果レポート</h2>
+          <button type="button" class="criteria-btn" onclick="openCriteria()">項目別採点表</button>
+        </div>
+        <div class="result-box" id="resultBox">
+          <div id="resultContent"><span class="result-placeholder">ここに採点表と審査レポートが表示されます</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="spinner" id="spinner"><div class="spinner-circle"></div><span class="spinner-label" id="spinnerLabel">AIが審査中...</span></div>
+
+<div class="modal-overlay" id="criteriaModal" onclick="if(event.target===this)closeCriteria()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>項目別採点表（審査基準）</h3>
+      <button class="modal-close" type="button" onclick="closeCriteria()" aria-label="閉じる">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-note">介護・障害福祉等の事業所の運営関係書類の審査基準です。下表の「配点」はこの画面上で変更を試せます（デモ表示）。</p>
+      <table class="criteria-table">
+        <thead>
+          <tr><th style="width:3rem">No.</th><th>審査項目</th><th style="width:8rem">配点</th><th>指摘事項（審査の観点）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="center">1</td><td>運営規程の必須記載事項</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>目的・方針、職員の職種員数職務、営業日時、サービス内容・利用料、実施地域、虐待防止措置等が記載されているか</td></tr>
+          <tr><td class="center">2</td><td>重要事項説明書の整合・同意取得</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>運営規程と内容（特に料金）が整合し、利用者への説明・同意の手続が定められているか</td></tr>
+          <tr><td class="center">3</td><td>人員配置基準（管理者・必要な専門職）</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>管理者、サービス提供／管理責任者等、必要な専門職が基準どおり配置されているか</td></tr>
+          <tr><td class="center">4</td><td>虐待防止措置（委員会・指針・研修・担当者）</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>委員会の定期開催、指針整備、年1回以上の研修、担当者配置がそろっているか</td></tr>
+          <tr><td class="center">5</td><td>身体拘束等の適正化</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>原則禁止の明記、やむを得ない場合の記録、委員会・指針・研修があるか</td></tr>
+          <tr><td class="center">6</td><td>感染症対策（委員会・指針・訓練）</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>委員会の定期開催、指針、年1回以上の研修・訓練があるか</td></tr>
+          <tr><td class="center">7</td><td>業務継続計画（BCP）の整備</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>自然災害・感染症のBCPが策定され、研修・訓練が実施されているか</td></tr>
+          <tr><td class="center">8</td><td>秘密保持・個人情報保護</td><td class="center"><input class="pts" type="number" min="0" value="5" oninput="recalcCriteria()"> 点</td><td>従業者の秘密保持義務、個人情報の利用同意の取得が定められているか</td></tr>
+          <tr><td class="center">9</td><td>苦情処理・事故対応の体制</td><td class="center"><input class="pts" type="number" min="0" value="5" oninput="recalcCriteria()"> 点</td><td>苦情受付窓口、事故発生時の対応・記録・再発防止の手順が整備されているか</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td></td><td>合計</td><td class="center"><span id="ptsTotal">100</span> 点</td><td>—</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="modal-foot">
+      <span class="apply-msg" id="applyMsg">各自治体の管理権限者しか変更できません。</span>
+      <button class="apply-btn" type="button" onclick="applyCriteria()">変更する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function goBack(){
+  if(parent&&parent.document){var f=parent.document.getElementById('mainFrame');if(f){f.src='app/main.htm';return;}}
+  location.href='../app/main.htm';
+}
+
+/* ===== 項目別採点表モーダル（配点変更デモ） ===== */
+function openCriteria(){document.getElementById('criteriaModal').classList.add('active');}
+function closeCriteria(){
+  document.getElementById('criteriaModal').classList.remove('active');
+  document.getElementById('applyMsg').style.display='none';
+}
+function recalcCriteria(){
+  var inputs=document.querySelectorAll('#criteriaModal .pts');
+  var t=0;
+  inputs.forEach(function(i){var v=parseInt(i.value,10);if(!isNaN(v))t+=v;});
+  document.getElementById('ptsTotal').textContent=t;
+}
+function applyCriteria(){document.getElementById('applyMsg').style.display='block';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCriteria();});
+
+var outputText='';
+var uploadedFileText='';
+
+/* ===== File Upload ===== */
+var dropArea=document.getElementById('fileDrop');
+['dragenter','dragover'].forEach(function(ev){dropArea.addEventListener(ev,function(e){e.preventDefault();dropArea.classList.add('dragover');});});
+['dragleave','drop'].forEach(function(ev){dropArea.addEventListener(ev,function(e){e.preventDefault();dropArea.classList.remove('dragover');});});
+dropArea.addEventListener('drop',function(e){
+  if(e.dataTransfer.files.length>0){document.getElementById('fileInput').files=e.dataTransfer.files;handleFile(document.getElementById('fileInput'));}
+});
+
+var lastFileName='';
+var fileSeq=0;
+
+function handleFile(input){
+  var file=input.files[0];
+  if(!file)return;
+  if(file.size>20*1024*1024){alert('ファイルサイズが20MBを超えています');input.value='';return;}
+  lastFileName=file.name;
+  uploadedFileText='';
+  document.getElementById('inputText').value='';
+  var seq=++fileSeq;
+  setFileStatus('読み取り中...');
+  extractText(file,seq);
+}
+
+function extractText(file,seq){
+  var name=file.name.toLowerCase();
+  if(name.endsWith('.txt')||name.endsWith('.csv')){
+    var reader=new FileReader();
+    reader.onload=function(e){applyText(e.target.result,seq);};
+    reader.onerror=function(){failFile(seq);};
+    reader.readAsText(file,'UTF-8');
+  } else if(name.endsWith('.pdf')){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var arr=new Uint8Array(e.target.result);
+      pdfjsLib.getDocument({data:arr}).promise.then(function(pdf){
+        var texts=[];
+        function getPage(i){
+          if(i>pdf.numPages){applyText(texts.join('\n').trim(),seq);return;}
+          pdf.getPage(i).then(function(page){
+            page.getTextContent().then(function(content){
+              texts.push(content.items.map(function(item){return item.str;}).join(' '));
+              getPage(i+1);
+            });
+          });
+        }
+        getPage(1);
+      }).catch(function(){failFile(seq,'PDFの読み取りに失敗しました（スキャン画像PDFは抽出できません）');});
+    };
+    reader.onerror=function(){failFile(seq);};
+    reader.readAsArrayBuffer(file);
+  } else if(name.endsWith('.docx')){
+    extractOffice(file,'w:p','word/document.xml',null,seq);
+  } else if(name.endsWith('.pptx')){
+    extractOffice(file,'a:p',null,/^ppt\/slides\/slide\d+\.xml$/,seq);
+  } else {
+    failFile(seq,'対応していない形式です（PDF / Word(.docx) / PowerPoint(.pptx) / TXT に対応）');
+  }
+}
+
+/* DOCX/PPTX を JSZip で解凍して本文を抽出 */
+function extractOffice(file,paraTag,singlePath,multiRe,seq){
+  if(typeof JSZip==='undefined'){failFile(seq,'解凍ライブラリの読み込みに失敗しました（通信環境をご確認ください）');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    JSZip.loadAsync(e.target.result).then(function(zip){
+      var paths=[];
+      if(singlePath){
+        if(zip.file(singlePath))paths.push(singlePath);
+      } else {
+        zip.forEach(function(p){if(multiRe.test(p))paths.push(p);});
+        paths.sort(function(a,b){
+          var na=parseInt((a.match(/(\d+)\.xml$/)||[0,0])[1],10);
+          var nb=parseInt((b.match(/(\d+)\.xml$/)||[0,0])[1],10);
+          return na-nb;
+        });
+      }
+      if(!paths.length){failFile(seq,'本文が見つかりませんでした');return;}
+      var parts=[],i=0;
+      function next(){
+        if(i>=paths.length){applyText(parts.join('\n').replace(/\n{3,}/g,'\n\n').trim(),seq);return;}
+        zip.file(paths[i]).async('string').then(function(xml){
+          parts.push(xmlToText(xml,paraTag));i++;next();
+        }).catch(function(){i++;next();});
+      }
+      next();
+    }).catch(function(){failFile(seq,'ファイルの解凍に失敗しました（ファイルが壊れている可能性があります）');});
+  };
+  reader.onerror=function(){failFile(seq);};
+  reader.readAsArrayBuffer(file);
+}
+
+/* OfficeのXMLから段落区切りを保ってテキスト化 */
+function xmlToText(xml,paraTag){
+  var t=xml.replace(new RegExp('</'+paraTag+'>','g'),'\n').replace(/<[^>]+>/g,'');
+  t=t.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&');
+  return t.replace(/[ \t]+\n/g,'\n');
+}
+
+function setFileStatus(msg){
+  var fn=document.getElementById('fileName');
+  fn.textContent=(lastFileName?lastFileName+' — ':'')+msg;
+  fn.style.display='block';
+}
+
+/* 最新の読み込みだけを反映（古い非同期結果は破棄） */
+function applyText(text,seq){
+  if(seq!==fileSeq)return;
+  uploadedFileText=(text||'');
+  if(!uploadedFileText.trim()){failFile(seq,'テキストを抽出できませんでした');return;}
+  document.getElementById('inputText').value=uploadedFileText;
+  setFileStatus('読み取り完了（'+uploadedFileText.length.toLocaleString()+'文字）');
+}
+function failFile(seq,msg){
+  if(seq!==fileSeq)return;
+  uploadedFileText='';
+  setFileStatus('⚠ '+(msg||'読み取りに失敗しました'));
+}
+
+/* ===== Execute ===== */
+function execute(e){
+  e.preventDefault();
+  var docType=document.getElementById('docType').value;
+  var text=document.getElementById('inputText').value.trim();
+  if(!text){alert('審査対象の書類テキストを入力してください');return;}
+
+  outputText='';
+  document.getElementById('resultContent').innerHTML='';
+  document.getElementById('actionArea').style.display='none';
+  document.getElementById('spinnerLabel').textContent='AIが審査中...';
+  document.getElementById('spinner').classList.add('active');
+  var btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='審査中...';
+
+  fetch('app15.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({doc_type:docType,text:text})})
+  .then(function(res){
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var reader=res.body.getReader(),decoder=new TextDecoder(),buffer='';
+    function read(){
+      return reader.read().then(function(r){
+        if(r.done){finish();return;}
+        buffer+=decoder.decode(r.value,{stream:true});
+        var lines=buffer.split('\n');buffer=lines.pop();
+        for(var i=0;i<lines.length;i++){
+          var t=lines[i].trim();
+          if(!t||t==='data: [DONE]')continue;
+          if(t.startsWith('data: ')){
+            try{var j=JSON.parse(t.slice(6));
+              if(j.text){outputText+=j.text;render();}
+              if(j.error){outputText+='\n[エラー] '+j.error;render();}
+            }catch(ex){}
+          }
+        }
+        return read();
+      });
+    }
+    return read();
+  }).catch(function(err){
+    document.getElementById('resultContent').innerHTML='<p style="color:var(--error-1)">エラー: '+err.message+'</p>';
+    finish();
+  });
+}
+
+function finish(){
+  document.getElementById('spinner').classList.remove('active');
+  var btn=document.getElementById('submitBtn');btn.disabled=false;btn.textContent='審査する';
+  if(outputText){
+    var r=reconcileScore(outputText);
+    if(r.changed){outputText=r.text;render();}
+    document.getElementById('actionArea').style.display='flex';
+  }
+}
+
+/* 採点表の「得点」列を自動合計し、合計点・評価ランクの食い違いを補正 */
+function reconcileScore(text){
+  var lines=text.split('\n');
+  var scoreCol=-1,total=0,counted=0;
+  for(var i=0;i<lines.length;i++){
+    if(lines[i].trim().indexOf('|')!==0)continue;
+    var cells=lines[i].trim().split('|').filter(function(c,idx,arr){return idx>0&&idx<arr.length-1;}).map(function(c){return c.trim();});
+    if(!cells.length)continue;
+    if(scoreCol===-1){
+      for(var c=0;c<cells.length;c++){if(cells[c].indexOf('得点')!==-1){scoreCol=c;break;}}
+      continue;
+    }
+    if(cells.every(function(c){return /^[\s\-:]+$/.test(c);}))continue;
+    if(scoreCol>=0&&scoreCol<cells.length){
+      var first=cells[0].match(/^\d+$/);
+      var m=cells[scoreCol].match(/-?\d+/);
+      if(first&&m){total+=parseInt(m[0],10);counted++;}
+    }
+  }
+  if(scoreCol===-1||counted===0)return {text:text,changed:false};
+  var rankLabel=total>=90?'A（90点以上）':total>=75?'B（75〜89点）':total>=60?'C（60〜74点）':'D（60点未満）';
+  var changed=false;
+  for(var j=0;j<lines.length;j++){
+    if(/合計点/.test(lines[j])&&/\/\s*100/.test(lines[j])){
+      lines[j]=lines[j].replace(/(合計点[^0-9]*?)(\d+)(\s*\/\s*100)/,function(_,a,b,c){if(parseInt(b,10)!==total)changed=true;return a+total+c;});
+    } else if(/評価ランク/.test(lines[j])){
+      var rl=lines[j].replace(/(評価ランク[：:]\s*).*/,'$1'+rankLabel);
+      if(rl!==lines[j])changed=true;
+      lines[j]=rl;
+    }
+  }
+  return {text:lines.join('\n'),changed:changed};
+}
+
+function render(){
+  document.getElementById('resultContent').innerHTML='<div class="prose">'+md(outputText)+'</div>';
+}
+
+/* ===== Markdown Renderer ===== */
+function md(t){
+  var lines=t.split('\n'),h='',inUl=false,inOl=false,inTable=false,tableHeader=false;
+  for(var i=0;i<lines.length;i++){
+    var l=lines[i];
+    if(l.trim().indexOf('|')===0){
+      var cells=l.trim().split('|').filter(function(c,idx,arr){return idx>0&&idx<arr.length-1;});
+      if(cells.length>0&&cells.every(function(c){return /^[\s\-:]+$/.test(c);})){tableHeader=true;continue;}
+      cl();
+      if(!inTable){h+='<table>';inTable=true;tableHeader=false;}
+      var tag=(!tableHeader&&inTable&&h.indexOf('<tr>')===-1)?'th':'td';
+      if(tag==='th')tableHeader=true;
+      h+='<tr>';
+      for(var c=0;c<cells.length;c++){h+='<'+tag+'>'+il(esc(cells[c].trim()))+'</'+tag+'>';}
+      h+='</tr>';
+      continue;
+    }
+    if(inTable){h+='</table>';inTable=false;tableHeader=false;}
+    if(l.startsWith('### ')){cl();h+='<h3>'+il(esc(l.slice(4)))+'</h3>';continue;}
+    if(l.startsWith('## ')){cl();h+='<h2>'+il(esc(l.slice(3)))+'</h2>';continue;}
+    if(l.startsWith('# ')){cl();h+='<h1>'+il(esc(l.slice(2)))+'</h1>';continue;}
+    var um=l.match(/^[-*]\s+(.*)/);
+    if(um){if(inOl){h+='</ol>';inOl=false;}if(!inUl){h+='<ul>';inUl=true;}h+='<li>'+il(esc(um[1]))+'</li>';continue;}
+    var om=l.match(/^\d+[.．]\s+(.*)/);
+    if(om){if(inUl){h+='</ul>';inUl=false;}if(!inOl){h+='<ol>';inOl=true;}h+='<li>'+il(esc(om[1]))+'</li>';continue;}
+    if(l.trim()===''){cl();continue;}
+    cl();h+='<p>'+il(esc(l))+'</p>';
+  }
+  cl();if(inTable){h+='</table>';}return h;
+  function cl(){if(inUl){h+='</ul>';inUl=false;}if(inOl){h+='</ol>';inOl=false;}}
+}
+function il(t){t=t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');t=t.replace(/`(.+?)`/g,'<code>$1</code>');return t;}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+/* ===== Copy ===== */
+function copyResult(){
+  if(!outputText)return;
+  navigator.clipboard.writeText(outputText).then(function(){
+    var b=document.querySelector('.btn-copy');b.textContent='コピー済';
+    setTimeout(function(){b.textContent='コピー';},3000);
+  });
+}
+
+/* ===== Text Download ===== */
+function downloadText(){
+  if(!outputText)return;
+  var blob=new Blob([outputText],{type:'text/plain;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='運営指導審査結果_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.target='_top';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+}
+
+/* ===== Word Export ===== */
+function exportWord(){
+  if(!outputText||typeof docx==='undefined')return;
+  var title='運営指導コンプライアンス審査 結果レポート';
+  var lines=outputText.split('\n');
+  var children=[];
+  children.push(new docx.Paragraph({text:title,heading:docx.HeadingLevel.TITLE,spacing:{after:200}}));
+  for(var i=0;i<lines.length;i++){
+    var l=lines[i];
+    if(l.trim().indexOf('|')===0){
+      var clean=l.replace(/\|/g,'  ').trim();
+      if(/^[\s\-:|]+$/.test(l.trim()))continue;
+      children.push(new docx.Paragraph({text:clean,spacing:{after:40}}));continue;
+    }
+    if(l.startsWith('### ')){children.push(new docx.Paragraph({text:l.slice(4),heading:docx.HeadingLevel.HEADING_3,spacing:{before:120,after:60}}));continue;}
+    if(l.startsWith('## ')){children.push(new docx.Paragraph({text:l.slice(3),heading:docx.HeadingLevel.HEADING_2,spacing:{before:200,after:80}}));continue;}
+    if(l.startsWith('# ')){children.push(new docx.Paragraph({text:l.slice(2),heading:docx.HeadingLevel.HEADING_1,spacing:{before:240,after:100}}));continue;}
+    var um=l.match(/^[-*]\s+(.*)/);
+    if(um){children.push(new docx.Paragraph({text:um[1],bullet:{level:0},spacing:{after:40}}));continue;}
+    var om=l.match(/^\d+[.．]\s+(.*)/);
+    if(om){children.push(new docx.Paragraph({text:om[1],numbering:{reference:'default-numbering',level:0},spacing:{after:40}}));continue;}
+    if(l.trim()===''){children.push(new docx.Paragraph({text:'',spacing:{after:80}}));continue;}
+    var c2=l.replace(/\*\*(.+?)\*\*/g,'$1').trim();
+    children.push(new docx.Paragraph({text:c2,spacing:{after:60}}));
+  }
+  var doc=new docx.Document({
+    numbering:{config:[{reference:'default-numbering',levels:[{level:0,format:docx.LevelFormat.DECIMAL,text:'%1.',alignment:docx.AlignmentType.START,style:{paragraph:{indent:{left:720,hanging:360}}}}]}]},
+    sections:[{children:children}]
+  });
+  docx.Packer.toBlob(doc).then(function(blob){
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;
+    a.download=title+'_'+new Date().toISOString().slice(0,10)+'.docx';
+    a.target='_top';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  });
+}
+</script>
+</body>
+</html>

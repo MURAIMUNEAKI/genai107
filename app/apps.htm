@@ -35,6 +35,9 @@
       <h2 class="apps-section-title">全国819自治体 専用追加アプリ</h2>
       <div class="card-grid" id="cardGrid2"></div>
 
+      <h2 class="apps-section-title">行政書類の自動審査</h2>
+      <div class="card-grid" id="cardGrid3"></div>
+
       <div class="page-footer">
         注意: AIの出力は必ずしも正確ではありません。重要な情報は必ずご自身で確認してください。
       </div>
@@ -64,7 +67,8 @@ var cardIcons = {
   kodoku:     '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',
   govbot:     '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/>',
   seisakuhyouka: '<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/>',
-  kaigo:      '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>'
+  kaigo:      '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>',
+  audit:      '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>'
 };
 
 var cards = [
@@ -88,6 +92,11 @@ var cards2 = [
   { id: 'seisakuhyouka', title: '政策評価AI',         desc: '政策文書をアップロードし、総務省ガイドラインに基づく8段階の政策評価レポートを自動生成します。', href: '../app2/seisakuhyouka.htm' },
   { id: 'kaigo',          title: '厚労省 介護保険QA',  desc: '厚生労働省の介護保険制度に関するQAを答えます。', href: '../app2/kaigo.htm' }
 ];
+var cards3 = [
+  { id: 'audit', title: 'ケアプラン適正性審査',         desc: '居宅・施設・予防のケアプラン（PDF/Word）をアップロードし、運営基準第13条に基づく9項目100点満点の採点と改善提案レポートをAIが自動生成します。', href: '../app4/app13.htm' },
+  { id: 'audit', title: '個別支援計画 適正性審査',       desc: '障害福祉サービスの個別支援計画をアップロードし、本人主体の目標設定や支援内容の整合性を観点に、採点と改善提案レポートをAIが自動生成します。', href: '../app4/app14.htm' },
+  { id: 'audit', title: '運営指導コンプライアンス審査', desc: '事業所の運営規程等の書類をアップロードし、運営指導（実地指導）の観点からコンプライアンス上の不備をAIが自動チェックしレポート化します。', href: '../app4/app15.htm' }
+];
 
 function renderCards(list, gridEl) {
   for (var i = 0; i < list.length; i++) {
@@ -102,6 +111,7 @@ function renderCards(list, gridEl) {
 }
 renderCards(cards, document.getElementById('cardGrid'));
 renderCards(cards2, document.getElementById('cardGrid2'));
+renderCards(cards3, document.getElementById('cardGrid3'));
 </script>
 </body>
 </html>
