@@ -55,7 +55,7 @@ photographic, anime, cinematic, digital-art, illustration, comic, watercolor, oi
 
 1:1 (1024×1024)、5:4、3:2、16:9、9:16
 
-### 全国819自治体 専用追加アプリ（`app2/`）
+### 全国874自治体 専用アプリ（`app2/`）
 
 | # | アプリ名 | パス | 概要 | 主な技術 |
 |---|----------|------|------|----------|

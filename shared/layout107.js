@@ -13,10 +13,12 @@ function initLayout(opts) {
 
   /* ---------- Nav Items ---------- */
   var navItems = [
-    { id: 'chat', label: 'チャット', href: basePath + 'chat.htm',
-      icon: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
-    { id: 'apps', label: 'AIアプリ', href: basePath + 'apps.htm',
-      icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>' }
+    { id: 'apps', label: 'デジタル庁アプリ', href: basePath + 'apps.htm',
+      icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>' },
+    { id: 'apps-local', label: '自治体用アプリ', href: basePath + 'apps.htm#sec-jichitai',
+      icon: '<path d="M3 22h18"/><path d="M3 10l9-6 9 6"/><path d="M5 10v8M9 10v8M13 10v8M17 10v8"/>' },
+    { id: 'apps-audit', label: '行政書類 自動審査', href: basePath + 'apps.htm#sec-audit',
+      icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>' }
   ];
 
   /* ---------- Mobile Menu Items (full list) ---------- */
