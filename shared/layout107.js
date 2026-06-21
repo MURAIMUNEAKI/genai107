@@ -21,6 +21,19 @@ function initLayout(opts) {
       icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>' }
   ];
 
+  /* ---------- 表示モードによるオビ（ピルナビ）並べ替え ---------- */
+  // mode=shorui のとき「行政書類 自動審査」を先頭に
+  var gnMode = '';
+  try { gnMode = sessionStorage.getItem('gennai_mode') || ''; } catch (e) {}
+  if (gnMode === 'shorui') {
+    for (var k = 0; k < navItems.length; k++) {
+      if (navItems[k].id === 'apps-audit') {
+        navItems.unshift(navItems.splice(k, 1)[0]);
+        break;
+      }
+    }
+  }
+
   /* ---------- Mobile Menu Items (full list) ---------- */
   var mobileItems = [
     { id: 'chat',       label: 'チャット',                 href: basePath + 'chat.htm',
@@ -84,14 +97,14 @@ function initLayout(opts) {
     '</button>';
 
   // Logo
-  headerInner += '<a href="' + basePath + 'apps.htm" class="app-logo"><img src="' + rootPath + 'images/gennai.jpg" alt="源内AI" class="app-logo-img"></a>';
+  headerInner += '<a onclick="location.href=\'' + basePath + 'apps.htm\'" class="app-logo" style="cursor:pointer"><img src="' + rootPath + 'images/gennai.jpg" alt="源内AI" class="app-logo-img"></a>';
 
   // Desktop pill nav
   headerInner += '<nav class="header-nav" aria-label="メインナビゲーション">';
   for (var i = 0; i < navItems.length; i++) {
     var n = navItems[i];
     var pillCls = 'nav-pill' + (n.id === activePage ? ' active' : '');
-    headerInner += '<a href="' + n.href + '" class="' + pillCls + '">' + svgIcon(n.icon, 18) + n.label + '</a>';
+    headerInner += '<a onclick="location.href=\'' + n.href + '\'" class="' + pillCls + '" style="cursor:pointer">' + svgIcon(n.icon, 18) + n.label + '</a>';
   }
   headerInner += '</nav>';
 
@@ -104,7 +117,7 @@ function initLayout(opts) {
         '<svg class="account-chevron" id="gn107-chevron" viewBox="0 0 16 16" width="10" height="10" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2"/></svg>' +
       '</button>' +
       '<div class="account-dropdown" id="gn107-dropdown">' +
-        '<a class="dropdown-item" href="' + basePath + 'history.htm">利用履歴</a>' +
+        '<a class="dropdown-item" style="cursor:pointer" onclick="location.href=\'' + basePath + 'history.htm\'">利用履歴</a>' +
         '<button class="dropdown-item" id="gn107-signout">サインアウト</button>' +
       '</div>' +
     '</div>';
@@ -119,7 +132,7 @@ function initLayout(opts) {
 
   var mobileHtml =
     '<div class="mobile-dialog-header">' +
-      '<a href="' + basePath + 'apps.htm" class="app-logo"><img src="' + rootPath + 'images/gennai.jpg" alt="源内AI" class="app-logo-img" style="height:1.5rem"></a>' +
+      '<a onclick="location.href=\'' + basePath + 'apps.htm\'" class="app-logo" style="cursor:pointer"><img src="' + rootPath + 'images/gennai.jpg" alt="源内AI" class="app-logo-img" style="height:1.5rem"></a>' +
       '<button class="mobile-close-btn" id="gn107-mobile-close" aria-label="閉じる">' +
         '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
       '</button>' +
@@ -129,7 +142,7 @@ function initLayout(opts) {
   for (var j = 0; j < mobileItems.length; j++) {
     var m = mobileItems[j];
     var mCls = 'mobile-nav-item' + (m.id === activePage ? ' active' : '');
-    mobileHtml += '<a href="' + m.href + '" class="' + mCls + '">' + svgIcon(m.icon, 20) + m.label + '</a>';
+    mobileHtml += '<a onclick="location.href=\'' + m.href + '\'" class="' + mCls + '" style="cursor:pointer">' + svgIcon(m.icon, 20) + m.label + '</a>';
   }
 
   mobileHtml +=
@@ -137,7 +150,7 @@ function initLayout(opts) {
     '<hr class="mobile-divider">' +
     '<div class="mobile-account-section">' +
       '<div class="mobile-account-title">アカウント</div>' +
-      '<a href="' + basePath + 'history.htm" class="mobile-nav-item">' +
+      '<a onclick="location.href=\'' + basePath + 'history.htm\'" class="mobile-nav-item" style="cursor:pointer">' +
         svgIcon('<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>', 20) +
         '利用履歴</a>' +
       '<button class="mobile-nav-item" id="gn107-mobile-signout" style="width:100%;border:none;background:none;cursor:pointer;font-family:inherit;font-size:1rem;text-align:left;">' +

@@ -56,6 +56,16 @@
   </div>
 
   <script>
+    // 表示モード（例: ?mode=shorui）を捕捉して保存。iframe・直リンク・ログイン経由でも引き継ぐ。
+    // ?mode=xxx 指定あり→保存 / ?mode= 空→解除 / 無指定→現状維持
+    (function () {
+      var mp = new URLSearchParams(location.search).get('mode');
+      if (mp !== null) {
+        if (mp) sessionStorage.setItem('gennai_mode', mp);
+        else sessionStorage.removeItem('gennai_mode');
+      }
+    })();
+
     if (sessionStorage.getItem('gennai_auth') === 'true') {
       window.location.href = 'app/apps.htm';
     }
