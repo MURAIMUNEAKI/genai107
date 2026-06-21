@@ -37,8 +37,8 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
 .dads-textarea:focus{outline:4px solid #000;outline-offset:.125rem;box-shadow:0 0 0 .125rem var(--yellow-300)}
 .dads-select{width:100%;appearance:none;border-radius:8px;border:2px solid #000;background:#fff;padding:.6875rem 2.5rem .6875rem 1rem;font-size:1rem;font-family:inherit;height:3rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%231a1a1c' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem}
 
-.file-drop{border:2px dashed var(--solid-gray-420);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:background .15s,border-color .15s}
-.file-drop:hover,.file-drop.dragover{background:var(--blue-50);border-color:var(--blue-900)}
+.file-drop{border:2px solid #000;border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;color:#000;background:#fff9db;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:background .15s,border-color .15s,box-shadow .15s}
+.file-drop:hover,.file-drop.dragover{background:#fff3b0;border-color:#000;box-shadow:0 4px 10px rgba(0,0,0,.3)}
 .file-drop input{display:none}
 .file-name{font-size:.875rem;color:var(--blue-900);font-weight:700;margin-top:.5rem}
 
@@ -121,7 +121,16 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
     <div class="split">
       <div class="split-left">
         <h1 class="exapp-title">ケアプラン適正性審査</h1>
-        <p class="exapp-usage">居宅サービス計画書（ケアプラン）をアップロードすると、運営基準（第13条）に基づく9つの審査項目で採点し、不備の指摘と改善提案を詳細レポートで出力します。</p>
+
+        <details class="sample-box">
+          <summary>仕組みの説明</summary>
+          <div style="font-size:.875rem;color:var(--solid-gray-600);margin:.625rem 0 0;line-height:1.8;">
+            <p>居宅・施設・介護予防のケアプラン（第1表〜第3表）をPDF・Word等でアップロードすると、AIが指定居宅介護支援等の運営基準（第13条）に基づく9つの審査項目で採点し、不備の指摘・改善提案・次のアクションを詳細レポートで出力します。主任ケアマネジャー（運営指導でのケアプラン点検担当）の視点で、自立支援・重度化防止・本人主体の目標設定を重視して評価します。</p>
+            <p style="margin-top:.5rem;font-weight:700;color:var(--solid-gray-800)">主な審査の観点（合計100点）</p>
+            <p>①利用者・家族の生活意向（第1表）／②総合的な援助の方針／③アセスメント課題（ニーズ）の明確性／④長期・短期目標の具体性と期間設定／⑤目標とサービス内容の整合性／⑥サービス種別・事業所・頻度の明記／⑦第2表と週間サービス計画表（第3表）の整合／⑧利用者同意（説明・署名・交付）／⑨インフォーマルサポートの活用。</p>
+            <p style="margin-top:.5rem">合計点に応じてA（90点以上）〜D（60点未満）の評価ランクを判定します。AIの出力は審査の補助であり、最終的な判断は担当部署で確認してください。</p>
+          </div>
+        </details>
 
         <details class="sample-box">
           <summary>サンプル書類をダウンロード（PDF5種類＋作成用Word）</summary>
@@ -150,7 +159,8 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
             <span class="dads-support">PDF・Word(.docx)・PowerPoint(.pptx)・テキストから本文を自動で読み取ります</span>
             <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInput').click()">
               <p>ファイルを選択またはドラッグ&ドロップ</p>
-              <p style="font-size:.8rem;color:var(--solid-gray-536)">PDF / DOCX / PPTX / TXT（20MBまで）</p>
+              <p style="font-size:.8rem;color:#000">PDF / DOCX / PPTX / TXT（20MBまで）</p>
+              <p style="font-size:.8rem;color:#000;font-weight:700;margin-top:.4rem">上記のサンプル書類をダウンロードしても試せます。</p>
               <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.txt" onchange="handleFile(this)">
             </div>
             <div class="file-name" id="fileName" style="display:none"></div>

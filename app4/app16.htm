@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>運営指導コンプライアンス審査 - 源内 for Business</title>
+<title>国保税減免申請書 審査 - 源内 for Business</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--solid-gray-50:#f8f8fb;--solid-gray-100:#f1f1f4;--solid-gray-300:#d8d8db;--solid-gray-420:#b4b4b7;--solid-gray-536:#8a8a8d;--solid-gray-600:#6e6e71;--solid-gray-800:#1a1a1c;--blue-50:#eff5ff;--blue-100:#dbe8fb;--blue-200:#c5d7fb;--blue-900:#0017c1;--blue-1000:#000fa8;--blue-1200:#000b7a;--error-1:#d32f2f;--yellow-300:#ffcc00;--red-800:#b71c1c;--header-height:3.5rem}
@@ -111,48 +111,38 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
 <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
 </head>
 <body>
-<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'uneishidou'}));</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'kokuhogenmen'}));</script>
 <div class="app-shell">
   <header class="app-header">
     <button class="back-btn" onclick="goBack()">メニューに戻る</button>
-    <span class="app-logo">運営指導コンプライアンス審査</span>
+    <span class="app-logo">国保税減免申請書 審査</span>
   </header>
   <main class="app-main">
     <div class="split">
       <div class="split-left">
-        <h1 class="exapp-title">運営指導コンプライアンス審査</h1>
+        <h1 class="exapp-title">国民健康保険税（料）減免申請書 審査</h1>
 
         <details class="sample-box">
           <summary>仕組みの説明</summary>
-          <div style="font-size:.875rem;color:var(--solid-gray-600);margin:.625rem 0 0;line-height:1.8;">
-            <p>介護保険／障害福祉／保育の事業所の運営規程・重要事項説明書・各種マニュアル・研修記録等をPDF・Word等でアップロードすると、AIが運営指導（実地指導）の標準確認項目に基づく9つの審査項目で法令適合性を採点し、是正すべき不備・改善提案・次のアクションを詳細レポートで出力します。とくに2024年度から義務化された虐待防止・身体拘束等の適正化・業務継続計画（BCP）・感染症対策の体制整備を重点的に確認します。</p>
-            <p style="margin-top:.5rem;font-weight:700;color:var(--solid-gray-800)">主な審査の観点（合計100点）</p>
-            <p>①運営規程の必須記載事項／②重要事項説明書の整合・同意取得（特に料金の不一致）／③人員配置基準（管理者・必要な専門職）／④虐待防止措置（委員会・指針・研修・担当者）／⑤身体拘束等の適正化／⑥感染症対策（委員会・指針・訓練）／⑦業務継続計画（BCP）の整備／⑧秘密保持・個人情報保護／⑨苦情処理・事故対応の体制。</p>
-            <p style="margin-top:.5rem">合計点に応じてA（90点以上）〜D（60点未満）の評価ランクを判定します。AIの出力は審査の補助であり、最終的な判断は担当部署で確認してください。</p>
-          </div>
+          <p style="font-size:.875rem;color:var(--solid-gray-600);margin:.625rem 0 0;line-height:1.7;">住民から提出された国民健康保険税（料）の減免・軽減申請書をアップロードすると、AIがまず減免・軽減区分（災害・所得激減・非自発的失業・死亡等）を自動判定し、その制度の枠組みで対象事由への該当性・要件充足・添付書類・減免割合・申請期限などを9つの審査項目で採点し、追加確認・補正すべき点を詳細レポートで出力します（法定軽減＝7割5割2割や非自発的失業者軽減との関係も整理）。</p>
         </details>
 
         <details class="sample-box">
           <summary>サンプル書類をダウンロード（PDF5種類＋作成用Word）</summary>
-          <p style="color:var(--error-1);font-weight:700;font-size:.875rem;margin:.5rem 0 0;">※それぞれの事業所種別に合わせて審査してください。</p>
+          <p style="color:var(--error-1);font-weight:700;font-size:.875rem;margin:.5rem 0 0;">※どのサンプルでもOKです。AIが書類から減免・軽減区分を自動判定して審査します。</p>
           <ul class="sample-list">
-            <li><a href="samples/rules_facility_1.pdf" download target="_top"><span class="tag tag-good">優良</span>① 特別養護老人ホーム（介護）／運営規程・重説・体制が完全適合（A評価想定）</a></li>
-            <li><a href="samples/rules_facility_2.pdf" download target="_top"><span class="tag tag-mid">要改善</span>② 通所介護（デイ）／運営規程と重説で食費が不一致（850円・700円）</a></li>
-            <li><a href="samples/rules_facility_3.pdf" download target="_top"><span class="tag tag-good">優良</span>③ 生活介護（障害福祉）／虐待防止・BCP等の体制が適合</a></li>
-            <li><a href="samples/rules_facility_4.pdf" download target="_top"><span class="tag tag-bad">重大</span>④ 認可保育所（児童）／感染症の発生時訓練が未実施・記録なし</a></li>
-            <li><a href="samples/rules_facility_5.pdf" download target="_top"><span class="tag tag-mid">要改善</span>⑤ 認知症GH（地域密着型）／事故の行政報告ルート・様式が未整備</a></li>
-            <li><a href="samples/rules_facility.docx" download target="_top"><span class="tag tag-tpl">作成用</span>⑥ サンプル作成用Word（空欄ひな形・ご自身の運営書類づくりに）</a></li>
+            <li><a href="samples/genmen_1_shitsugyo.pdf" download target="_top"><span class="tag tag-good">適正</span>① 非自発的失業（会社都合解雇）／受給資格者証・離職票そろい要件充足（A評価想定）</a></li>
+            <li><a href="samples/genmen_2_shotokugekigen.pdf" download target="_top"><span class="tag tag-mid">要改善</span>② 所得激減（事業不振）／3割以上減少だが給与明細・預貯金残高が未添付</a></li>
+            <li><a href="samples/genmen_3_taisyogai.pdf" download target="_top"><span class="tag tag-bad">重大</span>③ 所得激減／減少要因が株式譲渡所得（対象外）・再就職決定・納期限超過</a></li>
+            <li><a href="samples/genmen_4_saigai.pdf" download target="_top"><span class="tag tag-good">適正</span>④ 災害（火災）／罹災証明あり・損害割合5割以上で全部減免相当</a></li>
+            <li><a href="samples/genmen_5_shibou.pdf" download target="_top"><span class="tag tag-mid">要改善</span>⑤ 死亡・疾病／生計中心者の死亡だが収入・資産状況の記載が不足</a></li>
+            <li><a href="samples/genmen_template.docx" download target="_top"><span class="tag tag-tpl">作成用</span>⑥ サンプル作成用Word（空欄ひな形・申請書づくりに）</a></li>
           </ul>
         </details>
 
         <form id="appForm" onsubmit="execute(event)">
           <div class="form-field">
-            <label class="dads-label" for="docType">事業所の種別<span class="dads-required">※必須</span></label>
-            <select class="dads-select" id="docType">
-              <option value="kaigo">介護保険サービス事業所</option>
-              <option value="shogai">障害福祉サービス事業所</option>
-              <option value="hoiku">保育所・認定こども園</option>
-            </select>
+            <label class="dads-label">減免・軽減区分<span class="dads-optional">※AIが自動判定</span></label>
           </div>
           <div class="form-field">
             <label class="dads-label">ファイルから取り込み<span class="dads-optional">※任意</span></label>
@@ -168,7 +158,7 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
           <div class="form-field">
             <label class="dads-label" for="inputText">審査対象の書類テキスト<span class="dads-required">※必須</span></label>
             <span class="dads-support">上のファイル取り込みで自動入力されます。直接貼り付け・編集も可能です</span>
-            <textarea class="dads-textarea" id="inputText" placeholder="運営規程・重要事項説明書・各種マニュアル・研修記録等をここに貼り付け..." required style="min-height:200px"></textarea>
+            <textarea class="dads-textarea" id="inputText" placeholder="減免申請書・添付書類（離職票・罹災証明・収入状況報告・源泉徴収票等）の内容をここに貼り付け..." required style="min-height:200px"></textarea>
           </div>
           <div class="btn-area">
             <button type="submit" class="dads-btn" id="submitBtn">審査する</button>
@@ -186,7 +176,7 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
           <button type="button" class="criteria-btn" onclick="openCriteria()">項目別採点表</button>
         </div>
         <div class="result-box" id="resultBox">
-          <div id="resultContent"><span class="result-placeholder">ここに採点表と審査レポートが表示されます</span></div>
+          <div id="resultContent"><span class="result-placeholder">ここに減免区分の判定・採点表・審査レポートが表示されます</span></div>
         </div>
       </div>
     </div>
@@ -201,21 +191,21 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
       <button class="modal-close" type="button" onclick="closeCriteria()" aria-label="閉じる">&times;</button>
     </div>
     <div class="modal-body">
-      <p class="modal-note">介護・障害福祉等の事業所の運営関係書類の審査基準です。下表の「配点」はこの画面上で変更を試せます（デモ表示）。</p>
+      <p class="modal-note">国民健康保険税（料）減免申請書の審査基準です。下表の「配点」はこの画面上で変更を試せます（デモ表示）。</p>
       <table class="criteria-table">
         <thead>
           <tr><th style="width:3rem">No.</th><th>審査項目</th><th style="width:8rem">配点</th><th>指摘事項（審査の観点）</th></tr>
         </thead>
         <tbody>
-          <tr><td class="center">1</td><td>運営規程の必須記載事項</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>目的・方針、職員の職種員数職務、営業日時、サービス内容・利用料、実施地域、虐待防止措置等が記載されているか</td></tr>
-          <tr><td class="center">2</td><td>重要事項説明書の整合・同意取得</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>運営規程と内容（特に料金）が整合し、利用者への説明・同意の手続が定められているか</td></tr>
-          <tr><td class="center">3</td><td>人員配置基準（管理者・必要な専門職）</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>管理者、サービス提供／管理責任者等、必要な専門職が基準どおり配置されているか</td></tr>
-          <tr><td class="center">4</td><td>虐待防止措置（委員会・指針・研修・担当者）</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>委員会の定期開催、指針整備、年1回以上の研修、担当者配置がそろっているか</td></tr>
-          <tr><td class="center">5</td><td>身体拘束等の適正化</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>原則禁止の明記、やむを得ない場合の記録、委員会・指針・研修があるか</td></tr>
-          <tr><td class="center">6</td><td>感染症対策（委員会・指針・訓練）</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>委員会の定期開催、指針、年1回以上の研修・訓練があるか</td></tr>
-          <tr><td class="center">7</td><td>業務継続計画（BCP）の整備</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>自然災害・感染症のBCPが策定され、研修・訓練が実施されているか</td></tr>
-          <tr><td class="center">8</td><td>秘密保持・個人情報保護</td><td class="center"><input class="pts" type="number" min="0" value="5" oninput="recalcCriteria()"> 点</td><td>従業者の秘密保持義務、個人情報の利用同意の取得が定められているか</td></tr>
-          <tr><td class="center">9</td><td>苦情処理・事故対応の体制</td><td class="center"><input class="pts" type="number" min="0" value="5" oninput="recalcCriteria()"> 点</td><td>苦情受付窓口、事故発生時の対応・記録・再発防止の手順が整備されているか</td></tr>
+          <tr><td class="center">1</td><td>申請者・世帯情報の記載完全性</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>申請者氏名・住所・被保険者番号（記号番号）・世帯主・対象被保険者・連絡先等が漏れなく記載されているか</td></tr>
+          <tr><td class="center">2</td><td>減免事由の明確性・該当性</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>申請区分に沿った特別な事情（災害・所得激減・失業・死亡等）が具体的に記載され、条例減免の対象事由に該当するか</td></tr>
+          <tr><td class="center">3</td><td>所得・損害要件の充足</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>所得激減なら前年比おおむね3割以上の減少、災害なら損害割合10分の3以上など、数値的根拠が示され要件を満たすか</td></tr>
+          <tr><td class="center">4</td><td>添付書類の具備</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>離職票・雇用保険受給資格者証・罹災（被災）証明書・源泉徴収票・給与明細・廃業届・診断書・預貯金残高等がそろっているか</td></tr>
+          <tr><td class="center">5</td><td>減免割合・算定の妥当性</td><td class="center"><input class="pts" type="number" min="0" value="15" oninput="recalcCriteria()"> 点</td><td>申請されている減免割合（全部・一部）が事由・減少率・損害割合・所得に照らして制度上妥当か、対象（所得割／均等割等）が整理されているか</td></tr>
+          <tr><td class="center">6</td><td>申請期限・手続要件の遵守</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>保険税（料）の納期限までの申請か、資格取得から速やかに手続きされているか、対象が納期未到来分か</td></tr>
+          <tr><td class="center">7</td><td>法定軽減・他制度との関係整理</td><td class="center"><input class="pts" type="number" min="0" value="10" oninput="recalcCriteria()"> 点</td><td>法定軽減（7割5割2割）や非自発的失業者軽減との重複・優先関係が正しく整理され、二重・誤適用がないか</td></tr>
+          <tr><td class="center">8</td><td>対象外事由の除外</td><td class="center"><input class="pts" type="number" min="0" value="5" oninput="recalcCriteria()"> 点</td><td>譲渡所得・株式等配当所得・一時所得の減少、再就職・他保険加入の決定、収入回復済み等、減免対象外の事情が混入していないか</td></tr>
+          <tr><td class="center">9</td><td>申請者の意思確認・形式要件</td><td class="center"><input class="pts" type="number" min="0" value="5" oninput="recalcCriteria()"> 点</td><td>申請日、申請者の署名・押印、世帯主との関係、誓約・同意欄等の形式要件が整っているか</td></tr>
         </tbody>
         <tfoot>
           <tr><td></td><td>合計</td><td class="center"><span id="ptsTotal">100</span> 点</td><td>—</td></tr>
@@ -376,7 +366,6 @@ function failFile(seq,msg){
 /* ===== Execute ===== */
 function execute(e){
   e.preventDefault();
-  var docType=document.getElementById('docType').value;
   var text=document.getElementById('inputText').value.trim();
   if(!text){alert('審査対象の書類テキストを入力してください');return;}
 
@@ -387,7 +376,7 @@ function execute(e){
   document.getElementById('spinner').classList.add('active');
   var btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='審査中...';
 
-  fetch('app15.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({doc_type:docType,text:text})})
+  fetch('app16.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text})})
   .then(function(res){
     if(!res.ok)throw new Error('HTTP '+res.status);
     var reader=res.body.getReader(),decoder=new TextDecoder(),buffer='';
@@ -514,7 +503,7 @@ function downloadText(){
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
   a.href=url;
-  a.download='運営指導審査結果_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.download='国保税減免審査結果_'+new Date().toISOString().slice(0,10)+'.txt';
   a.target='_top';
   document.body.appendChild(a);
   a.click();
@@ -525,7 +514,7 @@ function downloadText(){
 /* ===== Word Export ===== */
 function exportWord(){
   if(!outputText||typeof docx==='undefined')return;
-  var title='運営指導コンプライアンス審査 結果レポート';
+  var title='国民健康保険税（料）減免申請書 審査結果レポート';
   var lines=outputText.split('\n');
   var children=[];
   children.push(new docx.Paragraph({text:title,heading:docx.HeadingLevel.TITLE,spacing:{after:200}}));

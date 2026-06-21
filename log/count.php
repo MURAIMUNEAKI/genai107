@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $app = trim($_POST['app'] ?? '');
 $whitelist = ['main','chat','bunsho','honyaku','gazou','daia','moji','lawsy','rag',
               'govbot','document','email','answer','kaigo','proofread','kodoku','seisakuhyouka','subsidy','tosho',
-              'careplan','shienkeikaku','uneishidou'];
+              'careplan','shienkeikaku','uneishidou','kokuhogenmen'];
 
 if (!in_array($app, $whitelist, true)) {
     http_response_code(204);
