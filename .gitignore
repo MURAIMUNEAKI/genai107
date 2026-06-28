@@ -1,4 +1,5 @@
 api/.env
+review/.env
 api/uploads/*
 !api/uploads/.gitkeep
 log/*.csv

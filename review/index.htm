@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行政事業レビューAI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/docx@9.5.1/dist/index.iife.js"></script>
+    <style>
+        :root {
+            --bg: #efe6d1;
+            --paper: rgba(255, 252, 244, 0.9);
+            --line: rgba(45, 56, 61, 0.14);
+            --ink: #1f2a2d;
+            --muted: #5a6a70;
+            --accent: #0d6b66;
+            --accent2: #bb6f24;
+            --shadow: 0 24px 48px rgba(38, 34, 18, 0.12);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            font-family: "BIZ UDPGothic", "Yu Gothic UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(13, 107, 102, 0.1), transparent 28%),
+                radial-gradient(circle at top right, rgba(187, 111, 36, 0.12), transparent 24%),
+                linear-gradient(135deg, #f5efe1, var(--bg));
+            min-height: 100vh;
+        }
+
+        .shell {
+            max-width: 1520px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero, .panel {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+        }
+
+        .hero {
+            padding: 22px 26px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 34px;
+        }
+
+        .hero p, .hero li, .muted, .status-line {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .hero ul {
+            margin: 12px 0 0;
+            padding-left: 18px;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 360px minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        .panel { padding: 18px; }
+        .panel section + section {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+        }
+
+        h2, h3 { margin: 0 0 12px; }
+
+        label {
+            display: block;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        input, select, textarea, button {
+            width: 100%;
+            border-radius: 14px;
+            font: inherit;
+            border: 1px solid rgba(31, 42, 45, 0.16);
+        }
+
+        input, select, textarea {
+            padding: 11px 12px;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--ink);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 12px 14px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), #158d86);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #ecdfbf, #f7f2e4);
+            color: var(--ink);
+            border: 1px solid rgba(31, 42, 45, 0.12);
+        }
+
+        button.ghost {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(13, 107, 102, 0.24);
+        }
+
+        button.warn {
+            background: linear-gradient(135deg, var(--accent2), #da8f42);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .stack { display: grid; gap: 12px; }
+
+        .dropzone {
+            border: 1px dashed rgba(13, 107, 102, 0.46);
+            border-radius: 18px;
+            background: rgba(13, 107, 102, 0.05);
+            padding: 15px;
+        }
+
+        .dropzone.dragover {
+            background: rgba(13, 107, 102, 0.12);
+        }
+
+        .file-list {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: rgba(13, 107, 102, 0.1);
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .result-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions button {
+            flex: 1 1 160px;
+        }
+
+        .tab-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .tab-btn {
+            width: auto;
+            padding: 8px 12px;
+            border-radius: 999px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--accent), #158d86);
+            color: #fff;
+        }
+
+        .result-box, .json-box, .log-box {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.82);
+            padding: 16px;
+        }
+
+        .result-box {
+            min-height: 420px;
+            line-height: 1.85;
+            font-size: 14px;
+        }
+
+        .json-box, .log-box {
+            min-height: 320px;
+            white-space: pre-wrap;
+            font-family: "Cascadia Mono", Consolas, monospace;
+            font-size: 12px;
+            overflow: auto;
+        }
+
+        .hidden { display: none; }
+
+        .empty {
+            color: var(--muted);
+            display: grid;
+            place-items: center;
+            min-height: 280px;
+            text-align: center;
+        }
+
+        @media (max-width: 980px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .result-head {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="hero">
+            <div class="status-badge">review / PDF・Word・CSV 対応</div>
+            <h1>行政事業レビューAI</h1>
+            <p>
+                PDF、Word、CSVをアップロードすると、まずテキストだけを抽出し、その抽出テキストをAIに投入して行政事業レビューを返します。
+                元ファイルのままAIに送らず、抽出本文ベースで処理します。
+            </p>
+            <ul>
+                <li>PDF はブラウザ側でテキスト抽出を優先</li>
+                <li>Word は DOCX を ZipArchive で抽出</li>
+                <li>CSV は UTF-8 / Shift_JIS を吸収して整形</li>
+                <li>APIキーとモデル名は `.env` で切り替え</li>
+            </ul>
+        </div>
+
+        <div class="workspace">
+            <aside class="panel">
+                <section>
+                    <h2>1. ファイル</h2>
+                    <div id="dropzone" class="dropzone">
+                        <label for="fileInput">PDF / DOCX / CSV / TXT</label>
+                        <input id="fileInput" type="file" multiple accept=".pdf,.docx,.csv,.txt">
+                        <p class="muted">ドラッグ&ドロップ対応。1ファイル20MBまで。</p>
+                    </div>
+                    <ul id="fileList" class="file-list"></ul>
+                </section>
+
+                <section>
+                    <h2>2. 基本情報</h2>
+                    <div class="stack">
+                        <div>
+                            <label for="projectName">事業名</label>
+                            <input id="projectName" type="text" placeholder="例: ○○支援事業">
+                        </div>
+                        <div>
+                            <label for="fiscalYear">年度</label>
+                            <input id="fiscalYear" type="text" placeholder="例: 2026">
+                        </div>
+                        <div>
+                            <label for="department">所管課</label>
+                            <input id="department" type="text" placeholder="例: 財政課">
+                        </div>
+                        <div>
+                            <label for="modeSelect">出力モード</label>
+                            <select id="modeSelect">
+                                <option value="sheet">レビューシート案</option>
+                                <option value="score">観点別採点</option>
+                                <option value="summary">幹部向け要約</option>
+                                <option value="improve">改善提案重視</option>
+                                <option value="json">構造化出力を意識した分析</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>3. 実行</h2>
+                    <div class="stack">
+                        <button id="runBtn" type="button">レビュー開始</button>
+                        <button id="clearBtn" type="button" class="secondary">結果クリア</button>
+                        <div>
+                            <div class="status-badge" id="statusBadge">待機中</div>
+                            <div class="status-line" id="statusLine" style="margin-top:8px;">ファイルを選択してください。</div>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <main class="panel">
+                <div class="result-head">
+                    <div>
+                        <h2>レビュー結果</h2>
+                        <p class="muted">SSEで受信しながら表示します。</p>
+                    </div>
+                    <div class="actions">
+                        <button id="copyBtn" type="button" class="ghost">コピー</button>
+                        <button id="txtBtn" type="button" class="ghost">TXT保存</button>
+                        <button id="wordBtn" type="button" class="warn">Word保存</button>
+                    </div>
+                </div>
+
+                <div class="tab-row">
+                    <button type="button" class="tab-btn active" data-tab="result">結果本文</button>
+                    <button type="button" class="tab-btn ghost" data-tab="json">JSON</button>
+                    <button type="button" class="tab-btn ghost" data-tab="log">処理ログ</button>
+                </div>
+
+                <div id="resultTab" class="result-box">
+                    <div class="empty">ここにレビュー結果が表示されます。</div>
+                </div>
+                <div id="jsonTab" class="json-box hidden">{}</div>
+                <div id="logTab" class="log-box hidden">ログはまだありません。</div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        var state = {
+            files: [],
+            pdfExtractedMap: {},
+            resultText: '',
+            resultJson: {},
+            logs: []
+        };
+
+        var fileInput = document.getElementById('fileInput');
+        var fileList = document.getElementById('fileList');
+        var dropzone = document.getElementById('dropzone');
+        var runBtn = document.getElementById('runBtn');
+        var clearBtn = document.getElementById('clearBtn');
+        var resultTab = document.getElementById('resultTab');
+        var jsonTab = document.getElementById('jsonTab');
+        var logTab = document.getElementById('logTab');
+        var statusBadge = document.getElementById('statusBadge');
+        var statusLine = document.getElementById('statusLine');
+
+        fileInput.addEventListener('change', function () {
+            setFiles(Array.from(fileInput.files || []));
+        });
+
+        dropzone.addEventListener('dragover', function (event) {
+            event.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', function () {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', function (event) {
+            event.preventDefault();
+            dropzone.classList.remove('dragover');
+            setFiles(Array.from(event.dataTransfer.files || []));
+        });
+
+        runBtn.addEventListener('click', runReview);
+        clearBtn.addEventListener('click', clearOutput);
+        document.getElementById('copyBtn').addEventListener('click', copyResult);
+        document.getElementById('txtBtn').addEventListener('click', downloadTxt);
+        document.getElementById('wordBtn').addEventListener('click', downloadWord);
+
+        document.querySelectorAll('[data-tab]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                switchTab(button.getAttribute('data-tab'));
+            });
+        });
+
+        function setFiles(files) {
+            state.files = files;
+            state.pdfExtractedMap = {};
+            renderFileList();
+            setStatus('待機中', files.length ? 'レビュー開始を押すと抽出を始めます。' : 'ファイルを選択してください。');
+        }
+
+        function renderFileList() {
+            fileList.innerHTML = '';
+            if (!state.files.length) {
+                var li = document.createElement('li');
+                li.textContent = 'ファイル未選択';
+                fileList.appendChild(li);
+                return;
+            }
+
+            state.files.forEach(function (file) {
+                var li = document.createElement('li');
+                li.textContent = file.name + ' (' + formatBytes(file.size) + ')';
+                fileList.appendChild(li);
+            });
+        }
+
+        async function runReview() {
+            if (!state.files.length) {
+                alert('ファイルを選択してください。');
+                return;
+            }
+
+            setBusy(true);
+            clearOutput();
+            addLog('レビュー処理を開始しました。');
+
+            try {
+                setStatus('前処理中', 'PDFの事前テキスト抽出を確認しています。');
+                await extractPdfTexts();
+
+                var formData = new FormData();
+                state.files.forEach(function (file) {
+                    formData.append('files[]', file);
+                });
+                formData.append('project_name', document.getElementById('projectName').value || '');
+                formData.append('fiscal_year', document.getElementById('fiscalYear').value || '');
+                formData.append('department', document.getElementById('department').value || '');
+                formData.append('mode', document.getElementById('modeSelect').value || 'sheet');
+                formData.append('client_extracted_json', JSON.stringify(state.pdfExtractedMap));
+
+                var response = await fetch('review.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.body) {
+                    throw new Error('ストリーミング応答を受け取れませんでした。');
+                }
+
+                await readSse(response.body);
+            } catch (error) {
+                addLog('エラー: ' + error.message);
+                setStatus('エラー', error.message);
+            } finally {
+                setBusy(false);
+            }
+        }
+
+        async function extractPdfTexts() {
+            for (var i = 0; i < state.files.length; i++) {
+                var file = state.files[i];
+                if (!/\.pdf$/i.test(file.name)) {
+                    continue;
+                }
+
+                setStatus('PDF抽出中', file.name + ' からテキストを抽出しています。');
+                addLog('PDF抽出: ' + file.name);
+                var text = await extractTextFromPdf(file);
+                if (text && text.trim()) {
+                    state.pdfExtractedMap[file.name] = text;
+                    addLog('PDF抽出完了: ' + file.name + ' / ' + text.length + '文字');
+                } else {
+                    addLog('PDF抽出失敗: ' + file.name + ' / サーバーフォールバックへ');
+                }
+            }
+        }
+
+        async function extractTextFromPdf(file) {
+            var arrayBuffer = await file.arrayBuffer();
+            var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            var allText = [];
+
+            for (var pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                var page = await pdf.getPage(pageNum);
+                var content = await page.getTextContent();
+                var pageText = content.items.map(function (item) {
+                    return item.str;
+                }).join(' ');
+
+                if (pageText.trim()) {
+                    allText.push('=== p.' + pageNum + ' ===\n' + pageText.trim());
+                }
+            }
+
+            return allText.join('\n\n').trim();
+        }
+
+        function readSse(body) {
+            return new Promise(function (resolve, reject) {
+                var reader = body.getReader();
+                var decoder = new TextDecoder();
+                var buffer = '';
+                var finished = false;
+
+                function handleFrame(frame) {
+                    var lines = frame.split('\n');
+                    var eventType = '';
+                    var dataLines = [];
+
+                    lines.forEach(function (line) {
+                        if (line.indexOf('event: ') === 0) {
+                            eventType = line.substring(7).trim();
+                        } else if (line.indexOf('data: ') === 0) {
+                            dataLines.push(line.substring(6));
+                        }
+                    });
+
+                    if (!dataLines.length) {
+                        return;
+                    }
+
+                    var data;
+                    try {
+                        data = JSON.parse(dataLines.join('\n'));
+                    } catch (error) {
+                        return;
+                    }
+
+                    if (eventType === 'ready') {
+                        addLog('SSE接続開始');
+                    } else if (eventType === 'stage') {
+                        setStatus('処理中', data.message || '処理中');
+                        addLog(data.message || 'stage');
+                    } else if (eventType === 'chunk') {
+                        state.resultText += data.text || '';
+                        renderResult();
+                    } else if (eventType === 'json') {
+                        state.resultJson = data.data || {};
+                        jsonTab.textContent = JSON.stringify(state.resultJson, null, 2);
+                    } else if (eventType === 'done') {
+                        finished = true;
+                        setStatus('完了', 'レビュー生成が完了しました。モデル: ' + (data.model || 'unknown'));
+                        addLog('完了: ' + (data.model || 'unknown'));
+                        resolve();
+                    } else if (eventType === 'error') {
+                        finished = true;
+                        reject(new Error(data.message || '不明なエラー'));
+                    }
+                }
+
+                function pump() {
+                    reader.read().then(function (result) {
+                        if (result.done) {
+                            if (!finished) {
+                                if (state.resultText) {
+                                    setStatus('完了', 'レビュー生成が完了しました。');
+                                    resolve();
+                                } else {
+                                    reject(new Error('応答本文を受け取れませんでした。'));
+                                }
+                            }
+                            return;
+                        }
+
+                        buffer += decoder.decode(result.value, { stream: true });
+                        var frames = buffer.split('\n\n');
+                        buffer = frames.pop();
+                        frames.forEach(handleFrame);
+                        pump();
+                    }).catch(reject);
+                }
+
+                pump();
+            });
+        }
+
+        function renderResult() {
+            if (!state.resultText) {
+                resultTab.innerHTML = '<div class="empty">ここにレビュー結果が表示されます。</div>';
+                return;
+            }
+
+            resultTab.innerHTML = escapeHtml(state.resultText)
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function clearOutput() {
+            state.resultText = '';
+            state.resultJson = {};
+            state.logs = [];
+            renderResult();
+            jsonTab.textContent = '{}';
+            logTab.textContent = 'ログはまだありません。';
+        }
+
+        function addLog(message) {
+            state.logs.push(message);
+            logTab.textContent = state.logs.join('\n');
+        }
+
+        function setBusy(busy) {
+            runBtn.disabled = busy;
+            fileInput.disabled = busy;
+        }
+
+        function setStatus(label, message) {
+            statusBadge.textContent = label;
+            statusLine.textContent = message;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(function (button) {
+                var active = button.getAttribute('data-tab') === tabName;
+                button.classList.toggle('active', active);
+                button.classList.toggle('ghost', !active);
+            });
+
+            resultTab.classList.toggle('hidden', tabName !== 'result');
+            jsonTab.classList.toggle('hidden', tabName !== 'json');
+            logTab.classList.toggle('hidden', tabName !== 'log');
+        }
+
+        function copyResult() {
+            if (!state.resultText) {
+                alert('レビュー結果がありません。');
+                return;
+            }
+
+            navigator.clipboard.writeText(state.resultText).then(function () {
+                alert('コピーしました。');
+            }).catch(function () {
+                alert('コピーに失敗しました。');
+            });
+        }
+
+        function downloadTxt() {
+            if (!state.resultText) {
+                alert('レビュー結果がありません。');
+                return;
+            }
+
+            var blob = new Blob([state.resultText], { type: 'text/plain;charset=utf-8' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = buildFileBaseName() + '.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        }
+
+        function downloadWord() {
+            if (!state.resultText) {
+                alert('レビュー結果がありません。');
+                return;
+            }
+            if (typeof docx === 'undefined') {
+                alert('docx.js を読み込めませんでした。');
+                return;
+            }
+
+            var paragraphs = state.resultText.split('\n').filter(function (line) {
+                return line.trim() !== '';
+            }).map(function (line) {
+                return new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({
+                            text: line,
+                            font: 'MS Mincho',
+                            size: 21
+                        })
+                    ],
+                    spacing: { after: 120 }
+                });
+            });
+
+            var doc = new docx.Document({
+                creator: 'review app',
+                sections: [{
+                    properties: {
+                        page: {
+                            size: { width: 11906, height: 16838 },
+                            margin: { top: 1701, right: 1701, bottom: 1701, left: 1701 }
+                        }
+                    },
+                    children: paragraphs
+                }]
+            });
+
+            docx.Packer.toBlob(doc).then(function (blob) {
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = buildFileBaseName() + '.docx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+            }).catch(function (error) {
+                alert('Word保存に失敗しました: ' + error.message);
+            });
+        }
+
+        function buildFileBaseName() {
+            var base = document.getElementById('projectName').value.trim() || 'review-result';
+            return base.replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_');
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes) return '0 B';
+            var units = ['B', 'KB', 'MB', 'GB'];
+            var value = bytes;
+            var unit = units[0];
+            for (var i = 0; i < units.length; i++) {
+                unit = units[i];
+                if (value < 1024 || i === units.length - 1) {
+                    break;
+                }
+                value = value / 1024;
+            }
+            return value.toFixed(value >= 10 || unit === 'B' ? 0 : 1) + ' ' + unit;
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+    </script>
+</body>
+</html>
