@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日本成長戦略 - 源内AI</title>
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/dads107.css">
+<style>
+/* ヘッダー（GitHub UI準拠） */
+.ct-header{border-bottom:1px solid #000;padding:0.75rem 1.5rem 0.5rem;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;}
+@media(min-width:1024px){.ct-header{padding:0.75rem 2.5rem 0.5rem;}}
+.ct-title{font-size:1.25rem;font-weight:700;line-height:1.5;margin:0;}
+@media(min-width:1024px){.ct-title{font-size:1.5rem;}}
+
+/* Notification Banners (GitHub準拠) */
+.ct-banner{max-width:64rem;margin:0 auto 1rem;border-radius:8px;padding:1rem 1.25rem;font-size:0.875rem;line-height:1.7;text-align:left;}
+.ct-banner-info{background:#fff;border:1px solid var(--blue-200);color:#1a1a1c;}
+.ct-banner-warning{background:#fff;border:1px solid #ffe082;color:#1a1a1c;}
+.ct-banner h3{font-size:0.9375rem;font-weight:700;margin:0 0 0.5rem;}
+.ct-banner p{margin:0.25rem 0;}
+.ct-banner ul,.ct-banner ol{margin:0.25rem 0 0.25rem 1.5rem;}
+.ct-banner li{margin:0.125rem 0;}
+.ct-banner strong{font-weight:700;}
+.ct-banner kbd{background:var(--solid-gray-100);border:1px solid var(--solid-gray-300);border-radius:3px;padding:0.125rem 0.375rem;font-size:0.8125rem;font-family:monospace;}
+
+.chat-layout{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+.chat-body{flex:1;overflow-y:auto;padding:0 1.5rem;scrollbar-gutter:stable;}
+@media(min-width:1024px){.chat-body{padding:0 2.5rem;}}
+.chat-messages{max-width:64rem;margin:0 auto;padding:0.25rem 0 1.5rem;}
+.chat-welcome{text-align:center;color:var(--solid-gray-536);padding:0.25rem 0;}
+.chat-welcome h2{font-size:1.25rem;font-weight:700;margin-bottom:0.5rem;}
+
+/* Card-style messages with borders (genai-web v1.0.7) */
+.chat-msg{display:flex;gap:1rem;padding:1rem;max-width:100%;border-radius:8px;margin-bottom:0.75rem;border:1px solid var(--solid-gray-300);}
+.chat-msg.user{background:var(--solid-gray-50);}
+.chat-msg.ai{background:#fff;}
+.chat-bubble{flex:1;line-height:1.7;overflow-wrap:anywhere;min-width:0;}
+.chat-avatar{width:2.5rem;height:2.5rem;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--solid-gray-600);background:var(--solid-gray-50);border:1px solid var(--solid-gray-200);}
+.chat-avatar svg{width:1.25rem;height:1.25rem;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.msg-actions{display:flex;gap:0.5rem;margin-top:0.375rem;justify-content:flex-end;}
+.msg-actions button{font-size:0.8125rem;}
+
+/* 引用元アコーディオン */
+.citations-panel{margin-top:0.75rem;border:1px solid var(--solid-gray-300);border-radius:8px;background:var(--solid-gray-50);overflow:hidden;}
+.citations-toggle{width:100%;display:flex;align-items:center;gap:0.5rem;padding:0.625rem 0.75rem;background:none;border:none;cursor:pointer;font-size:0.875rem;font-weight:700;font-family:inherit;color:var(--solid-gray-800);text-align:left;}
+.citations-toggle svg{transition:transform 0.2s;}
+.citations-toggle.open svg{transform:rotate(90deg);}
+.citations-body{display:none;padding:0 0.75rem 0.75rem;font-size:0.8125rem;line-height:1.7;}
+.citations-body.open{display:block;}
+.citation-item{padding:0.5rem 0;border-bottom:1px solid var(--solid-gray-200);}
+.citation-item:last-child{border-bottom:none;}
+.citation-item-title{font-weight:700;font-size:0.8125rem;}
+.citation-item-score{color:var(--solid-gray-536);font-size:0.75rem;}
+.citation-item-content{color:var(--solid-gray-600);margin-top:0.25rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* Scroll to bottom */
+.scroll-bottom-btn{position:fixed;right:1rem;bottom:5.5rem;z-index:10;width:2.75rem;height:2.75rem;border-radius:50%;border:1px solid var(--solid-gray-300);background:#fff;color:var(--blue-900);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.scroll-bottom-btn:hover{background:var(--blue-100);}
+.scroll-bottom-btn.visible{display:flex;}
+@media(min-width:1024px){.scroll-bottom-btn{right:2rem;}}
+
+.chat-input-area{border-top:1px solid var(--solid-gray-300);padding:0.75rem 1.5rem;flex-shrink:0;background:#fff;}
+@media(min-width:1024px){.chat-input-area{padding:0.75rem 2.5rem;}}
+.chat-input-wrap{display:flex;gap:0.5rem;max-width:64rem;margin:0 auto;align-items:flex-end;}
+.chat-input{flex:1;min-height:3rem;max-height:12rem;border-radius:8px;border:1px solid var(--solid-gray-600);padding:0.625rem 1rem;font-size:1rem;font-family:inherit;resize:none;line-height:1.7;overflow-y:auto;}
+.chat-input:focus{outline:4px solid #000;outline-offset:2px;box-shadow:0 0 0 2px var(--yellow-300);}
+.send-btn{min-width:3.5rem;min-height:3rem;border-radius:8px;background:var(--blue-900);color:#fff;border:none;cursor:pointer;font-size:1.25rem;display:flex;align-items:center;justify-content:center;}
+.send-btn:hover{background:var(--blue-1000);}
+.send-btn:disabled{background:var(--solid-gray-300);cursor:not-allowed;}
+.stop-btn{background:var(--error-1);}
+.stop-btn:hover{background:var(--error-2);}
+
+.typing-indicator{display:inline-flex;gap:4px;padding:0.5rem;}
+.typing-indicator span{width:6px;height:6px;border-radius:50%;background:var(--solid-gray-420);animation:blink 1.4s infinite both;}
+.typing-indicator span:nth-child(2){animation-delay:0.2s;}
+.typing-indicator span:nth-child(3){animation-delay:0.4s;}
+@keyframes blink{0%,80%,100%{opacity:0.3}40%{opacity:1}}
+</style>
+</head>
+<body>
+<script src="../shared/auth.js"></script>
+<script>checkAuth();</script>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'app11'}));</script>
+
+<div class="app-shell">
+  <main class="app-main">
+    <div class="chat-layout">
+      <!-- Page Header -->
+      <div class="ct-header">
+        <h1 class="ct-title">日本成長戦略</h1>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-body" id="chatBody">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-welcome" id="welcomeMsg">
+            <div class="ct-banner ct-banner-info">
+              <p>日本成長戦略（案）に基づいて、あなたの自治体・団体の事業について相談をするAIです。</p>
+              <p><a href="seichou.pdf" download="日本成長戦略（案）.pdf" target="_top" style="color:var(--blue-900);text-decoration:underline;font-weight:700;">日本成長戦略（案）PDFダウンロード</a></p>
+            </div>
+            <h2>日本成長戦略AIにようこそ</h2>
+            <p>あなたの事業を成長戦略に基づいて導きます。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="chat-input-area">
+        <div class="chat-input-wrap">
+          <textarea class="chat-input" id="chatInput" rows="1" placeholder="メッセージを入力（Enterで改行、Ctrl+Enterで送信します）"></textarea>
+          <button class="send-btn" id="sendBtn" disabled title="送信">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Scroll to bottom -->
+<button class="scroll-bottom-btn" id="scrollBottomBtn" title="チャット下部へ戻る">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+</button>
+
+<script src="../shared/layout107.js?v=20260620"></script>
+<script src="../shared/markdown.js"></script>
+<script src="../shared/api-client.js"></script>
+<script src="../shared/history-store.js"></script>
+<script>
+initLayout({ activePage: 'app11', basePath: '../app/' });
+
+var API_URL = 'app11.php';
+
+/* ---------- DOM ---------- */
+var chatBody = document.getElementById('chatBody');
+var chatMessages = document.getElementById('chatMessages');
+var welcomeMsg = document.getElementById('welcomeMsg');
+var chatInput = document.getElementById('chatInput');
+var sendBtn = document.getElementById('sendBtn');
+
+/* ---------- State ---------- */
+var messages = [];        // { role, content, citations? }
+var conversationId = '';  // Dify 会話ID（マルチターン継続用）
+var isStreaming = false;
+var currentStream = null;
+var currentChatId = null;
+var chatTitle = '';
+
+// 履歴復元チェック
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    currentChatId = id;
+    restoreChat(id);
+  } else {
+    currentChatId = 'app11_' + Date.now();
+  }
+})();
+
+/* ---------- Input Auto-resize ---------- */
+chatInput.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 192) + 'px';
+  sendBtn.disabled = !this.value.trim();
+});
+
+chatInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    if (!sendBtn.disabled) sendMessage();
+  }
+});
+
+sendBtn.addEventListener('click', function() {
+  if (isStreaming) {
+    stopStream();
+  } else {
+    sendMessage();
+  }
+});
+
+/* ---------- Send Message ---------- */
+function sendMessage() {
+  var text = chatInput.value.trim();
+  if (!text) return;
+
+  welcomeMsg.style.display = 'none';
+  messages.push({ role: 'user', content: text });
+  appendMessage('user', text);
+
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  sendBtn.disabled = true;
+
+  startStream(text);
+}
+
+function startStream(queryText) {
+  isStreaming = true;
+  sendBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+  sendBtn.classList.add('stop-btn');
+  sendBtn.disabled = false;
+
+  var aiBubble = appendMessage('ai', '');
+  var prose = aiBubble.querySelector('.prose');
+  prose.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+
+  var fullText = '';
+  var msgCitations = null;
+  var ctrl = new AbortController();
+  currentStream = { abort: function() { ctrl.abort(); } };
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: queryText, conversation_id: conversationId }),
+    signal: ctrl.signal
+  }).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+
+    function read() {
+      return reader.read().then(function(result) {
+        if (result.done) {
+          if (buffer.trim()) processBuffer();
+          onComplete();
+          return;
+        }
+        buffer += decoder.decode(result.value, { stream: true });
+        processBuffer();
+        return read();
+      });
+    }
+
+    function processBuffer() {
+      var lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (!line) continue;
+        try {
+          var j = JSON.parse(line);
+          if (j.conversation_id) { conversationId = j.conversation_id; }
+          if (j.citations) {
+            msgCitations = j.citations;
+            renderCitations(aiBubble, msgCitations);
+          }
+          if (j.text) {
+            fullText += j.text;
+            prose.innerHTML = renderMarkdown(fullText);
+            scrollToBottom();
+          }
+        } catch(e) {}
+      }
+    }
+
+    function onComplete() {
+      messages.push({ role: 'model', content: fullText, citations: msgCitations });
+      prose.innerHTML = renderMarkdown(fullText);
+      renderCitations(aiBubble, msgCitations);
+      finishStream();
+      saveChat();
+      if (messages.length === 2) generateTitle();
+    }
+
+    return read();
+  }).catch(function(err) {
+    if (err.name !== 'AbortError') {
+      prose.innerHTML = '<span class="text-error">' + escapeHtml(err.message) + '</span>';
+    }
+    finishStream();
+  });
+}
+
+function stopStream() {
+  if (currentStream) currentStream.abort();
+  finishStream();
+}
+
+function finishStream() {
+  isStreaming = false;
+  currentStream = null;
+  sendBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+  sendBtn.classList.remove('stop-btn');
+  sendBtn.disabled = !chatInput.value.trim();
+}
+
+/* ---------- 引用元アコーディオン ---------- */
+function renderCitations(msgEl, citations) {
+  // 既存のパネルを除去
+  var existing = msgEl.querySelector('.citations-panel');
+  if (existing) existing.remove();
+
+  if (!citations || !citations.length) return;
+
+  var panel = document.createElement('div');
+  panel.className = 'citations-panel';
+
+  var toggle = document.createElement('button');
+  toggle.className = 'citations-toggle';
+  toggle.innerHTML = '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg> 引用元（' + citations.length + '件）';
+
+  var body = document.createElement('div');
+  body.className = 'citations-body';
+
+  for (var i = 0; i < citations.length; i++) {
+    var c = citations[i];
+    var item = document.createElement('div');
+    item.className = 'citation-item';
+    item.innerHTML =
+      '<div class="citation-item-title">' + escapeHtml(c.title || '') + '</div>' +
+      (c.score ? '<div class="citation-item-score">類似度: ' + Number(c.score).toFixed(3) + '</div>' : '') +
+      '<div class="citation-item-content">' + escapeHtml(c.content || '') + '</div>';
+    body.appendChild(item);
+  }
+
+  toggle.addEventListener('click', function() {
+    toggle.classList.toggle('open');
+    body.classList.toggle('open');
+  });
+
+  panel.appendChild(toggle);
+  panel.appendChild(body);
+
+  // chat-bubble 内に追加
+  var bubble = msgEl.querySelector('.chat-bubble');
+  if (bubble) bubble.appendChild(panel);
+}
+
+/* ---------- DOM Helpers ---------- */
+function appendMessage(role, text) {
+  var msg = document.createElement('div');
+  msg.className = 'chat-msg ' + role;
+
+  var avatarLabel = role === 'user'
+    ? '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+    : '<svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 014 4v1h1a2 2 0 012 2v6a2 2 0 01-2 2h-1v1a2 2 0 01-2 2H10a2 2 0 01-2-2v-1H7a2 2 0 01-2-2V9a2 2 0 012-2h1V6a4 4 0 014-4z"/><circle cx="9.5" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>';
+  var html = '<div class="chat-avatar ' + role + '">' + avatarLabel + '</div>';
+  html += '<div class="chat-bubble">';
+
+  if (role === 'ai') {
+    html += '<div class="prose">' + (text ? renderMarkdown(text) : '') + '</div>';
+  } else {
+    html += '<div style="white-space:pre-wrap">' + escapeHtml(text) + '</div>';
+  }
+
+  if (role === 'ai') {
+    html += '<div class="msg-actions">';
+    html += '<button class="copy-btn" onclick="copyBubble(this)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>コピー</button>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  msg.innerHTML = html;
+  chatMessages.appendChild(msg);
+  scrollToBottom();
+  return msg;
+}
+
+function scrollToBottom() {
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function copyBubble(btn) {
+  var bubble = btn.closest('.chat-msg').querySelector('.prose');
+  if (!bubble) return;
+  navigator.clipboard.writeText(bubble.innerText).then(function() {
+    btn.classList.add('copied');
+    var orig = btn.innerHTML;
+    btn.innerHTML = btn.innerHTML.replace('コピー', 'コピー済み');
+    setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+  });
+}
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ---------- Chat History (HistoryStore 使用) ---------- */
+function saveChat() {
+  if (messages.length < 2) return;
+  var msgCopy = JSON.parse(JSON.stringify(messages));
+  HistoryStore.save({
+    id: currentChatId,
+    appType: 'app11',
+    title: chatTitle || msgCopy[0].content.substring(0, 50),
+    messages: msgCopy,
+    conversationId: conversationId,
+    messageCount: msgCopy.length
+  });
+}
+
+function restoreChat(id) {
+  HistoryStore.load(id).then(function(data) {
+    try {
+      if (!data) return;
+      messages = Array.isArray(data.messages) ? data.messages : [];
+      conversationId = data.conversationId || '';
+      chatTitle = data.title || '';
+      welcomeMsg.style.display = 'none';
+      for (var i = 0; i < messages.length; i++) {
+        var m = messages[i];
+        var content = m.content != null ? String(m.content) : '';
+        var msgEl = appendMessage(m.role === 'user' ? 'user' : 'ai', content);
+        if (m.role !== 'user' && m.citations) {
+          renderCitations(msgEl, m.citations);
+        }
+      }
+    } catch(err) {
+      console.error('restoreChat error:', err);
+    }
+  }).catch(function(err) {
+    console.error('restoreChat openDB error:', err);
+  });
+}
+
+function generateTitle() {
+  ApiClient.predict({
+    messages: [{ role: 'user', content: 'この会話のタイトルを15文字以内で生成してください（タイトルのみ出力）: ' + messages[0].content }],
+    systemPrompt: 'タイトルのみを出力してください。説明や装飾は不要です。'
+  }).then(function(title) {
+    chatTitle = title.replace(/[「」『』]/g, '').trim();
+    saveChat();
+  }).catch(function(){});
+}
+
+/* ---------- Scroll to Bottom Button ---------- */
+var scrollBottomBtn = document.getElementById('scrollBottomBtn');
+chatBody.addEventListener('scroll', function() {
+  var atBottom = chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 80;
+  scrollBottomBtn.classList.toggle('visible', !atBottom);
+});
+scrollBottomBtn.addEventListener('click', function() { scrollToBottom(); });
+</script>
+</body>
+</html>

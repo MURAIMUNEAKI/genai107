@@ -1,0 +1,6 @@
+<Files ".env">
+  Require all denied
+</Files>
+<Files "debug.log">
+  Require all denied
+</Files>

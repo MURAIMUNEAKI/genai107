@@ -48,7 +48,7 @@
       <h2 class="section-title">デジタル庁 提供AIアプリ</h2>
       <div class="card-grid" id="cardGrid"></div>
 
-      <h2 class="section-title" style="margin-top:2rem">全国874自治体 専用アプリ</h2>
+      <h2 class="section-title" style="margin-top:2rem">全国884自治体 専用アプリ</h2>
       <div class="card-grid" id="cardGrid2"></div>
 
       <div class="page-footer">
@@ -91,7 +91,10 @@ var cardIcons = {
   kodoku:     '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',
   govbot:     '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/>',
   seisakuhyouka: '<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/>',
-  kaigo:      '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>'
+  kaigo:      '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>',
+  review:     '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+  growth:     '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+  honebuto:   '<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/>'
 };
 var cards = [
   { id: 'chat',       title: 'チャット',               desc: 'AIと対話しながらアイデアを整理・深掘りできます。ファイルの添付やシステムプロンプトの設定も可能です。', href: 'chat.htm' },
@@ -111,7 +114,10 @@ var cards2 = [
   { id: 'tosho',      title: '国立国会図書館サーチ',   desc: '国立国会図書館の蔵書をキーワードで検索できます。タイトル・著者・出版社での絞り込みに対応。', href: '../app2/tosho.htm' },
   { id: 'govbot',     title: '総務省 相談Govbot',     desc: '総務省が提供している国・地方共通相談チャットボットです。', href: '../app2/govbot.htm' },
   { id: 'seisakuhyouka', title: '政策評価AI',         desc: '政策文書をアップロードし、総務省ガイドラインに基づく8段階の政策評価レポートを自動生成します。', href: '../app2/seisakuhyouka.htm' },
-  { id: 'kaigo',          title: '厚労省 介護保険QA',  desc: '厚生労働省の介護保険制度に関するQAを答えます。', href: '../app2/kaigo.htm' }
+  { id: 'kaigo',          title: '厚労省 介護保険QA',  desc: '厚生労働省の介護保険制度に関するQAを答えます。', href: '../app2/kaigo.htm' },
+  { id: 'review',         title: '行政事業レビューAI',  desc: '事業概要書・予算/決算資料・成果報告書（PDF・Word・CSV）をアップロードし、行政事業レビュー（観点別評価・改善提案）を自動生成します。', href: '../app2/review.htm' },
+  { id: 'growth',         title: '日本成長戦略',        desc: '国家戦略「日本成長戦略」に基づき、自らの事業をチャットで相談できます。回答には引用元も表示されます。', href: '../app3/app11.htm' },
+  { id: 'honebuto',       title: '骨太の方針2026',      desc: '経済財政運営と改革の基本方針2026（原案）に基づき、国の予算をチャットで相談できます。回答には引用元も表示されます。', href: '../app3/app12.htm' }
 ];
 
 function renderCards(list, gridEl) {
