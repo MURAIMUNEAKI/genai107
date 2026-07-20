@@ -55,6 +55,8 @@ a:hover{color:var(--blue-1000);}
 }
 .app-logo:hover{text-decoration:none;color:var(--blue-900);}
 .app-logo-img{height:2rem;width:auto;display:block;object-fit:contain;}
+/* スマホでは横長バナー画像（gennai.jpg）がレイアウトを崩すため非表示にする */
+@media(max-width:767px){.app-logo-img{display:none;}}
 
 /* Desktop Nav (pill links) */
 .header-nav{display:none;align-items:center;gap:0.25rem;margin-left:1.5rem;}

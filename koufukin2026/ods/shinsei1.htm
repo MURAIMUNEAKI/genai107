@@ -1,0 +1,709 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交付金申請書作成 (入力画面)</title>
+    <!-- Common Fonts & CSS from Index -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Copied from index.html for consistency */
+            --bg-color: #0f172a;
+            --text-primary: #ffffff;
+            --text-secondary: #e0f2fe;
+            --accent-a: #10b981;
+            --accent-v: #3b82f6;
+            --accent-s: #8b5cf6;
+            --common-color: #fbbf24;
+            --heading-yellow: #fde047;
+            --frame-color: #0ea5e9;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(56, 189, 248, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--frame-color);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            background: linear-gradient(90deg, #b45309 0%, #fbbf24 25%, #fffbeb 50%, #fbbf24 75%, #b45309 100%);
+            background-size: 200% auto;
+            color: #fbbf24;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 2s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.4));
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Nav links just for context, simplified */
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .nav-link:hover {
+            color: var(--heading-yellow);
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 40fr 60fr;
+            /* PC: 2 Columns */
+            gap: 1rem;
+            padding: 1rem;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                /* Mobile: 1 Column */
+            }
+        }
+
+        /* Panels */
+        .panel {
+            background: transparent;
+            border: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: none;
+            height: 100%;
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            color: var(--heading-yellow);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 0.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.3rem 0.5rem;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            color: #0f172a;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--heading-yellow);
+            background: #ffffff;
+            box-shadow: 0 0 0 2px rgba(253, 224, 71, 0.4);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        /* Button */
+        .btn-generate {
+            background: linear-gradient(90deg, var(--frame-color), var(--accent-v));
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.3rem;
+            margin-bottom: 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Output Area */
+        #outputArea {
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            flex: 1;
+            white-space: pre-wrap;
+            font-family: 'Noto Sans JP', sans-serif;
+            border: 1px solid rgba(253, 224, 71, 0.5);
+            line-height: 1.8;
+
+            /* PC Default: Constrained Height with Scroll based on viewport */
+            max-height: 75vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+
+            /* Prevent auto-zoom on iOS */
+            input,
+            textarea,
+            select {
+                font-size: 16px !important;
+            }
+
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            /* Mobile: Auto-expand height */
+            #outputArea {
+                max-height: none;
+                height: auto;
+                overflow-y: visible;
+            }
+        }
+
+        /* Right Panel Specifics */
+        .main-container>.panel:last-of-type {
+            /* Flex layout to manage title and output area */
+            display: flex;
+            flex-direction: column;
+            /* Remove height: 100% constraint to allow footer/scroll properly if needed,
+               but with max-height on child, it should be fine. */
+        }
+
+        /* Select styling for readability */
+        select option {
+            background: #ffffff;
+            color: #0f172a;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(253, 224, 71, 0.3);
+            border-left-color: var(--heading-yellow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">地域未来交付金2026</div>
+        <nav>
+            <a href="https://ods.or.jp/ai/koufukin/" class="nav-link" target="_blank"
+                rel="noopener noreferrer">TOPに戻る</a>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <!-- LEFT COLUMN: INPUT -->
+        <section class="panel">
+
+            <form id="applicationForm" onsubmit="return false;">
+
+                <!-- TYPE Selection -->
+                <div class="form-group">
+                    <label for="typeSelect">申請タイプ (TYPE)</label>
+                    <select id="typeSelect" required>
+                        <option value="" disabled selected>選択してください</option>
+                        <option value="TYPE A">TYPE A (地域住民等利用推進型)</option>
+                        <option value="TYPE V">TYPE V (先進的デジタル公共財活用型)</option>
+                        <option value="TYPE S">TYPE S (デジタル行財政改革特化型)</option>
+                    </select>
+                </div>
+
+                <!-- Municipality Name -->
+                <div class="form-group">
+                    <label for="municipalityName">自治体名</label>
+                    <input type="text" id="municipalityName" placeholder="例: ○○県○○市" required>
+                </div>
+
+                <!-- Genre Selection -->
+                <div class="form-group">
+                    <label for="genreSelect">ジャンル</label>
+                    <select id="genreSelect" required>
+                        <option value="" disabled selected>選択してください</option>
+                        <option value="健康・福祉">健康・福祉</option>
+                        <option value="子育て・教育">子育て・教育</option>
+                        <option value="地域経済">地域経済</option>
+                        <option value="観光・移住定住">観光・移住定住</option>
+                        <option value="防災・安全">防災・安全</option>
+                        <option value="行政手続・窓口">行政手続・窓口</option>
+                        <option value="インフラ・施設管理">インフラ・施設管理</option>
+                        <option value="その他">その他</option>
+                    </select>
+                </div>
+
+                <!-- Project Name -->
+                <div class="form-group">
+                    <label for="projectName">事業名</label>
+                    <input type="text" id="projectName" placeholder="例: AIを活用した高齢者見守りシステム構築事業" required>
+                </div>
+
+                <!-- Project Overview -->
+                <div class="form-group">
+                    <label for="projectOverview">事業概要</label>
+                    <textarea id="projectOverview" placeholder="事業の目的、背景、具体的な実施内容などを具体的かつ簡潔に記述してください。"
+                        required></textarea>
+                </div>
+
+                <!-- Budget -->
+                <div class="form-group">
+                    <label for="budgetAmount">予算額 (概算)</label>
+                    <input type="text" id="budgetAmount" placeholder="例: 5,000万円" required>
+                </div>
+
+                <!-- Others -->
+                <div class="form-group">
+                    <label for="otherDetails">その他 (KPI目標、協力体制など)</label>
+                    <textarea id="otherDetails"
+                        placeholder="KPI目標数値、連携する企業・団体の名称、既存システムとの連携など、補足情報を入力してください。"></textarea>
+                </div>
+
+                <button type="submit" class="btn-generate" onclick="generateProposal()">申請書案を生成する</button>
+            </form>
+        </section>
+
+        <!-- RIGHT COLUMN: OUTPUT -->
+        <section class="panel">
+            <h2 class="panel-title">調査結果＆申請書</h2>
+            <div id="outputArea">ここに生成された申請書案が表示されます...</div>
+        </section>
+    </div>
+
+    <!-- Hidden API Key Input REMOVED for security -->
+    <script>
+        // Check protocol to warn user about PHP requirement
+        if (window.location.protocol === 'file:') {
+            const outputArea = document.getElementById('outputArea');
+            outputArea.innerHTML = '<div style="background:rgba(255,0,0,0.2); padding:1em; border:1px solid red; margin-bottom:1em;">' +
+                '<h3 style="color:#ffaaaa; margin:0;">[重要] 動作環境の確認</h3>' +
+                '<p>現在、HTMLファイルを直接開いています(file://)。<br>' +
+                'セキュリティ確保のため、AI処理をサーバーサイド(PHP)に移行しました。<br>' +
+                'この機能を動作させるには、<b>Webサーバー(XAMPP, Apache等)</b>を経由してアクセスしてください。</p></div>';
+        }
+
+        async function fetchStream(url, payload, containerId, onStartCallback) {
+            let container = document.getElementById(containerId);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    if (onStartCallback) onStartCallback(); // Ensure switch on error
+                    container = document.getElementById(containerId);
+                    if (container) container.innerText += `\n[Server Error] ${response.status} ${response.statusText}`;
+                    return;
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let params = { started: false };
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    if (!params.started) {
+                        params.started = true;
+                        if (onStartCallback) onStartCallback();
+                        container = document.getElementById(containerId); // Refresh ref
+                    }
+
+                    const text = decoder.decode(value, { stream: true });
+                    if (container) {
+                        container.innerText += text;
+                        // Auto-scroll to bottom of the output area
+                        let scrollTarget = document.getElementById('outputArea');
+                        if (scrollTarget) {
+                            scrollTarget.scrollTop = scrollTarget.scrollHeight;
+                            if (window.innerWidth <= 768) {
+                                window.scrollTo(0, document.body.scrollHeight);
+                            }
+                        }
+                    }
+                }
+
+            } catch (e) {
+                if (onStartCallback) onStartCallback();
+                container = document.getElementById(containerId);
+                if (container) container.innerText += `\n[Communication Error] ${e.message}\n(※PHPファイルが見つからない、またはサーバー経由で実行されていません)`;
+            }
+        }
+
+        async function generateProposal() {
+            const btn = document.querySelector('.btn-generate');
+            const outputArea = document.getElementById('outputArea');
+
+            // Get Values
+            const type = document.getElementById('typeSelect').value;
+            const municipality = document.getElementById('municipalityName').value;
+            const genre = document.getElementById('genreSelect').value;
+            const project = document.getElementById('projectName').value;
+            const overview = document.getElementById('projectOverview').value;
+            const budget = document.getElementById('budgetAmount').value;
+            const others = document.getElementById('otherDetails').value;
+
+            if (!type || !municipality || !genre || !project || !overview || !budget) {
+                alert("全項目を入れてから生成してください。");
+                return;
+            }
+
+            // UI Reset
+            btn.disabled = true;
+            btn.innerText = "生成中... (数分かかる場合があります)";
+
+            // Prepare Output Area (Clear & Add Headers)
+            outputArea.innerHTML = '';
+
+            // Setup Wrappers
+            const jigyouWrapper = document.createElement('div');
+            jigyouWrapper.id = 'jigyouWrapper';
+            // First Spinner (Jigyou)
+            jigyouWrapper.innerHTML = '<div class="spinner" id="spinner1"></div>';
+            outputArea.appendChild(jigyouWrapper);
+
+            const chousaWrapper = document.createElement('div');
+            chousaWrapper.id = 'chousaWrapper';
+            // Start empty for Chousa
+            outputArea.appendChild(chousaWrapper);
+
+            // Execute
+            const payload = { municipality, genre, project, overview, budget, others };
+
+            // Callbacks for UI Transitions
+            const onStartJigyou = () => {
+                const w = document.getElementById('jigyouWrapper');
+                w.innerHTML = '';
+
+                const h3 = document.createElement('h3');
+                h3.style.color = 'var(--heading-yellow)';
+                h3.style.marginBottom = '0.5rem';
+                h3.style.marginTop = '0';
+                h3.innerText = '事業概要';
+                w.appendChild(h3);
+
+                const div = document.createElement('div');
+                div.id = 'jigyouOutput';
+                div.style.whiteSpace = 'pre-wrap';
+                div.style.marginBottom = '2rem';
+                w.appendChild(div);
+
+                // Show spinner for Chousa if not already showing content
+                const cw = document.getElementById('chousaWrapper');
+                if (cw && !cw.querySelector('h3')) {
+                    cw.innerHTML = '<div class="spinner" id="spinner2"></div>';
+                }
+            };
+
+            const onStartChousa = () => {
+                const cw = document.getElementById('chousaWrapper');
+                cw.innerHTML = '';
+
+                const h3 = document.createElement('h3');
+                h3.style.color = 'var(--heading-yellow)';
+                h3.style.marginBottom = '0.5rem';
+                h3.innerText = `${municipality}の${genre}の現状`;
+                cw.appendChild(h3);
+
+                const div = document.createElement('div');
+                div.id = 'chousaOutput';
+                div.style.whiteSpace = 'pre-wrap';
+                cw.appendChild(div);
+            };
+
+            // Run Parallel (Step 1 & 2)
+            await Promise.all([
+                fetchStream('jigyou1.php', payload, 'jigyouOutput', onStartJigyou),
+                fetchStream('chousa1.php', payload, 'chousaOutput', onStartChousa)
+            ]);
+
+            // --- Step 3: Global Plan Generation ---
+
+            // Prepare UI for Step 3
+            const jigyou2Wrapper = document.createElement('div');
+            jigyou2Wrapper.id = 'jigyou2Wrapper';
+            // Spinner for Final Step
+            jigyou2Wrapper.innerHTML = '<div class="spinner" id="spinner3"></div>';
+            outputArea.appendChild(jigyou2Wrapper);
+
+            // Auto-scroll to show new spinner
+            outputArea.scrollTop = outputArea.scrollHeight;
+            if (window.innerWidth <= 768) {
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+
+            // Gather inputs for Step 3
+            // Note: We grab the raw text generated in Step 1 & 2
+            const jigyou1Result = document.getElementById('jigyouOutput').innerText;
+            const chousa1Result = document.getElementById('chousaOutput').innerText;
+
+            const payload2 = {
+                ...payload, // Original inputs
+                jigyou1_result: jigyou1Result,
+                chousa1_result: chousa1Result
+            };
+
+            const onStartJigyou2 = () => {
+                const w = document.getElementById('jigyou2Wrapper');
+                w.innerHTML = '';
+
+                const h3 = document.createElement('h3');
+                h3.style.color = 'var(--heading-yellow)';
+                h3.style.borderTop = '1px solid rgba(255,255,255,0.2)';
+                h3.style.paddingTop = '1rem';
+                h3.style.marginTop = '2rem';
+                h3.style.marginBottom = '1rem';
+                h3.innerText = '実施計画案';
+                w.appendChild(h3);
+
+                const div = document.createElement('div');
+                div.id = 'jigyou2Output';
+                div.style.whiteSpace = 'pre-wrap';
+                w.appendChild(div);
+            };
+
+            await fetchStream('jigyou2.php', payload2, 'jigyou2Output', onStartJigyou2);
+
+            // --- Step 4: Final Actions UI ---
+            const actionWrapper = document.createElement('div');
+            actionWrapper.style.marginTop = '2rem';
+            actionWrapper.style.display = 'flex';
+            actionWrapper.style.gap = '1rem';
+            actionWrapper.style.justifyContent = 'center';
+
+            // Button 1: Final Proposal Mode (Red) 
+            const btnFinal = document.createElement('button');
+            btnFinal.innerText = "最終提案書モード（約２分）";
+            // Remove className btn-final if not needed or keep it
+            btnFinal.style.background = '#ef4444'; // Red
+            btnFinal.style.color = 'white';
+            btnFinal.style.border = 'none';
+            btnFinal.style.padding = '0.8rem 1.5rem';
+            btnFinal.style.borderRadius = '0.5rem';
+            btnFinal.style.fontWeight = 'bold';
+            btnFinal.style.cursor = 'pointer';
+
+            // Step 4 Execution Logic
+            btnFinal.onclick = async () => {
+                // 1. Capture Step 3 Result (jigyou2Output)
+                const step3Node = document.getElementById('jigyou2Output');
+                const step3Result = step3Node ? step3Node.innerText : "（前段の出力取得に失敗しました）";
+
+                // 2. Clear Output Area
+                actionWrapper.remove(); // Remove buttons immediately
+                outputArea.innerHTML = '';
+
+                // 3. Show Spinner with Message
+                const jigyou3Wrapper = document.createElement('div');
+                jigyou3Wrapper.id = 'jigyou3Wrapper';
+                jigyou3Wrapper.innerHTML = `
+                    <div class="spinner" id="spinner4"></div>
+                    <div style="text-align:center; margin-top:1.5em; color:var(--text-secondary); font-weight:500;">
+最終完全提案書を作成中...<br>
+<span style="font-size:0.9em; opacity:0.9;">（自治体情報や過去事例の徹底リサーチを実行中のため、完了まで約2分かかります）</span>
+                    </div>
+                `;
+                outputArea.appendChild(jigyou3Wrapper);
+
+                // 4. Prepare Payload for Recursing
+                const payload3 = {
+                    ...payload2,
+                    jigyou2_result: step3Result
+                };
+
+                const onStartJigyou3 = () => {
+                    jigyou3Wrapper.innerHTML = '';
+
+                    const h3 = document.createElement('h3');
+                    h3.style.color = 'var(--heading-yellow)';
+                    h3.style.borderBottom = '1px solid var(--heading-yellow)';
+                    h3.style.paddingBottom = '0.5rem';
+                    h3.style.marginTop = '1rem';
+                    h3.innerText = '地域未来交付金 最終提案書 (完全版)';
+                    jigyou3Wrapper.appendChild(h3);
+
+                    const div = document.createElement('div');
+                    div.id = 'jigyou3Output';
+                    div.style.whiteSpace = 'pre-wrap';
+                    div.style.lineHeight = '2.0'; // More readable line height for long text
+                    jigyou3Wrapper.appendChild(div);
+                };
+
+                // 5. Execute Stream
+                await fetchStream('jigyou3.php', payload3, 'jigyou3Output', onStartJigyou3);
+
+                // 6. Add Copy Button
+                const copyBtn = document.createElement('button');
+                copyBtn.innerText = "提案書案をコピー";
+                copyBtn.style.marginTop = '2rem';
+                copyBtn.style.width = '100%';
+                copyBtn.style.background = '#0ea5e9';
+                copyBtn.style.color = 'white';
+                copyBtn.style.border = 'none';
+                copyBtn.style.padding = '1rem 2rem';
+                copyBtn.style.borderRadius = '0.5rem';
+                copyBtn.style.fontWeight = 'bold';
+                copyBtn.style.fontSize = '1.1rem';
+                copyBtn.style.cursor = 'pointer';
+                copyBtn.style.transition = 'all 0.2s';
+
+                copyBtn.onmouseover = () => copyBtn.style.transform = 'translateY(-2px)';
+                copyBtn.onmouseout = () => copyBtn.style.transform = 'none';
+
+                copyBtn.onclick = async () => {
+                    try {
+                        const text = document.getElementById('jigyou3Output').innerText;
+                        await navigator.clipboard.writeText(text);
+                        const originalText = copyBtn.innerText;
+                        const originalBg = copyBtn.style.background;
+                        copyBtn.innerText = "コピーしました！";
+                        copyBtn.style.background = '#10b981';
+                        setTimeout(() => {
+                            copyBtn.innerText = originalText;
+                            copyBtn.style.background = originalBg;
+                        }, 2000);
+                    } catch (e) {
+                        alert('コピーに失敗しました。');
+                    }
+                };
+                jigyou3Wrapper.appendChild(copyBtn);
+                outputArea.scrollTop = outputArea.scrollHeight;
+                if (window.innerWidth <= 768) {
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+
+                // 6. Reset Main Button
+                btn.disabled = false;
+                btn.innerText = "申請書案を生成する";
+            };
+
+            actionWrapper.appendChild(btnFinal);
+
+            // Button 2: Cancel (Blue)
+            const btnCancel = document.createElement('button');
+            btnCancel.innerText = "やめる";
+            // ... (rest of the code matching the file content exactly) ...
+            btnCancel.style.background = '#3b82f6'; // Blue
+            btnCancel.style.color = 'white';
+            btnCancel.style.border = 'none';
+            btnCancel.style.padding = '0.8rem 1.5rem';
+            btnCancel.style.borderRadius = '0.5rem';
+            btnCancel.style.fontWeight = 'bold';
+            btnCancel.style.cursor = 'pointer';
+
+            btnCancel.onclick = () => {
+                // Reset Right Panel
+                outputArea.innerHTML = 'ここに生成された申請書案が表示されます...';
+                // Reset Button State if needed (already reset below)
+            };
+            actionWrapper.appendChild(btnCancel);
+
+            outputArea.appendChild(actionWrapper);
+            // Auto scroll to buttons
+            outputArea.scrollTop = outputArea.scrollHeight;
+            if (window.innerWidth <= 768) {
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+
+            btn.disabled = false;
+            btn.innerText = "申請書案を生成する";
+        }
+    </script>
+
+</body>
+
+</html>

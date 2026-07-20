@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="地域未来交付金（デジタル実装タイプ）2026年版の完全攻略ガイド。TYPE A（住民利用）、TYPE V（公共財）、TYPE S（行財政改革）の要件、加点ポイント、申請書の書き方を解説。">
+    <meta name="robots" content="index, follow">
+    <title>地域未来交付金 2026 - Digital Implementation TYPE A/V/S</title>
+    <meta property="og:title" content="地域未来交付金 2026 - Digital Implementation TYPE A/V/S">
+    <meta property="og:description"
+        content="地域未来交付金（デジタル実装タイプ）2026年版の完全攻略ガイド。TYPE A（住民利用）、TYPE V（公共財）、TYPE S（行財政改革）の要件、加点ポイント、申請書の書き方を解説。">
+    <meta property="og:image" content="https://muraimuneaki.net/koufukin2026/images/samune.jpg">
+    <meta property="og:url" content="https://muraimuneaki.net/koufukin2026/index.html">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://muraimuneaki.net/koufukin2026/images/samune.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-primary: #ffffff;
+            --text-secondary: #e0f2fe;
+            /* High contrast text */
+            --accent-a: #10b981;
+            --accent-v: #3b82f6;
+            --accent-s: #8b5cf6;
+            --common-color: #fbbf24;
+            --heading-yellow: #fde047;
+            /* Bright Yellow for headings */
+            --frame-color: #0ea5e9;
+            /* Light Blue (水色) Frame */
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(56, 189, 248, 0.5);
+            /* Light blue border */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Header & Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--frame-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--heading-yellow);
+            text-shadow: 0 0 10px rgba(253, 224, 71, 0.3);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--heading-yellow);
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+            letter-spacing: -0.05em;
+
+            /* Gradient Gold Shimmer */
+            background: linear-gradient(90deg,
+                    #b45309 0%,
+                    #fbbf24 25%,
+                    #fffbeb 50%,
+                    #fbbf24 75%,
+                    #b45309 100%);
+            background-size: 200% auto;
+            color: #fbbf24;
+            /* Fallback */
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            animation: shine 2s linear infinite;
+
+            /* Softened Drop Shadow (instead of text-shadow for clipped text) */
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.4));
+        }
+
+        .hero h1 span {
+            display: block;
+            font-size: 0.5em;
+            font-weight: 400;
+            color: var(--heading-yellow);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .hero-desc {
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+            /* Reduced from 1.1rem */
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            display: block;
+
+            /* Styling to make it stand out */
+            font-size: 4rem;
+            font-weight: bold;
+            color: #fbbf24;
+            /* Gold */
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 10px rgba(251, 191, 36, 0.5);
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section.container {
+            padding: 2.5rem 2rem;
+            border-top: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            margin-top: 4rem;
+            /* Additional space above */
+            background: rgba(251, 191, 36, 0.15);
+            /* Yellow background tint */
+            color: #fbbf24;
+            /* Yellow text for tag */
+            border: 1px solid #fbbf24;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #38bdf8;
+            /* Light Blue (Mizuiro) for Big Headings */
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            max-width: 800px;
+            font-size: 1.1rem;
+        }
+
+        /* Cards Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .col-span-2 {
+            grid-column: span 2;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--frame-color);
+            /* 水色の枠 */
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.1), 0 2px 4px -1px rgba(14, 165, 233, 0.06);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+        }
+
+        .card-number {
+            font-size: 3rem;
+            font-weight: 800;
+            opacity: 0.15;
+            line-height: 1;
+            margin-bottom: -1rem;
+            margin-left: -0.5rem;
+            color: var(--heading-yellow);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            color: var(--heading-yellow);
+            /* Also yellow headers per request */
+        }
+
+        .card-content {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .card-content ul {
+            padding-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .card-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* KPI / Important Box */
+        .info-box {
+            background: rgba(14, 165, 233, 0.1);
+            border-left: 3px solid var(--heading-yellow);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .info-box h3,
+        .info-box strong {
+            color: var(--heading-yellow);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        /* Animations */
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0) translateX(-50%);
+            }
+
+            40% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+
+            60% {
+                transform: translateY(-5px) translateX(-50%);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--frame-color);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            margin-top: 2rem;
+            background: linear-gradient(90deg, var(--frame-color), var(--accent-v));
+            color: white;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-ai {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            margin-top: 2rem;
+            margin-left: 1rem;
+            background: #ef4444;
+            /* Red Background */
+            color: white;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: none;
+        }
+
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            background: #dc2626;
+            /* Darker Red on Hover */
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+
+            .mobile-menu select {
+                background: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                padding: 0.5rem;
+                border-radius: 8px;
+                outline: none;
+                font-size: 0.9rem;
+            }
+
+            .mobile-menu option {
+                background-color: #0f172a;
+                color: #ffffff;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            /* Simplified for mobile */
+
+            .grid {
+                grid-template-columns: 1fr;
+                /* Force 1 column on mobile */
+                gap: 1.5rem;
+            }
+
+            .col-span-2 {
+                grid-column: auto;
+                /* Reset column spanning on mobile */
+            }
+
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            section.container {
+                padding: 2rem 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+                /* Reduce padding on mobile */
+            }
+
+            .btn,
+            .btn-ai {
+                display: block;
+                width: fit-content;
+                margin: 1rem auto 0 auto;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+                /* Reduced from 2.5rem */
+            }
+        }
+
+
+
+        .hero-subtitle {
+            font-size: 0.6em;
+            display: block;
+            margin: 0.2rem 0;
+            /* Control vertical spacing */
+            line-height: 1.2;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">地域未来交付金AI</div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">TOP</a></li>
+                <li><a href="gaiyou.html">制度概要</a></li>
+                <li><a href="typea.html">TYPE A</a></li>
+                <li><a href="typev.html">TYPE V</a></li>
+                <li><a href="types.html">TYPE S</a></li>
+                <li><a href="koufukin/index.html">申請書AI</a></li>
+            </ul>
+        </nav>
+        <div class="mobile-menu">
+            <select
+                onchange="if(this.value.indexOf('http')===0){window.open(this.value,'_blank');this.value='';}else if(this.value){window.location.href=this.value;}"
+                aria-label="Navigation Menu">
+                <option value="" disabled selected>MENU</option>
+                <option value="index.html">TOP</option>
+                <option value="gaiyou.html">制度概要</option>
+                <option value="typea.html">TYPE A</option>
+                <option value="typev.html">TYPE V</option>
+                <option value="types.html">TYPE S</option>
+                <option value="koufukin/index.html">申請書AI</option>
+            </select>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero">
+            <h1>
+                地域未来交付金<span class="hero-subtitle">デジタル実装型</span>詳細解説 & 申請AI
+            </h1>
+            <p class="hero-desc">
+                地域の課題解決と魅力向上を実現するデジタル実装。<br>
+                TYPE A (利用推進)、TYPE V (公共財活用)、TYPE S (行財政改革) の詳細要件ガイド。<br>
+            </p>
+            <div class="scroll-indicator">↓</div>
+        </section>
+
+        <!-- SECTION 1: COMMON -->
+        <section id="common" class="container fade-in-section">
+            <div class="section-header">
+                <p class="section-desc" style="margin-bottom: 1.2rem;">
+                    昨年、624自治体が3500本の申請書に利用した交付金申請AIの2026年バージョンです。<br>
+                    今年は、最初に2500字程度のたたき台をAIが書き確認を求めます。<br>
+                    それでOKなら、赤いボタンを押して約3分後に本格的な8000字の申請書のたたき台が出るという仕様に変えました。<br>
+                    特に、その自治体の課題を抽出して、申請書の内容に反映する機能が強化されました。<br>
+                    今年版は、特定団体や特定企業と関係がないエンジニア村井宗明の個人作品のオープンソースなので、利用やリンクについては各自の判断と責任でどうぞ
+                </p>
+                <span class="section-tag">Overview</span>
+                <h2 class="section-title">1. 共通要件・全体概要</h2>
+                <p class="section-desc">
+                    すべてのTYPEに共通して求められる、絶対遵守すべき基本的要件。<br>
+                    単なるシステム導入ではなく、「地域の課題解決」と「持続可能性」が問われます。
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-number">01</div>
+                    <div class="card-title">目的の明確化</div>
+                    <div class="card-content">
+                        <p>単なるシステム導入はNG。「地域の課題解決」や「魅力向上」への寄与を論理的に説明する必要があります。</p>
+                        <div class="info-box" style="margin-top:1rem; padding:0.8rem; font-size:0.85rem;">
+                            <strong>KPI設定:</strong> 「アウトプット指標（活動量）」と「アウトカム指標（住民への効果）」の両方を設定し、3カ年計測・公表が必須。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-number">02</div>
+                    <div class="card-title">推進体制 (コンソーシアム)</div>
+                    <div class="card-content">
+                        <p>自治体単独ではなく、地域内外の関係者と連携する体制が必須です。</p>
+                        <ul>
+                            <li>構成員: 自治体、民間、地域団体、国、専門家など</li>
+                            <li>役割分担の明確化</li>
+                            <li>利用者の参画も推奨</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-number">03</div>
+                    <div class="card-title">持続可能性 (サステナビリティ)</div>
+                    <div class="card-content">
+                        <p>「実証実験で終わり」は認められません。</p>
+                        <ul>
+                            <li>実装期間: 令和9年(2027年)3月31日まで</li>
+                            <li>終了後も継続的にサービス提供義務あり</li>
+                            <li>ランニングコストの財源確保提示が必要</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-number">04</div>
+                    <div class="card-title">調達の公正性</div>
+                    <div class="card-content">
+                        <p>原則として<strong>「一般競争入札」</strong>を実施。</p>
+                        <p>指名競争や随意契約を行う場合は、競争原理の担保や正当な理由の説明が必須となります。</p>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <a href="gaiyou.html" class="btn">制度概要 詳細解説へ</a>
+                <a href="koufukin/index.html" class="btn-ai">申請書AI を利用</a>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TYPE A -->
+        <section id="type-a" class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Usage Promotion</span>
+                <h2 class="section-title">TYPE A: 地域住民等利用推進型</h2>
+                <p class="section-desc">
+                    <strong>キーワード: 「実装」「住民裨益」「継続利用」</strong><br>
+                    補助率: 1/2 | 上限: 国費1億円<br>
+                    住民が使って効果を実感できることに重点を置いた区分です。
+                </p>
+            </div>
+
+            <div class="info-box">
+                <h3>審査の重要ポイント</h3>
+                <p>行政事務の効率化による「処理時間の短縮」だけでは認められません。<strong>住民が直接利用する</strong>アプリ等、または住民に直接メリットがあるサービスであることが必須です。</p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">加点項目: モデル仕様書の活用</div>
+                    <div class="card-content">
+                        デジタル庁「デジタル地方創生モデル仕様書(23類型)」に準拠したシステム導入。<br>
+                        (例: AIオンデマンド交通、書かない窓口、防災システム等)
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">加点項目: SaaS/DMPの活用</div>
+                    <div class="card-content">
+                        「デジタル地方創生サービスカタログ」やDMPカタログサイトからの製品選定。安価で迅速な導入が評価されます。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">加点項目: スタートアップ活用</div>
+                    <div class="card-content">
+                        設立15年以内・未上場のスタートアップが主体的にプロダクトを提供する（単なる下請け不可）場合。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">申請書の記述ポイント</div>
+                    <div class="card-content">
+                        <ul>
+                            <li><strong>ユースケース:</strong> 誰がいつ使うか具体的に。</li>
+                            <li><strong>製品特定:</strong> 「〇〇社の××相当」と具体的に。</li>
+                            <li><strong>周知計画:</strong> 利用率をどう上げるか。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <a href="typea.html" class="btn">TYPE A 詳細解説へ</a>
+                <a href="koufukin/index.html" class="btn-ai">申請書AI を利用</a>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TYPE V -->
+        <section id="type-v" class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Public Good</span>
+                <h2 class="section-title">TYPE V: 先進的デジタル公共財活用型</h2>
+                <p class="section-desc">
+                    <strong>キーワード: 「共同調達」「データ連携基盤」「モデル性」</strong><br>
+                    補助率: 2/3 | 上限: 国費4億円<br>
+                    複数自治体連携による大規模実装。ハイレベルな審査要件。
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card col-span-2">
+                    <div class="card-title">必須: デジタル公共財の定義</div>
+                    <div class="card-content">
+                        以下のいずれかの活用が必須です。
+                        <ol style="margin-top:1rem; padding-left:1.2rem;">
+                            <li><strong>デジタル公共財:</strong> データ連携基盤、JPKI、マイキープラットフォーム等。特にエリアデータ連携基盤が推奨。</li>
+                            <li><strong>新興型デジタル公共財:</strong> 将来の公共財となりうる先進技術（高度AI、新規性のあるマイナンバー活用、Web3.0/ブロックチェーン等）。</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">モデル性 (50点配点)</div>
+                    <div class="card-content">
+                        <ul>
+                            <li><strong>共同・連携:</strong> 単なる同一ベンダー利用は不可。仕様共通化やデータ連携が必須。</li>
+                            <li><strong>データ基盤:</strong> FIWARE Orion等を活用し、データフローを構築。</li>
+                            <li><strong>広域性:</strong> 県内全域など規模が大きいほど有利。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">記述のポイント</div>
+                    <div class="card-content">
+                        <ul>
+                            <li><strong>連携の必然性:</strong> なぜ共同か？を定量・定性的に。</li>
+                            <li><strong>アーキテクチャ図:</strong> データの流れを図示。</li>
+                            <li><strong>横展開:</strong> 全国へ普及するポテンシャル。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <a href="typev.html" class="btn">TYPE V 詳細解説へ</a>
+                <a href="koufukin/index.html" class="btn-ai">申請書AI を利用</a>
+            </div>
+        </section>
+
+        <!-- SECTION 4: TYPE S -->
+        <section id="type-s" class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Special Reform</span>
+                <h2 class="section-title">TYPE S: デジタル行財政改革特化型</h2>
+                <p class="section-desc">
+                    <strong>キーワード: 「トップランナー」「国との連携」「標準化」</strong><br>
+                    補助率: 3/4 | 上限: 国費2.25億円 (＋委託費)<br>
+                    全国で6件程度の狭き門。国の制度改革につながる先導的取組。
+                </p>
+            </div>
+
+            <div class="info-box">
+                <strong>対象分野:</strong> 教育、子育て・福祉、医療・介護、防災、モビリティ、インフラの6分野。
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-number">01</div>
+                    <div class="card-title">圧倒的な先導性</div>
+                    <div class="card-content">
+                        既存事例のコピーは不可。「全国初」「制度の壁を突破する」チャレンジが必要。
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-number">02</div>
+                    <div class="card-title">EBPMと定量的効果</div>
+                    <div class="card-content">
+                        「なんとなく便利」は不可。業務時間削減、財政支出削減などのBefore/Afterをデータで精緻に証明できること。
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-number">03</div>
+                    <div class="card-title">標準化・横展開</div>
+                    <div class="card-content">
+                        将来的に「国の標準仕様」になるポテンシャル。他自治体がコピーできるレベルの標準化意思。
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-number">04</div>
+                    <div class="card-title">首長の覚悟</div>
+                    <div class="card-content">
+                        業務フローの抜本改革、条例改正も辞さない強いコミットメントを示す記述が求められます。
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <a href="types.html" class="btn">TYPE S 詳細解説へ</a>
+                <a href="koufukin/index.html" class="btn-ai">申請書AI を利用</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p style="font-size: 0.75rem;"><a href="https://muraimuneaki.net/"
+                style="color: inherit; text-decoration: none;">© 2026 Murai Muneaki</a></p>
+    </footer>
+
+    <script>
+        // Scroll Animation
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Add staggered animation to children if needed
+                    const children = entry.target.querySelectorAll('.card');
+                    children.forEach((child, index) => {
+                        child.style.opacity = '0';
+                        child.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            child.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                            child.style.opacity = '1';
+                            child.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-section').forEach(section => {
+            section.classList.add('fade-in');
+            observer.observe(section);
+        });
+
+        // Smooth Scroll for Anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

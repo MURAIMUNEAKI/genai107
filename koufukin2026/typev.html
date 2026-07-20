@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="地域未来交付金 TYPE V (先進的デジタル公共財活用型) の詳細解説。デジタル公共財要件、広域連携の進め方、モデル性審査のポイントを解説。">
+    <meta name="robots" content="index, follow">
+    <title>TYPE V - 地域未来交付金 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-primary: #ffffff;
+            --text-secondary: #e0f2fe;
+            --accent-a: #10b981;
+            --accent-v: #3b82f6;
+            /* TYPE V Blue */
+            --accent-s: #8b5cf6;
+            --common-color: #fbbf24;
+            /* Amber/Gold for Common elements */
+            --heading-yellow: #fde047;
+            --frame-color: #0ea5e9;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(56, 189, 248, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.15) 0%, transparent 40%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Header & Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--frame-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--heading-yellow);
+            text-shadow: 0 0 10px rgba(253, 224, 71, 0.3);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: var(--heading-yellow);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+            letter-spacing: -0.05em;
+            color: var(--accent-v);
+            /* Blue for Type V */
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .hero-desc {
+            max-width: 800px;
+            margin: 0 auto;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            display: block;
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--accent-v);
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section.container {
+            padding: 2.5rem 2rem;
+            border-top: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            color: var(--accent-v);
+            border: 1px solid var(--accent-v);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent-v);
+            /* Blue Headings for Type V page? Or stick to Light Blue */
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            max-width: 800px;
+            font-size: 1.1rem;
+        }
+
+        /* Cards Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .col-span-2 {
+            grid-column: span 2;
+        }
+
+        .col-span-3 {
+            grid-column: span 3;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--frame-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+        }
+
+        .card-number {
+            font-size: 3rem;
+            font-weight: 800;
+            opacity: 0.15;
+            line-height: 1;
+            margin-bottom: -1rem;
+            margin-left: -0.5rem;
+            color: var(--heading-yellow);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--heading-yellow);
+        }
+
+        .card-content {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .card-content ul,
+        .card-content ol {
+            padding-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .card-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: #ffffff;
+            text-decoration: underline;
+            text-decoration-color: var(--frame-color);
+        }
+
+        /* KPI / Important Box */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--accent-v);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .info-box h3,
+        .info-box strong {
+            color: var(--heading-yellow);
+        }
+
+        /* Animations */
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0) translateX(-50%);
+            }
+
+            40% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+
+            60% {
+                transform: translateY(-5px) translateX(-50%);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--frame-color);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            margin-top: 2rem;
+            background: linear-gradient(90deg, var(--frame-color), var(--common-color));
+            color: white;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-ai {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            margin-top: 2rem;
+            margin-left: 1rem;
+            background: #ef4444;
+            /* Red Background */
+            color: white;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: none;
+        }
+
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            background: #dc2626;
+            /* Darker Red on Hover */
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+
+            .mobile-menu select {
+                background: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                padding: 0.5rem;
+                border-radius: 8px;
+                outline: none;
+                font-size: 0.9rem;
+            }
+
+            .mobile-menu option {
+                background-color: #0f172a;
+                color: #ffffff;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .col-span-2,
+            .col-span-3 {
+                grid-column: auto;
+            }
+
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            section.container {
+                padding: 2rem 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .btn,
+            .btn-ai {
+                display: block;
+                width: fit-content;
+                margin: 1rem auto 0 auto;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">地域未来交付金AI</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">TOP</a></li>
+                <li><a href="gaiyou.html">制度概要</a></li>
+                <li><a href="typea.html">TYPE A</a></li>
+                <li><a href="typev.html" class="active">TYPE V</a></li>
+                <li><a href="types.html">TYPE S</a></li>
+                <li><a href="koufukin/index.html">申請書AI</a></li>
+            </ul>
+        </nav>
+        <div class="mobile-menu">
+            <select
+                onchange="if(this.value.indexOf('http')===0){window.open(this.value,'_blank');this.value='';}else if(this.value){window.location.href=this.value;}"
+                aria-label="Navigation Menu">
+                <option value="" disabled selected>MENU</option>
+                <option value="index.html">TOP</option>
+                <option value="gaiyou.html">制度概要</option>
+                <option value="typea.html">TYPE A</option>
+                <option value="typev.html">TYPE V</option>
+                <option value="types.html">TYPE S</option>
+                <option value="koufukin/index.html">申請書AI</option>
+            </select>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero">
+            <h1>TYPE V<br>先進的デジタル公共財活用型<br>詳細解説</h1>
+            <p class="hero-desc">
+                補助率2/3。「広域連携」と「先端技術の標準化」を目指すモデル事業。<br>
+                単なるシステム導入ではなく、国のインフラとなる「デジタル公共財」の実装が求められます。
+            </p>
+            <div class="scroll-indicator">↓</div>
+        </section>
+
+        <!-- Chapter 1: Concept -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Concept</span>
+                <h2 class="section-title">基本概念と戦略</h2>
+            </div>
+            <div class="grid">
+                <div class="card col-span-2">
+                    <div class="card-title">TYPE Aとの違い</div>
+                    <div class="card-content">
+                        TYPE Aは「住民利用」。TYPE Vはそれに加え、<strong>「広域連携」「先端技術の標準化」「インフラ共有」</strong>が必須。<br>
+                        「一自治体で完結する話」や「枯れた技術」は対象外です。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">優遇された予算</div>
+                    <div class="card-content">
+                        <ul>
+                            <li><strong>補助率:</strong> 2/3 (TYPE Aは1/2)</li>
+                            <li><strong>上限額:</strong> 国費4億円 (事業費6億円)</li>
+                            <li><strong>申請枠:</strong> 1団体1申請のみ (+連携参加1件可)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 2: DPG Definition -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Target</span>
+                <h2 class="section-title">対象となる「デジタル公共財」</h2>
+                <p class="section-desc">最大の足切り要件。以下のいずれかに該当する必要があります。</p>
+            </div>
+            <div class="grid">
+                <div class="card col-span-2">
+                    <div class="card-title">1. デジタル公共財 (DPG)</div>
+                    <div class="card-content">
+                        デジタル庁推奨のオープンで標準的なシステム。<br>
+                        <strong>データ連携基盤（エリアデータ連携基盤）</strong>が代表例。<br>
+                        <em>必須要件:</em> 推奨モジュール(FIWARE Orion等)の採用、相互運用性の確保。
+                    </div>
+                </div>
+                <div class="card col-span-2">
+                    <div class="card-title">2. 新興型デジタル公共財 (Emerging DPGs)</div>
+                    <div class="card-content">
+                        将来的にインフラとなりうる先端技術。以下の3分野。
+                        <ul>
+                            <li><strong>① 高度なAI活用:</strong> サービスの主ロジックにAI活用（救急搬送最適化、疾病予測等）。<br><span
+                                    style="color: #ef4444; font-size: 0.9em;">※単なるLLM（ChatGPT等）のAPI利用や文字起こしはTYPE
+                                    Aです。</span></li>
+                            <li><strong>② マイナンバーカード新用途:</strong> 教育ID連携、避難所管理、チケットレス入場など。</li>
+                            <li><strong>③ Web3.0活用:</strong> NFT（デジタル住民票）、DAO（自律分散型組織による地域運営）。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 3: Cooperation -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Cooperation</span>
+                <h2 class="section-title">必須要件：共同調達・共同利用</h2>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">連携パターン</div>
+                    <div class="card-content">
+                        <ol>
+                            <li><strong>新規共同構築:</strong> 代表団体が一括契約し、構成団体が負担金拠出。</li>
+                            <li><strong>既存共同利用:</strong> 他団体の既存サービスに「乗り合い」。</li>
+                            <li><strong>基盤共有:</strong> データ連携基盤のみ共有し、アプリは個別導入。</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">合意形成</div>
+                    <div class="card-content">
+                        申請時点で、首長・部局長レベルでの「明示的な合意」が必須。<br>
+                        <span style="font-size: 0.9em;">※コンソーシアムの代表構成員は必ず「地方公共団体」である必要があります。</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 4: Assessment -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Assessment</span>
+                <h2 class="section-title">審査基準：モデル性審査 (50点)</h2>
+                <p class="section-desc">事業性審査に加え、TYPE V独自の厳格な加点基準があります。</p>
+            </div>
+            <div class="grid">
+                <div class="card col-span-2">
+                    <div class="card-title">1. 政策的優遇措置 (計28点)</div>
+                    <div class="card-content">
+                        <ul>
+                            <li><strong>広域連携 (Max 10点):</strong> 県内全自治体参加なら満点。都道府県主導が有利。</li>
+                            <li><strong>基盤活用 (Max 6点):</strong> 個人・非個人両データの活用。</li>
+                            <li><strong>相互運用性 (Max 6点):</strong> オープンソース、GIF準拠。</li>
+                            <li><strong>新規創出 (Max 6点):</strong> 民間開放による新ビジネス創出。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">2. サービス設計 (計12点)</div>
+                    <div class="card-content">
+                        具体性、相乗効果（シナジー）、住民ニーズへの対応。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">3. 付加価値 (計10点)</div>
+                    <div class="card-content">
+                        データ分析による価値、Well-Being指標の活用、ロジックツリー(EBPM)。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 5: Application Keys -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Strategy</span>
+                <h2 class="section-title">申請の重要ポイント</h2>
+            </div>
+            <div class="grid">
+                <div class="card" style="border-color: #f87171; background: rgba(254, 226, 226, 0.1);">
+                    <div class="card-title" style="color: #ef4444;">事前相談の「必須化」</div>
+                    <div class="card-content">
+                        <strong>締切: 1月28日</strong><br>
+                        TYPE Vは事前相談が必須です。これを逃すと申請できません。構想段階でも相談を入れること。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">技術的要件</div>
+                    <div class="card-content">
+                        データ連携基盤を使う場合、FIWARE等の推奨モジュール、APIゲートウェイ、<strong>認証・認可基盤の共通化</strong>、セキュリティ要件（スマートシティガイドライン）等の遵守が必要。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">高度なKPI</div>
+                    <div class="card-content">
+                        コスト削減効果、データ連携量、Well-Being指標など、連携による付加価値を測る指標が必要。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 6: Risks -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Risks</span>
+                <h2 class="section-title">注意事項とリスク</h2>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">「なんちゃってAI」排除</div>
+                    <div class="card-content">
+                        「AIチャットボット」「AI-OCR」程度ではTYPE Vの要件を満たしません。TYPE Aへ誘導されます。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">実装の確実性</div>
+                    <div class="card-content">
+                        関係者が多いため調整難航リスクが高い。「合意形成」と「標準化受容」の覚悟を示す記述が必要。
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 3rem;">
+                <h3>TYPE V 必勝の条件</h3>
+                <ol>
+                    <li><strong>広域:</strong> 県主導または強固な連合体。</li>
+                    <li><strong>基盤:</strong> アプリだけでなくデータ基盤(OS)がある。</li>
+                    <li><strong>先端:</strong> 国推奨の技術標準(DPG)を採用。</li>
+                    <li><strong>標準:</strong> 他地域へコピー可能なモデル。</li>
+                    <li><strong>相談:</strong> 事前相談を済ませていること。</li>
+                </ol>
+            </div>
+
+            <div style="text-align: center; margin-top: 4rem; margin-bottom: 4rem;">
+                <a href="index.html" class="btn">トップページに戻る</a>
+                <a href="koufukin/index.html" class="btn-ai">申請書AI を利用</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p style="font-size: 0.75rem;"><a href="https://muraimuneaki.net/"
+                style="color: inherit; text-decoration: none;">© 2026 Murai Muneaki</a></p>
+    </footer>
+
+    <script>
+        // Scroll Animation
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const children = entry.target.querySelectorAll('.card');
+                    children.forEach((child, index) => {
+                        child.style.opacity = '0';
+                        child.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            child.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                            child.style.opacity = '1';
+                            child.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-section').forEach(section => {
+            section.classList.add('fade-in');
+            observer.observe(section);
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+
+</html>

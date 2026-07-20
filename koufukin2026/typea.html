@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="地域未来交付金 TYPE A (地域住民等利用推進型) の詳細解説。要件、加点ポイント、申請書の書き方NG例まで、採択のためのノウハウを公開。">
+    <meta name="robots" content="index, follow">
+    <title>TYPE A - 地域未来交付金 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-primary: #ffffff;
+            --text-secondary: #e0f2fe;
+            /* High contrast text */
+            --accent-a: #10b981;
+            /* TYPE A Green */
+            --accent-v: #3b82f6;
+            --accent-s: #8b5cf6;
+            --common-color: #fbbf24;
+            --heading-yellow: #fde047;
+            /* Bright Yellow for headings */
+            --common-color: #fbbf24;
+            /* Amber/Gold for Common elements */
+            --frame-color: #0ea5e9;
+            /* Light Blue (水色) Frame */
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(56, 189, 248, 0.5);
+            /* Light blue border */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Header & Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--frame-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--heading-yellow);
+            text-shadow: 0 0 10px rgba(253, 224, 71, 0.3);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: var(--heading-yellow);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+            letter-spacing: -0.05em;
+            color: var(--accent-a);
+            /* Green for Type A */
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6), 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .hero-desc {
+            max-width: 800px;
+            margin: 0 auto;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            display: block;
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--accent-a);
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section.container {
+            padding: 2.5rem 2rem;
+            border-top: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            margin-top: 4rem;
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #38bdf8;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            max-width: 800px;
+            font-size: 1.1rem;
+        }
+
+        /* Cards Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .col-span-2 {
+            grid-column: span 2;
+        }
+
+        .col-span-3 {
+            grid-column: span 3;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--frame-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+        }
+
+        .card-number {
+            font-size: 3rem;
+            font-weight: 800;
+            opacity: 0.15;
+            line-height: 1;
+            margin-bottom: -1rem;
+            margin-left: -0.5rem;
+            color: var(--heading-yellow);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--heading-yellow);
+        }
+
+        .card-content {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .card-content ul {
+            padding-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .card-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: #ffffff;
+            text-decoration: underline;
+            text-decoration-color: var(--frame-color);
+        }
+
+        /* KPI / Important Box */
+        .info-box {
+            background: rgba(14, 165, 233, 0.1);
+            border-left: 3px solid var(--heading-yellow);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .info-box h3,
+        .info-box strong {
+            color: var(--heading-yellow);
+        }
+
+        /* Animations */
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0) translateX(-50%);
+            }
+
+            40% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+
+            60% {
+                transform: translateY(-5px) translateX(-50%);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--frame-color);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            margin-top: 2rem;
+            background: linear-gradient(90deg, var(--frame-color), var(--common-color));
+            color: white;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-ai {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            margin-top: 2rem;
+            margin-left: 1rem;
+            background: #ef4444;
+            /* Red Background */
+            color: white;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: none;
+        }
+
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            background: #dc2626;
+            /* Darker Red on Hover */
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+
+            .mobile-menu select {
+                background: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                padding: 0.5rem;
+                border-radius: 8px;
+                outline: none;
+                font-size: 0.9rem;
+            }
+
+            .mobile-menu option {
+                background-color: #0f172a;
+                color: #ffffff;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .col-span-2,
+            .col-span-3 {
+                grid-column: auto;
+            }
+
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            section.container {
+                padding: 2rem 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .btn,
+            .btn-ai {
+                display: block;
+                width: fit-content;
+                margin: 1rem auto 0 auto;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">地域未来交付金AI</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">TOP</a></li>
+                <li><a href="gaiyou.html">制度概要</a></li>
+                <li><a href="typea.html" class="active">TYPE A</a></li>
+                <li><a href="typev.html">TYPE V</a></li>
+                <li><a href="types.html">TYPE S</a></li>
+                <li><a href="koufukin/index.html">申請書AI</a></li>
+            </ul>
+        </nav>
+        <div class="mobile-menu">
+            <select
+                onchange="if(this.value.indexOf('http')===0){window.open(this.value,'_blank');this.value='';}else if(this.value){window.location.href=this.value;}"
+                aria-label="Navigation Menu">
+                <option value="" disabled selected>MENU</option>
+                <option value="index.html">TOP</option>
+                <option value="gaiyou.html">制度概要</option>
+                <option value="typea.html">TYPE A</option>
+                <option value="typev.html">TYPE V</option>
+                <option value="types.html">TYPE S</option>
+                <option value="koufukin/index.html">申請書AI</option>
+            </select>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero">
+            <h1>TYPE A<br>地域住民等利用推進型<br>申請完全ガイド</h1>
+            <p class="hero-desc">
+                住民が利用し、効果を実感できることが絶対条件。<br>
+                制度の趣旨を理解し、要件漏れを防ぎ、加点を最大化するための完全ガイド。<br>
+                (令和7年12月24日 制度概要準拠)
+            </p>
+            <div class="scroll-indicator">↓</div>
+        </section>
+
+        <!-- Chapter 1: Basic Concept -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Concept</span>
+                <h2 class="section-title">基本概念と戦略</h2>
+            </div>
+            <div class="grid">
+                <div class="card col-span-2">
+                    <div class="card-title">TYPE 1からの決定的な変化</div>
+                    <div class="card-content">
+                        <strong>「実装」から「利用」へ。</strong><br>
+                        単にシステムが稼働するだけでなく、住民が実際に操作し利用するシーンが必須です。<br>
+                        <br>
+                        <ul>
+                            <li><strong>行政効率化のみはNG:</strong> 住民の目に触れない内部事務（勤怠管理、電子決裁、RPA等）は対象外。</li>
+                            <li><strong>「時短」は効果とみなされない:</strong> 職員の作業時間短縮等は、TYPE Aにおける住民サービスの向上とは認められません。</li>
+                            <li><strong>継続性:</strong> 単年度の実証実験ではなく、サービスイン後も維持・継続することが必須。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">基本スペック</div>
+                    <div class="card-content">
+                        <ul>
+                            <li><strong>補助率:</strong> 1/2</li>
+                            <li><strong>上限額:</strong> 国費1億円 (事業費2億円)</li>
+                            <li><strong>申請枠:</strong> <br>都道府県：9事業<br>市区町村：5事業<br>(+地域間連携1事業)</li>
+                            <li><strong>下限額:</strong> 事業費100万円以上</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 2: 9 Checkpoints -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Requirements</span>
+                <h2 class="section-title">必須要件 (9つのチェックポイント)</h2>
+                <p class="section-desc">ひとつでも欠けると「足切り」で不採択となります。必ず全て満たしてください。</p>
+            </div>
+            <div class="grid">
+                <!-- 01 課題解決 -->
+                <div class="card">
+                    <div class="card-number">01</div>
+                    <div class="card-title">具体的な地域課題</div>
+                    <div class="card-content">
+                        「なんとなくDX」は不可。「高齢者の買い物難民」「待機児童の手続き負担」など、具体的な「痛み」と解決策を提示。
+                    </div>
+                </div>
+                <!-- 02 実装 -->
+                <div class="card">
+                    <div class="card-number">02</div>
+                    <div class="card-title">地域への実装</div>
+                    <div class="card-content">
+                        庁内システムでおさまらず、実際の地域の暮らし（交通・教育・医療・防災など）の中にサービスが組み込まれること。
+                    </div>
+                </div>
+                <!-- 03 住民裨益 -->
+                <div class="card">
+                    <div class="card-number">03</div>
+                    <div class="card-title">【最重要】住民への直接裨益</div>
+                    <div class="card-content">
+                        住民が直接利用する（アプリ等）か、窓口等でメリットを享受できること。<br>
+                        <strong style="color: #ef4444; text-decoration: none;">NG: 職員の時短・効率化のみ</strong>
+                    </div>
+                </div>
+                <!-- 04 KPI -->
+                <div class="card">
+                    <div class="card-number">04</div>
+                    <div class="card-title">3カ年のKPI</div>
+                    <div class="card-content">
+                        活動量（DL数等）だけでなく、成果（満足度・行動変容）を3年間計測する計画が必要。既存拡張なら上乗せ必須。
+                    </div>
+                </div>
+                <!-- 05 期限 -->
+                <div class="card">
+                    <div class="card-number">05</div>
+                    <div class="card-title">期限内実装</div>
+                    <div class="card-content">
+                        交付決定から<strong>令和9年3月31日</strong>までに確実にサービスイン（供用開始）すること。
+                    </div>
+                </div>
+                <!-- 06 継続性 -->
+                <div class="card">
+                    <div class="card-number">06</div>
+                    <div class="card-title">継続性</div>
+                    <div class="card-content">
+                        単発イベントや一過性のと取組みは不可。事業終了後も維持・運営する財源と意思を示すこと。
+                    </div>
+                </div>
+                <!-- 07 モデル活用 -->
+                <div class="card">
+                    <div class="card-number">07</div>
+                    <div class="card-title">優良モデル活用</div>
+                    <div class="card-content">
+                        リスクの高いフルスクラッチ開発は非推奨。導入済みの優良事例やパッケージシステムを活用すること。
+                    </div>
+                </div>
+                <!-- 08 体制 -->
+                <div class="card">
+                    <div class="card-number">08</div>
+                    <div class="card-title">推進体制</div>
+                    <div class="card-content">
+                        担当者任せにしない。庁内連携、民間・住民を巻き込んだコンソーシアム等の体制図を作成。
+                    </div>
+                </div>
+                <!-- 09 金額 -->
+                <div class="card">
+                    <div class="card-number">09</div>
+                    <div class="card-title">事業費100万円以上</div>
+                    <div class="card-content">
+                        対象事業費が100万円未満の小規模案件は対象外。PC購入費など対象外経費を除いて計算すること。<br>
+                        <span style="font-size: 0.9em; color: var(--accent-a);">※地域間連携の場合は、連携団体の合計額で判定します。</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 3: Strategy (Bonus Points) -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Strategy</span>
+                <h2 class="section-title">加点項目・攻略法</h2>
+                <p class="section-desc">採択を勝ち取るための加点項目。該当数が多いほど高評価となります。</p>
+            </div>
+            <div class="grid">
+                <div class="card col-span-2">
+                    <div class="card-title">1. モデル仕様書の活用 (最重要)</div>
+                    <div class="card-content">
+                        デジタル庁「モデル仕様書（23類型）」に準拠したシステムを導入すると加点。<br>
+                        （AIオンデマンド交通、母子手帳、書かない窓口、防災、電子図書館、こどもデータ連携など）<br>
+                        <br>
+                        <strong>※必須機能を削除せずに実装することが条件です。</strong>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">その他の加点</div>
+                    <div class="card-content">
+                        <ul>
+                            <li><strong>共通SaaS / DMP活用:</strong> DMP活用時は「比較表」の出力・提出が必須。</li>
+                            <li><strong>スタートアップ活用:</strong> 創業15年以内。入札時の「トライアル発注（随契）」活用を推奨。</li>
+                            <li><strong>地域間連携:</strong> 複数自治体の共同実施。「定住自立圏」等は枠外申請が可能。</li>
+                            <li><strong>マイナンバーカード利活用:</strong> 避難所入退、図書館カード、オンライン認証等。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 4: Writing & Rules -->
+        <section class="container fade-in-section">
+            <div class="section-header">
+                <span class="section-tag">Writing & Rules</span>
+                <h2 class="section-title">申請書作成・遵守事項</h2>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">Excel入力の技術</div>
+                    <div class="card-content">
+                        <ul>
+                            <li><strong>統計データ:</strong> 「なんとなく」ではなく、数字で課題を語る。</li>
+                            <li><strong>ストーリー:</strong> 「〇〇地区の高齢者がスマホでバスを呼び、通院できる」といった具体的利用シーンを描写。</li>
+                            <li><strong>経費内訳:</strong> 「一式」はNG。要件定義、開発、運用費を詳細に。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card" style="border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.1);">
+                    <div class="card-title" style="color: #fca5a5;">NG事例・厳格な遵守事項</div>
+                    <div class="card-content" style="color: #fee2e2;">
+                        <ul>
+                            <li><strong>事前着手禁止:</strong> 交付決定日（4/1予定）より前の発注・契約は不可。</li>
+                            <li><strong>ハード偏重NG:</strong> サービス実装を伴わない単なるタブレット配布等は不可。</li>
+                            <li><strong>期間外費用NG:</strong> 実装計画期間外のランニングコストは対象外。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 3rem;">
+                <h3>申請スケジュール</h3>
+                <p>
+                    <strong>事前相談期間:</strong> 令和7年12月24日 〜 <strong>令和8年1月21日（水）12時</strong><br>
+                    <strong>交付決定（予定）:</strong> 4月1日<br>
+                    ※期間が非常に短いため、早急な事前準備が必要です。
+                </p>
+            </div>
+
+            <!-- Conclusion -->
+            <div class="container fade-in-section" style="margin-top: 4rem;">
+                <div class="section-header">
+                    <h2 class="section-title">必勝のための「3つのNot」</h2>
+                    <p class="section-desc">申請書を書く際の最終チェックリスト。</p>
+                </div>
+                <div class="grid">
+                    <div class="card col-span-2">
+                        <div class="card-content" style="text-align: left;">
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="margin-bottom: 1rem;">❌ <strong>「行政都合」ではないか？</strong> <br><span
+                                        style="font-size: 0.9em; opacity: 0.8;">職員が楽になる話ばかり書かず、主語を「住民」に書き換える。</span>
+                                </li>
+                                <li style="margin-bottom: 1rem;">❌ <strong>「作っただけ」で終わらないか？</strong> <br><span
+                                        style="font-size: 0.9em; opacity: 0.8;">DL数や利用率を上げるための「泥臭い広報・普及計画」が必要。</span>
+                                </li>
+                                <li style="margin-bottom: 1rem;">❌ <strong>「独自仕様」に固執していないか？</strong> <br><span
+                                        style="font-size: 0.9em; opacity: 0.8;">モデル仕様書やSaaS活用など、国の標準化路線に乗る。</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 4rem; margin-bottom: 4rem;">
+                <a href="index.html" class="btn">トップページに戻る</a>
+                <a href="koufukin/index.html" class="btn-ai">申請書AI を利用</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p style="font-size: 0.75rem;"><a href="https://muraimuneaki.net/"
+                style="color: inherit; text-decoration: none;">© 2026 Murai Muneaki</a></p>
+    </footer>
+
+    <script>
+        // Scroll Animation & Intersection Observer
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const children = entry.target.querySelectorAll('.card');
+                    children.forEach((child, index) => {
+                        child.style.opacity = '0';
+                        child.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            child.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                            child.style.opacity = '1';
+                            child.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-section').forEach(section => {
+            section.classList.add('fade-in');
+            observer.observe(section);
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+
+</html>

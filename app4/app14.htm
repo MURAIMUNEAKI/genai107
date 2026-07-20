@@ -82,6 +82,21 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
 .spinner-circle{width:5rem;height:5rem;border:6px solid var(--solid-gray-300);border-top-color:var(--blue-900);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner-label{font-size:1.25rem;font-weight:700;color:var(--solid-gray-800)}
+.spinner-cancel{margin-top:.25rem;padding:.5rem 1.5rem;border-radius:8px;border:2px solid var(--solid-gray-420);background:#fff;font-weight:700;cursor:pointer;font-family:inherit}
+.spinner-cancel:hover{background:var(--solid-gray-100)}
+.rank-badge{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;padding:.6rem 1rem;border-radius:10px;border:2px solid;font-weight:700}
+.rank-badge .rank-letter{font-size:2rem;line-height:1}
+.rank-badge .rank-score{font-size:1.05rem}
+.rank-A{background:#e8f7ee;border-color:#16a34a;color:#15803d}
+.rank-B{background:#eff5ff;border-color:#2563eb;color:#1d4ed8}
+.rank-C{background:#fff8e1;border-color:#d97706;color:#b45309}
+.rank-D{background:#fdecec;border-color:#dc2626;color:#b91c1c}
+.prose td.mark-ok{background:#e8f7ee;color:#15803d;font-weight:700}
+.prose td.mark-mid{background:#fff8e1;color:#b45309;font-weight:700}
+.prose td.mark-ng{background:#fdecec;color:#b91c1c;font-weight:700}
+.char-count{font-size:.75rem;color:var(--solid-gray-600);text-align:right;margin-top:.25rem}
+.char-count.over{color:var(--error-1);font-weight:700}
+.btn-memo{background:#d97706;color:#fff}.btn-memo:hover{background:#b45309}
 
 .criteria-btn{padding:.45rem 1rem;background:#fff;border:2px solid var(--blue-900);color:var(--blue-900);border-radius:8px;font-weight:700;font-size:.875rem;cursor:pointer;font-family:inherit;white-space:nowrap}
 .criteria-btn:hover{background:var(--blue-50);text-decoration:underline}
@@ -136,8 +151,8 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
           <summary>サンプル書類をダウンロード（PDF5種類＋作成用Word）</summary>
           <p style="color:var(--error-1);font-weight:700;font-size:.875rem;margin:.5rem 0 0;">※サンプルは就労継続支援の例です</p>
           <ul class="sample-list">
-            <li><a href="samples/individual_support_plan_1.pdf" download target="_top"><span class="tag tag-good">優良</span>① 山本大輔：知的障害・就労継続／本人主体で評価指標も明確（A評価想定）</a></li>
-            <li><a href="samples/individual_support_plan_2.pdf" download target="_top"><span class="tag tag-bad">重大</span>② 木村拓也：脳性麻痺・身体障害／目標が事業所・職員目線の管理目標</a></li>
+            <li><a href="samples/individual_support_plan_1.pdf" download target="_top"><span class="tag tag-mid">軽微</span>① 山本大輔：知的障害・就労継続／本人主体で評価指標も明確（B評価想定）</a></li>
+            <li><a href="samples/individual_support_plan_2.pdf" download target="_top"><span class="tag tag-mid">要改善</span>② 木村拓也：脳性麻痺・身体障害／目標が事業所・職員目線の管理目標</a></li>
             <li><a href="samples/individual_support_plan_3.pdf" download target="_top"><span class="tag tag-mid">要改善</span>③ 渡辺香織：統合失調症・精神／管理的な目標で本人の意向反映が弱い</a></li>
             <li><a href="samples/individual_support_plan_4.pdf" download target="_top"><span class="tag tag-mid">要改善</span>④ 小林健太：高次脳機能障害／支援内容・担当者が抽象的（「適宜」等）</a></li>
             <li><a href="samples/individual_support_plan_5.pdf" download target="_top"><span class="tag tag-bad">重大</span>⑤ 加藤翼：自閉スペクトラム／次回モニタリング時期が未記載</a></li>
@@ -157,19 +172,24 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
           </div>
           <div class="form-field">
             <label class="dads-label">ファイルから取り込み<span class="dads-optional">※任意</span></label>
-            <span class="dads-support">PDF・Word(.docx)・PowerPoint(.pptx)・テキストから本文を自動で読み取ります</span>
+            <span class="dads-support">PDF・Word(.docx)・PowerPoint(.pptx)・テキストから本文を自動で読み取ります。画像（JPG/PNG）・スキャン画像PDFはAIでテキスト化します（OCR）</span>
             <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInput').click()">
-              <p>ファイルを選択またはドラッグ&ドロップ</p>
-              <p style="font-size:.8rem;color:#000">PDF / DOCX / PPTX / TXT（20MBまで）</p>
+              <p>ファイルを選択・ドラッグ&ドロップ（画像は Ctrl+V 貼り付けも可）</p>
+              <p style="font-size:.8rem;color:#000">PDF / DOCX / PPTX / TXT（20MBまで）／ JPG / PNG / WebP（10MBまで）・最大3ファイル</p>
               <p style="font-size:.8rem;color:#000;font-weight:700;margin-top:.4rem">上記のサンプル書類をダウンロードしても試せます。</p>
-              <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.txt" onchange="handleFile(this)">
+              <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.txt,.jpg,.jpeg,.png,.webp" multiple onchange="handleFile(this)">
             </div>
+            <label style="display:flex;align-items:center;gap:.4rem;margin-top:.5rem;font-size:.875rem;font-weight:700;cursor:pointer">
+              <input type="checkbox" id="handwritingMode" style="width:1.25rem;height:1.25rem;accent-color:var(--blue-900)"> 手書き文字を読み取り
+            </label>
+            <span class="dads-support" style="margin-top:.1rem">ONにすると画像・スキャン画像PDFを手書き用OCR-AIで読み取ります（OFF時は標準AI）</span>
             <div class="file-name" id="fileName" style="display:none"></div>
           </div>
           <div class="form-field">
             <label class="dads-label" for="inputText">審査対象の書類テキスト<span class="dads-required">※必須</span></label>
             <span class="dads-support">上のファイル取り込みで自動入力されます。直接貼り付け・編集も可能です</span>
-            <textarea class="dads-textarea" id="inputText" placeholder="アセスメント・目標・支援内容・モニタリング等の内容をここに貼り付け..." required style="min-height:200px"></textarea>
+            <textarea class="dads-textarea" id="inputText" placeholder="アセスメント・目標・支援内容・モニタリング等の内容をここに貼り付け..." style="min-height:200px"></textarea>
+            <div class="char-count" id="charCount">0 / 18,000字</div>
           </div>
           <div class="btn-area">
             <button type="submit" class="dads-btn" id="submitBtn">審査する</button>
@@ -178,6 +198,7 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
             <button type="button" class="action-btn btn-copy" onclick="copyResult()">コピー</button>
             <button type="button" class="action-btn btn-txt" onclick="downloadText()">テキスト保存</button>
             <button type="button" class="action-btn btn-word" onclick="exportWord()">Word出力</button>
+            <button type="button" class="action-btn btn-memo" onclick="exportRequestMemo()">補正依頼メモ</button>
           </div>
         </form>
       </div>
@@ -193,7 +214,7 @@ body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:
     </div>
   </main>
 </div>
-<div class="spinner" id="spinner"><div class="spinner-circle"></div><span class="spinner-label" id="spinnerLabel">AIが審査中...</span></div>
+<div class="spinner" id="spinner"><div class="spinner-circle"></div><span class="spinner-label" id="spinnerLabel">AIが審査中...</span><button type="button" class="spinner-cancel" onclick="cancelRun()">中止する</button></div>
 
 <div class="modal-overlay" id="criteriaModal" onclick="if(event.target===this)closeCriteria()">
   <div class="modal-box">
@@ -254,7 +275,10 @@ function applyCriteria(){document.getElementById('applyMsg').style.display='bloc
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCriteria();});
 
 var outputText='';
-var uploadedFileText='';
+var currentController=null;
+var MAX_DOCS=3;
+var docs=[];
+var docsGen=0;
 
 /* ===== File Upload ===== */
 var dropArea=document.getElementById('fileDrop');
@@ -264,27 +288,29 @@ dropArea.addEventListener('drop',function(e){
   if(e.dataTransfer.files.length>0){document.getElementById('fileInput').files=e.dataTransfer.files;handleFile(document.getElementById('fileInput'));}
 });
 
-var lastFileName='';
-var fileSeq=0;
-
+/* 複数ファイル（最大3）をアップした順にテキスト化して蓄積。審査結果の表示後は前のファイルをクリアして入れ替え */
 function handleFile(input){
-  var file=input.files[0];
-  if(!file)return;
-  if(file.size>20*1024*1024){alert('ファイルサイズが20MBを超えています');input.value='';return;}
-  lastFileName=file.name;
-  uploadedFileText='';
-  document.getElementById('inputText').value='';
-  var seq=++fileSeq;
-  setFileStatus('読み取り中...');
-  extractText(file,seq);
+  var files=Array.prototype.slice.call(input.files);
+  input.value='';
+  if(!files.length)return;
+  if(outputText){docsGen++;docs=[];}
+  if(docs.length+files.length>MAX_DOCS){alert('アップロードできる書類は最大'+MAX_DOCS+'ファイルです');return;}
+  for(var i=0;i<files.length;i++){
+    var file=files[i];
+    if(file.size>20*1024*1024){alert(file.name+' はファイルサイズが20MBを超えています');continue;}
+    var d={name:file.name,status:'loading',text:'',msg:'読み取り中...',gen:docsGen,file:file};
+    docs.push(d);
+    extractText(file,d);
+  }
+  renderDocs();
 }
 
-function extractText(file,seq){
+function extractText(file,d){
   var name=file.name.toLowerCase();
   if(name.endsWith('.txt')||name.endsWith('.csv')){
     var reader=new FileReader();
-    reader.onload=function(e){applyText(e.target.result,seq);};
-    reader.onerror=function(){failFile(seq);};
+    reader.onload=function(e){applyDoc(d,e.target.result);};
+    reader.onerror=function(){failDoc(d);};
     reader.readAsText(file,'UTF-8');
   } else if(name.endsWith('.pdf')){
     var reader=new FileReader();
@@ -293,7 +319,11 @@ function extractText(file,seq){
       pdfjsLib.getDocument({data:arr}).promise.then(function(pdf){
         var texts=[];
         function getPage(i){
-          if(i>pdf.numPages){applyText(texts.join('\n').trim(),seq);return;}
+          if(i>pdf.numPages){
+            var t=texts.join('\n').trim();
+            if(t){applyDoc(d,t);}else{ocrFile(file,d);}
+            return;
+          }
           pdf.getPage(i).then(function(page){
             page.getTextContent().then(function(content){
               texts.push(content.items.map(function(item){return item.str;}).join(' '));
@@ -302,22 +332,24 @@ function extractText(file,seq){
           });
         }
         getPage(1);
-      }).catch(function(){failFile(seq,'PDFの読み取りに失敗しました（スキャン画像PDFは抽出できません）');});
+      }).catch(function(){ocrFile(file,d);});
     };
-    reader.onerror=function(){failFile(seq);};
+    reader.onerror=function(){failDoc(d);};
     reader.readAsArrayBuffer(file);
+  } else if(/\.(jpe?g|png|webp)$/.test(name)){
+    ocrFile(file,d);
   } else if(name.endsWith('.docx')){
-    extractOffice(file,'w:p','word/document.xml',null,seq);
+    extractOffice(file,'w:p','word/document.xml',null,d);
   } else if(name.endsWith('.pptx')){
-    extractOffice(file,'a:p',null,/^ppt\/slides\/slide\d+\.xml$/,seq);
+    extractOffice(file,'a:p',null,/^ppt\/slides\/slide\d+\.xml$/,d);
   } else {
-    failFile(seq,'対応していない形式です（PDF / Word(.docx) / PowerPoint(.pptx) / TXT に対応）');
+    failDoc(d,'対応していない形式です（PDF / Word(.docx) / PowerPoint(.pptx) / TXT / JPG / PNG / WebP に対応）');
   }
 }
 
 /* DOCX/PPTX を JSZip で解凍して本文を抽出 */
-function extractOffice(file,paraTag,singlePath,multiRe,seq){
-  if(typeof JSZip==='undefined'){failFile(seq,'解凍ライブラリの読み込みに失敗しました（通信環境をご確認ください）');return;}
+function extractOffice(file,paraTag,singlePath,multiRe,d){
+  if(typeof JSZip==='undefined'){failDoc(d,'解凍ライブラリの読み込みに失敗しました（通信環境をご確認ください）');return;}
   var reader=new FileReader();
   reader.onload=function(e){
     JSZip.loadAsync(e.target.result).then(function(zip){
@@ -332,18 +364,18 @@ function extractOffice(file,paraTag,singlePath,multiRe,seq){
           return na-nb;
         });
       }
-      if(!paths.length){failFile(seq,'本文が見つかりませんでした');return;}
+      if(!paths.length){failDoc(d,'本文が見つかりませんでした');return;}
       var parts=[],i=0;
       function next(){
-        if(i>=paths.length){applyText(parts.join('\n').replace(/\n{3,}/g,'\n\n').trim(),seq);return;}
+        if(i>=paths.length){applyDoc(d,parts.join('\n').replace(/\n{3,}/g,'\n\n').trim());return;}
         zip.file(paths[i]).async('string').then(function(xml){
           parts.push(xmlToText(xml,paraTag));i++;next();
         }).catch(function(){i++;next();});
       }
       next();
-    }).catch(function(){failFile(seq,'ファイルの解凍に失敗しました（ファイルが壊れている可能性があります）');});
+    }).catch(function(){failDoc(d,'ファイルの解凍に失敗しました（ファイルが壊れている可能性があります）');});
   };
-  reader.onerror=function(){failFile(seq);};
+  reader.onerror=function(){failDoc(d);};
   reader.readAsArrayBuffer(file);
 }
 
@@ -354,41 +386,178 @@ function xmlToText(xml,paraTag){
   return t.replace(/[ \t]+\n/g,'\n');
 }
 
-function setFileStatus(msg){
-  var fn=document.getElementById('fileName');
-  fn.textContent=(lastFileName?lastFileName+' — ':'')+msg;
-  fn.style.display='block';
+/* 画像・スキャンPDFは ocr.php 経由で Gemini がテキスト化（手書きONで高精度モデル） */
+function ocrFile(file,d){
+  if(file.size>10*1024*1024){failDoc(d,'AIで読み取れる画像・スキャンPDFは10MBまでです');return;}
+  var hw=document.getElementById('handwritingMode').checked;
+  d.msg=hw?'手書き読み取り中（手書き用OCR-AI）...':'AIで読み取り中...';
+  renderDocs();
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var dataUrl=e.target.result;
+    var mime=(dataUrl.match(/^data:([^;]+);/)||[])[1]||file.type||'image/jpeg';
+    fetch('ocr.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      file:{mimeType:mime,data:dataUrl.slice(dataUrl.indexOf(',')+1)},
+      handwriting:hw
+    })}).then(function(res){return res.json();}).then(function(j){
+      if(j&&j.text){applyDoc(d,j.text);}else{failDoc(d,(j&&j.error)||'AIでの読み取りに失敗しました');}
+    }).catch(function(){failDoc(d,'AIでの読み取りに失敗しました（通信エラー）');});
+  };
+  reader.onerror=function(){failDoc(d);};
+  reader.readAsDataURL(file);
 }
 
-/* 最新の読み込みだけを反映（古い非同期結果は破棄） */
-function applyText(text,seq){
-  if(seq!==fileSeq)return;
-  uploadedFileText=(text||'');
-  if(!uploadedFileText.trim()){failFile(seq,'テキストを抽出できませんでした');return;}
-  document.getElementById('inputText').value=uploadedFileText;
-  setFileStatus('読み取り完了（'+uploadedFileText.length.toLocaleString()+'文字）');
+/* アップした順番を保って一覧表示＆textareaへ反映 */
+function renderDocs(){
+  var fn=document.getElementById('fileName');
+  if(!docs.length){fn.style.display='none';fn.innerHTML='';return;}
+  var html='';
+  for(var i=0;i<docs.length;i++){
+    var d=docs[i];
+    var s=d.status==='done'?'読み取り完了（'+d.text.length.toLocaleString()+'文字）':(d.status==='error'?'⚠ '+d.msg:d.msg);
+    var ops=d.status==='loading'?'':' <a href="#" onclick="rereadDoc('+i+');return false;">［再読取］</a> <a href="#" onclick="removeDoc('+i+');return false;">［削除］</a>';
+    html+=esc(d.name)+' — '+s+ops+'<br>';
+  }
+  html+='<a href="#" onclick="clearDocs();return false;">［取り込みをクリア］</a>';
+  fn.innerHTML=html;
+  fn.style.display='block';
+  var done=[];
+  for(var j=0;j<docs.length;j++){if(docs[j].status==='done')done.push(docs[j]);}
+  var t='';
+  if(done.length===1){t=done[0].text;}
+  else if(done.length>1){
+    var parts=[];
+    for(var k=0;k<done.length;k++){parts.push('【'+done[k].name+'】\n'+done[k].text);}
+    t=parts.join('\n\n');
+  }
+  document.getElementById('inputText').value=t;
+  updateCharCount();
 }
-function failFile(seq,msg){
-  if(seq!==fileSeq)return;
-  uploadedFileText='';
-  setFileStatus('⚠ '+(msg||'読み取りに失敗しました'));
+
+function applyDoc(d,text){
+  if(d.gen!==docsGen)return;
+  text=(text||'').trim();
+  if(!text){failDoc(d,'テキストを抽出できませんでした');return;}
+  d.status='done';d.text=text;
+  renderDocs();
 }
+function failDoc(d,msg){
+  if(d.gen!==docsGen)return;
+  d.status='error';d.msg=msg||'読み取りに失敗しました';
+  renderDocs();
+}
+function clearDocs(){
+  docsGen++;docs=[];
+  document.getElementById('inputText').value='';
+  renderDocs();
+  updateCharCount();
+}
+function removeDoc(i){
+  docs.splice(i,1);
+  renderDocs();
+}
+/* 手書きチェック切替後などにファイル単位で読み直す（古い結果は破棄される） */
+function rereadDoc(i){
+  var old=docs[i];
+  if(!old||!old.file)return;
+  var d={name:old.name,status:'loading',text:'',msg:'読み取り中...',gen:docsGen,file:old.file};
+  docs[i]=d;
+  renderDocs();
+  extractText(d.file,d);
+}
+
+/* 文字数カウンタ（18,000字を超えた分は審査に送られない） */
+function updateCharCount(){
+  var len=document.getElementById('inputText').value.length;
+  var el=document.getElementById('charCount');
+  if(!el)return;
+  el.textContent=len.toLocaleString()+' / 18,000字'+(len>18000?'（超過分は審査に使われません）':'');
+  el.className='char-count'+(len>18000?' over':'');
+}
+document.getElementById('inputText').addEventListener('input',updateCharCount);
+
+/* 審査の中止 */
+function cancelRun(){
+  if(currentController)currentController.abort();
+}
+
+/* 評価ランクを結果先頭に大型バッジ表示 */
+function showRankBadge(){
+  var m=outputText.match(/評価ランク[：:]\s*[〔\[]?\s*([A-D])/);
+  if(!m)return;
+  var s=outputText.match(/合計点[^0-9]*?(\d+)\s*\/\s*100/);
+  var el=document.createElement('div');
+  el.className='rank-badge rank-'+m[1];
+  el.innerHTML='<span class="rank-letter">'+m[1]+'</span><span class="rank-score">評価ランク '+m[1]+(s?('　合計 '+s[1]+' / 100点'):'')+'</span>';
+  var rc=document.getElementById('resultContent');
+  rc.insertBefore(el,rc.firstChild);
+}
+
+/* 審査結果から補正依頼メモ（窓口用）を抽出してテキスト保存 */
+function exportRequestMemo(){
+  if(!outputText)return;
+  var lines=outputText.split('\n');var out=[];var active=false;
+  var re=/重大な不備|補正|追加確認|追加で確認|聞き漏らし|処分前に補う|改善提案|要確認事項/;
+  for(var i=0;i<lines.length;i++){
+    var l=lines[i];
+    if(/^##\s/.test(l)){active=re.test(l);if(active)out.push('■ '+l.replace(/^##\s*/,''));continue;}
+    if(active&&l.trim()!=='')out.push(l.replace(/\*\*/g,''));
+  }
+  if(!out.length){alert('補正・確認に関する項目が見つかりませんでした');return;}
+  var appName=document.title.replace(/\s*-\s*源内 for Business\s*$/,'');
+  var memo='【補正・確認のお願い（窓口用メモ）】\n作成日：'+new Date().toLocaleDateString('ja-JP')+'\n審査：'+appName+'\n\n'+out.join('\n')+'\n\n※本メモはAI審査の補助出力です。担当職員が内容を確認のうえお使いください。\n担当：＿＿＿＿＿＿　連絡先：＿＿＿＿＿＿\n';
+  var blob=new Blob([memo],{type:'text/plain;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='補正依頼メモ_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.target='_top';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+}
+
+/* 画像のクリップボード貼り付け（スクリーンショット等をそのまま取り込み） */
+document.addEventListener('paste',function(e){
+  if(!e.clipboardData||!e.clipboardData.items)return;
+  var files=[];
+  for(var i=0;i<e.clipboardData.items.length;i++){
+    var it=e.clipboardData.items[i];
+    if(it.kind==='file'&&/^image\//.test(it.type)){var f=it.getAsFile();if(f)files.push(f);}
+  }
+  if(!files.length)return;
+  e.preventDefault();
+  if(outputText){docsGen++;docs=[];}
+  if(docs.length+files.length>MAX_DOCS){alert('アップロードできる書類は最大'+MAX_DOCS+'ファイルです');return;}
+  for(var j=0;j<files.length;j++){
+    var f=files[j];
+    if(f.size>20*1024*1024){alert('貼り付け画像が20MBを超えています');continue;}
+    var d={name:'貼り付け画像'+(docs.length+1)+'.png',status:'loading',text:'',msg:'読み取り中...',gen:docsGen,file:f};
+    docs.push(d);
+    extractText(f,d);
+  }
+  renderDocs();
+});
 
 /* ===== Execute ===== */
 function execute(e){
   e.preventDefault();
   var docType=document.getElementById('docType').value;
   var text=document.getElementById('inputText').value.trim();
+  if(docs.some(function(d){return d.status==='loading';})){alert('ファイルを読み取り中です。完了までお待ちください');return;}
   if(!text){alert('審査対象の書類テキストを入力してください');return;}
 
+  currentController=new AbortController();
   outputText='';
+  verdictMarks=null;
   document.getElementById('resultContent').innerHTML='';
   document.getElementById('actionArea').style.display='none';
   document.getElementById('spinnerLabel').textContent='AIが審査中...';
   document.getElementById('spinner').classList.add('active');
   var btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='審査中...';
 
-  fetch('app14.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({doc_type:docType,text:text})})
+  fetch('app14.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({doc_type:docType,text:text}),signal:currentController.signal})
   .then(function(res){
     if(!res.ok)throw new Error('HTTP '+res.status);
     var reader=res.body.getReader(),decoder=new TextDecoder(),buffer='';
@@ -402,6 +571,7 @@ function execute(e){
           if(!t||t==='data: [DONE]')continue;
           if(t.startsWith('data: ')){
             try{var j=JSON.parse(t.slice(6));
+              if(j.verdict){verdictMarks=parseVerdict(j.verdict);}
               if(j.text){outputText+=j.text;render();}
               if(j.error){outputText+='\n[エラー] '+j.error;render();}
             }catch(ex){}
@@ -412,6 +582,11 @@ function execute(e){
     }
     return read();
   }).catch(function(err){
+    if(err&&err.name==='AbortError'){
+      if(outputText){render();}else{document.getElementById('resultContent').innerHTML='<p style="color:var(--solid-gray-600)">審査を中止しました</p>';}
+      finish();
+      return;
+    }
     document.getElementById('resultContent').innerHTML='<p style="color:var(--error-1)">エラー: '+err.message+'</p>';
     finish();
   });
@@ -424,41 +599,77 @@ function finish(){
     var r=reconcileScore(outputText);
     if(r.changed){outputText=r.text;render();}
     document.getElementById('actionArea').style.display='flex';
+    showRankBadge();
   }
 }
 
-/* 採点表の「得点」列を自動合計し、合計点・評価ランクの食い違いを補正 */
+/* サーバの確定判定（多数決）を受け取り、表の判定・得点・合計点・評価ランクを機械計算で上書き */
+var verdictMarks=null;
+function parseVerdict(v){
+  var m=String(v).match(/\d+\s*[:：]\s*[○◯△×]/g)||[];
+  var out=[];
+  for(var i=0;i<m.length;i++){
+    var mm=m[i].match(/(\d+)\s*[:：]\s*([○◯△×])/);
+    var idx=parseInt(mm[1],10);
+    if(idx===1&&out.length>0)break;
+    if(idx!==out.length+1)continue;
+    out.push(mm[2]==='◯'?'○':mm[2]);
+  }
+  return out.length>=4?out:null;
+}
 function reconcileScore(text){
   var lines=text.split('\n');
-  var scoreCol=-1,total=0,counted=0;
+  var haiCol=-1,judgeCol=-1,scoreCol=-1,total=0,counted=0,seen={};
+  function fixedScore(mark,hai){
+    if(mark==='○')return hai;
+    if(mark==='△')return hai>=15?8:(hai>=10?5:3);
+    return 0;
+  }
   for(var i=0;i<lines.length;i++){
     if(lines[i].trim().indexOf('|')!==0)continue;
     var cells=lines[i].trim().split('|').filter(function(c,idx,arr){return idx>0&&idx<arr.length-1;}).map(function(c){return c.trim();});
     if(!cells.length)continue;
     if(scoreCol===-1){
-      for(var c=0;c<cells.length;c++){if(cells[c].indexOf('得点')!==-1){scoreCol=c;break;}}
+      var hasH=-1,hasJ=-1,hasS=-1;
+      for(var c=0;c<cells.length;c++){
+        if(cells[c].indexOf('配点')!==-1)hasH=c;
+        if(cells[c].indexOf('判定')!==-1)hasJ=c;
+        if(cells[c].indexOf('得点')!==-1)hasS=c;
+      }
+      if(hasH>=0&&hasJ>=0&&hasS>=0){haiCol=hasH;judgeCol=hasJ;scoreCol=hasS;}
       continue;
     }
     if(cells.every(function(c){return /^[\s\-:]+$/.test(c);}))continue;
-    if(scoreCol>=0&&scoreCol<cells.length){
-      var first=cells[0].match(/^\d+$/);
-      var m=cells[scoreCol].match(/-?\d+/);
-      if(first&&m){total+=parseInt(m[0],10);counted++;}
+    if(scoreCol>=cells.length||judgeCol>=cells.length||haiCol>=cells.length)continue;
+    var first=cells[0].match(/^\d+$/);
+    var hm=cells[haiCol].match(/\d+/);
+    var jm=cells[judgeCol].match(/[○◯△×]/);
+    if(first&&hm&&jm){
+      var no=parseInt(first[0],10);
+      if(seen[no])continue;
+      if(verdictMarks&&no>verdictMarks.length)continue;
+      seen[no]=true;
+      var mark=(verdictMarks&&verdictMarks[no-1])?verdictMarks[no-1]:(jm[0]==='◯'?'○':jm[0]);
+      var pts=fixedScore(mark,parseInt(hm[0],10));
+      cells[judgeCol]=mark;
+      cells[scoreCol]=String(pts);
+      lines[i]='| '+cells.join(' | ')+' |';
+      total+=pts;counted++;
     }
   }
   if(scoreCol===-1||counted===0)return {text:text,changed:false};
   var rankLabel=total>=90?'A（90点以上）':total>=75?'B（75〜89点）':total>=60?'C（60〜74点）':'D（60点未満）';
-  var changed=false;
   for(var j=0;j<lines.length;j++){
     if(/合計点/.test(lines[j])&&/\/\s*100/.test(lines[j])){
-      lines[j]=lines[j].replace(/(合計点[^0-9]*?)(\d+)(\s*\/\s*100)/,function(_,a,b,c){if(parseInt(b,10)!==total)changed=true;return a+total+c;});
+      lines[j]=lines[j].replace(/(合計点[^0-9]*?)(\d+)(\s*\/\s*100)/,function(_,a,b,c){return a+total+c;});
     } else if(/評価ランク/.test(lines[j])){
-      var rl=lines[j].replace(/(評価ランク[：:]\s*).*/,'$1'+rankLabel);
-      if(rl!==lines[j])changed=true;
-      lines[j]=rl;
+      lines[j]=lines[j].replace(/(評価ランク[：:]\s*).*/,'$1'+rankLabel);
+    } else if(verdictMarks&&/^判定\s*[:：]/.test(lines[j].trim())){
+      var vs=[];for(var k=0;k<verdictMarks.length;k++){vs.push((k+1)+':'+verdictMarks[k]);}
+      lines[j]='判定: '+vs.join(' ');
     }
   }
-  return {text:lines.join('\n'),changed:changed};
+  return {text:lines.join('\n'),changed:true};
 }
 
 function render(){
@@ -478,7 +689,15 @@ function md(t){
       var tag=(!tableHeader&&inTable&&h.indexOf('<tr>')===-1)?'th':'td';
       if(tag==='th')tableHeader=true;
       h+='<tr>';
-      for(var c=0;c<cells.length;c++){h+='<'+tag+'>'+il(esc(cells[c].trim()))+'</'+tag+'>';}
+      for(var c=0;c<cells.length;c++){
+        var cellTxt=cells[c].trim(),cls='';
+        if(tag==='td'){
+          if(/^○/.test(cellTxt))cls=' class="mark-ok"';
+          else if(/^△/.test(cellTxt))cls=' class="mark-mid"';
+          else if(/^[×✕]/.test(cellTxt))cls=' class="mark-ng"';
+        }
+        h+='<'+tag+cls+'>'+il(esc(cellTxt))+'</'+tag+'>';
+      }
       h+='</tr>';
       continue;
     }

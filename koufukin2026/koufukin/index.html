@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地域未来交付金2026 詳細解説＆申請書AI作成</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow: hidden;
+            background-color: #0f172a;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Mobile: Direct embed */
+        .mobile-container {
+            display: none;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .mobile-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* PC: Scaled iframe */
+        .pc-container {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: auto;
+            background-color: #0f172a;
+        }
+
+        #iframe-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #iframe-container {
+            width: 1200px;
+            height: 650px;
+            transform-origin: center center;
+            border: none;
+        }
+
+        #iframe-container iframe {
+            width: 1200px;
+            height: 650px;
+            border: none;
+            display: block;
+        }
+
+        /* Show appropriate container based on device */
+        @media (max-width: 768px) {
+            .mobile-container {
+                display: block;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .pc-container {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Container -->
+    <div class="mobile-container">
+        <iframe src="shinsei1.htm" title="地域未来交付金申請書作成"></iframe>
+    </div>
+
+    <!-- PC Container with Scaling -->
+    <div class="pc-container">
+        <div id="iframe-wrapper">
+            <div id="iframe-container">
+                <iframe src="shinsei1.htm" title="地域未来交付金申請書作成"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PC用のリサイズ処理
+        function resizeIframe() {
+            // モバイルの場合は処理しない
+            if (window.innerWidth <= 768) {
+                return;
+            }
+
+            const container = document.getElementById('iframe-container');
+            if (!container) return;
+
+            // 基準サイズ
+            const baseWidth = 1200;
+            const baseHeight = 650;
+
+            // 画面サイズに基づいてスケール計算
+            const scaleX = window.innerWidth / baseWidth;
+            const scaleY = window.innerHeight / baseHeight;
+            const scale = Math.min(scaleX, scaleY);
+
+            // スケール適用
+            container.style.transform = `scale(${scale})`;
+        }
+
+        // 初回実行
+        if (window.innerWidth > 768) {
+            resizeIframe();
+        }
+
+        // ウィンドウリサイズ時に再計算
+        window.addEventListener('resize', resizeIframe);
+
+        // iframe読み込み完了後にも実行
+        window.addEventListener('load', resizeIframe);
+    </script>
+</body>
+
+</html>

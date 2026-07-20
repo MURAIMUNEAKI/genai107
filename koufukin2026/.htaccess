@@ -1,0 +1,8 @@
+# .env ファイルへの直接アクセスを禁止
+<Files ".env*">
+    Require all denied
+</Files>
+<FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交付金申請サポート - API接続テスト</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --error: #ef4444;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+            display: inline-block;
+        }
+
+        .status-card.pending .status-indicator {
+            background-color: #fbbf24;
+        }
+
+        .status-card.success {
+            border-color: var(--success);
+            background-color: #f0fdf4;
+        }
+
+        .status-card.success .status-indicator {
+            background-color: var(--success);
+        }
+
+        .status-card.error {
+            border-color: var(--error);
+            background-color: #fef2f2;
+        }
+
+        .status-card.error .status-indicator {
+            background-color: var(--error);
+        }
+
+        .log-area {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            white-space: pre-wrap;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        button:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Gemini API 接続診断 (マルチモデル対応版)</h1>
+        <p>指定されたAPIキーで検索とAI生成をテストします。複数のモデルを順次試行します。</p>
+
+        <!-- API Key is injected here for testing purposes -->
+        <!-- APIキーはサーバーサイドで管理 -->
+
+        <div class="status-card" id="aiCard">
+            <h3><span class="status-indicator" id="aiStatus"></span> 基本AI生成</h3>
+            <div id="aiResult" style="font-size: 0.9rem; color: var(--text-secondary);">待機中...</div>
+        </div>
+
+        <div class="status-card" id="searchCard">
+            <h3><span class="status-indicator" id="searchStatus"></span> 検索グラウンディング</h3>
+            <div id="searchResult" style="font-size: 0.9rem; color: var(--text-secondary);">待機中...</div>
+        </div>
+
+        <button id="runTestBtn" onclick="runDiagnostics()">診断を開始</button>
+
+        <div class="log-area" id="debugLog">ログ出力待機中...</div>
+    </div>
+
+    <script>
+        const logArea = document.getElementById('debugLog');
+
+        // Models to try in order of preference
+        const MODELS = [
+            "gemini-3.1-flash-lite",
+            "gemini-2.0-flash-exp",
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-001",
+            "gemini-1.5-pro",
+            "gemini-pro"
+        ];
+
+        let WORKING_MODEL = null;
+
+        function log(msg) {
+            const time = new Date().toLocaleTimeString();
+            logArea.innerText = `[${time}] ${msg}\n` + logArea.innerText;
+        }
+
+        async function tryGenerate(key, model, payload) {
+            log(`Trying model: ${model}...`);
+            try {
+                const response = await fetch('test-proxy.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: model, payload: payload })
+                });
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+                return data;
+            } catch (e) {
+                log(`Failed ${model}: ${e.message}`);
+                return null;
+            }
+        }
+
+        async function testAI(key) {
+            const card = document.getElementById('aiCard');
+            const indicator = document.getElementById('aiStatus');
+            const resultDiv = document.getElementById('aiResult');
+
+            log("Testing AI Generation (Iterating models)...");
+            indicator.style.backgroundColor = '#fbbf24';
+
+            for (const model of MODELS) {
+                const result = await tryGenerate(key, model, {
+                    contents: [{ parts: [{ text: "こんにちは" }] }]
+                });
+
+                if (result) {
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        WORKING_MODEL = model;
+                        card.classList.add('success');
+                        resultDiv.innerHTML = `<strong>成功 (${model})</strong>: "${text}"`;
+                        log(`AI Success with ${model}`);
+                        return true;
+                    }
+                }
+            }
+
+            card.classList.add('error');
+            resultDiv.innerText = `全モデルで失敗しました。APIキーまたは権限を確認してください。`;
+            return false;
+        }
+
+        async function testSearch(key) {
+            const card = document.getElementById('searchCard');
+            const indicator = document.getElementById('searchStatus');
+            const resultDiv = document.getElementById('searchResult');
+
+            if (!WORKING_MODEL) {
+                card.classList.add('error');
+                resultDiv.innerText = `AI生成に失敗したため、検索テストをスキップしました。`;
+                return false;
+            }
+
+            log(`Testing Search Grounding with working model: ${WORKING_MODEL}...`);
+            indicator.style.backgroundColor = '#fbbf24';
+
+            // Try the grounding tool (using simple google_search as requested by 2.0-flash-exp)
+            const result = await tryGenerate(key, WORKING_MODEL, {
+                contents: [{ parts: [{ text: "今の日本の総理大臣は誰？" }] }],
+                tools: [{ google_search: {} }]
+            });
+
+            if (result) {
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                const grounding = result.candidates?.[0]?.groundingMetadata;
+
+                if (grounding) {
+                    card.classList.add('success');
+                    resultDiv.innerHTML = `<strong>成功 (${WORKING_MODEL})</strong>:<br>返答: ${text}<br><small style="color:var(--success)">検索ソース確認済み</small>`;
+                    log("Search Grounding Verified.");
+                    return true;
+                } else {
+                    // Try fallback tool syntax (just in case)
+                    log("No grounding metadata with google_search_retrieval. Trying google_search...");
+                    const result2 = await tryGenerate(key, WORKING_MODEL, {
+                        contents: [{ parts: [{ text: "What is the latest iPhone model?" }] }],
+                        tools: [{ google_search: {} }]
+                    });
+
+                    if (result2 && result2.candidates?.[0]?.groundingMetadata) {
+                        card.classList.add('success');
+                        resultDiv.innerHTML = `<strong>成功 (${WORKING_MODEL})</strong> (google_search):<br>返答確認済み<br><small style="color:var(--success)">検索ソース確認済み</small>`;
+                        log("Search Grounding Verified (google_search syntax).");
+                        return true;
+                    }
+
+                    card.classList.add('error'); // Soft error? No, hard error if feature requested
+                    resultDiv.innerHTML = `<strong>警告 (${WORKING_MODEL})</strong>: 返答はありましたが、検索が使用されませんでした。<br>Note: このモデルまたはキーでGroundingが無効になっている可能性があります。`;
+                    log("Search failed to trigger.");
+                }
+            } else {
+                card.classList.add('error');
+                resultDiv.innerText = `エラー: 検索リクエストが拒否されました。`;
+            }
+            return false;
+        }
+
+        async function runDiagnostics() {
+            const btn = document.getElementById('runTestBtn');
+            btn.disabled = true;
+            btn.innerText = "診断中...";
+            logArea.innerText = "";
+
+            const key = 'server-side';
+            if (!key) {
+                log("API Key missing");
+                return;
+            }
+
+            // Reset cards
+            document.querySelectorAll('.status-card').forEach(c => {
+                c.className = 'status-card';
+                c.querySelector('.status-indicator').style.backgroundColor = '#cbd5e1';
+            });
+
+            const aiSuccess = await testAI(key);
+            if (aiSuccess) {
+                await testSearch(key);
+            }
+
+            btn.disabled = false;
+            btn.innerText = "診断を再実行";
+        }
+
+        // Auto-run on load
+        window.onload = runDiagnostics;
+    </script>
+
+</body>
+
+</html>

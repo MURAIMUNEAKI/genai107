@@ -3,5 +3,8 @@ review/.env
 api/uploads/*
 !api/uploads/.gitkeep
 log/*.csv
+app4/verdicts/*
+!app4/verdicts/.htaccess
 genai-web/
 .claude/
+.firecrawl/

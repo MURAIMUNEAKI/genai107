@@ -1,0 +1,10 @@
+# バイナリファイルはCRLF変換を無効化（破損防止）
+*.pdf   binary
+*.docx  binary
+*.xlsx  binary
+*.pptx  binary
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.gif   binary
+*.zip   binary
