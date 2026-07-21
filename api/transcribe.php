@@ -8,7 +8,6 @@ ini_set('max_execution_time', '300');
 ini_set('memory_limit', '256M');
 
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit; }
@@ -30,6 +29,20 @@ $file = $_FILES['file'];
 if ($file['error'] !== UPLOAD_ERR_OK) {
     http_response_code(400);
     echo json_encode(['error' => 'アップロードエラー: code=' . $file['error']]);
+    exit;
+}
+if (!is_uploaded_file($file['tmp_name'])) {
+    http_response_code(400);
+    echo json_encode(['error' => '不正なアップロードです']);
+    exit;
+}
+// マジックバイト検査（実行ファイルの明示拒否）
+$fpHead = fopen($file['tmp_name'], 'rb');
+$headBytes = fread($fpHead, 8);
+fclose($fpHead);
+if (strncmp($headBytes, "MZ", 2) === 0 || strncmp($headBytes, "\x7fELF", 4) === 0 || strncmp($headBytes, "#!", 2) === 0) {
+    http_response_code(400);
+    echo json_encode(['error' => '実行ファイルはアップロードできません']);
     exit;
 }
 

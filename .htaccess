@@ -1,0 +1,20 @@
+# ============================================
+# genai107 セキュリティ設定
+# ============================================
+
+# ディレクトリ一覧表示の禁止
+Options -Indexes
+
+# [1] HTTP → HTTPS リダイレクト（301恒久）
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# [2] HSTS ヘッダー（HTTPS接続時のみ付加）＋ セキュリティヘッダー
+<IfModule mod_headers.c>
+Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

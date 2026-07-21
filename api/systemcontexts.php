@@ -4,7 +4,6 @@
  */
 ini_set('display_errors', '0');
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
@@ -57,7 +56,33 @@ if ($method === 'POST') {
         echo json_encode(['error' => 'オーナーIDは必須です']);
         exit;
     }
+    // 入力上限（スパム・肥大化対策。通常利用では到達しない値）
+    if (mb_strlen($title) > 200) {
+        http_response_code(400);
+        echo json_encode(['error' => 'タイトルは200文字以内にしてください'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if (mb_strlen($prompt) > 20000) {
+        http_response_code(400);
+        echo json_encode(['error' => 'プロンプトは20,000文字以内にしてください'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if (mb_strlen($ownerId) > 64) {
+        http_response_code(400);
+        echo json_encode(['error' => 'オーナーIDが不正です'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
     $items = readCtx();
+    // 1オーナーあたりの保存件数上限
+    $ownerCount = 0;
+    foreach ($items as $i) {
+        if (($i['ownerId'] ?? '') === $ownerId) $ownerCount++;
+    }
+    if ($ownerCount >= 100) {
+        http_response_code(400);
+        echo json_encode(['error' => '保存できるプロンプトは100件までです。不要なものを削除してください'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
     $newItem = [
         'id' => 'sc_' . uniqid(),
         'title' => $title,

@@ -1,0 +1,9 @@
+# uploads/.htaccess — このディレクトリ内では一切のスクリプトを実行しない
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|phar|cgi|pl|py|jsp|asp|aspx|sh|exe|dll|bat|cmd|htaccess)$">
+  Require all denied
+</FilesMatch>
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phar
+RemoveType .php .phtml
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>

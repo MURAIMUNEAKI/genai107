@@ -2,6 +2,11 @@ api/.env
 review/.env
 api/uploads/*
 !api/uploads/.gitkeep
+!api/uploads/.htaccess
+api/auth-attempts.json
+api2/uploads/*
+!api2/uploads/.gitkeep
+!api2/uploads/.htaccess
 log/*.csv
 app4/verdicts/*
 !app4/verdicts/.htaccess

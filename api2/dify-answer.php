@@ -25,7 +25,6 @@ while (ob_get_level()) @ob_end_clean();
 header('Content-Type: application/x-ndjson; charset=utf-8');
 header('Cache-Control: no-cache');
 header('X-Accel-Buffering: no');
-header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit; }

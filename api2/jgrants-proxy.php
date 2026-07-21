@@ -2,7 +2,6 @@
 // proxy.php
 // CORS対応のためにPHP経由でJ-Grants APIにアクセスするプロキシ
 
-header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: X-API-KEY");
 header("Content-Type: application/json");
 

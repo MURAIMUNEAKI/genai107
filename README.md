@@ -4,37 +4,94 @@
 
 ## 概要
 
-源内（GenAI）は、デジタル庁が開発・運用する生成 AI 利活用基盤です。行政職員が業務特化の生成 AI アプリケーションを、迅速かつ安全かつ簡単に利用できる環境を提供します。  
+源内（GenAI）は、デジタル庁が開発・運用する生成 AI 利活用基盤です。行政職員が業務特化の生成 AI アプリケーションを、迅速かつ安全かつ簡単に利用できる環境を提供します。
 源内は大きく分けて2種類のシステムで構成されます。
 
 - [源内 Web](https://github.com/digital-go-jp/genai-web): 利用者が直接さわる Web アプリケーション
 - [行政実務用 AI アプリ](https://github.com/digital-go-jp/genai-ai-api): 生成 AI を活用したマイクロサービス
 
-本リポジトリではこのうち、中央省庁で実際に展開されている行政実務用 AI アプリの一部を公開しています。  
+本リポジトリではこのうち、中央省庁で実際に展開されている行政実務用 AI アプリの一部を公開しています。
 源内の取り組み・構想・生成 AI 活用方法の詳細等は、[デジタル庁のTechブログ](https://digital-gov.note.jp/m/m90208c3610d0)で発信中です。
+
+---
+
+## 目次
+
+1. [システム全体アーキテクチャ](#システム全体アーキテクチャ)
+2. [機能一覧（源内AI Web v1.0.7）](#機能一覧源内ai-web-v107)
+   - [共通機能](#共通機能)
+   - [デジタル庁 提供AIアプリ（app/）](#デジタル庁-提供aiアプリapp)
+   - [全国884自治体 専用アプリ（app2/・app3/）](#全国884自治体-専用アプリapp2app3)
+   - [行政書類の自動審査アプリ（app4/）](#行政書類の自動審査アプリapp4)
+   - [地域未来交付金・地域防災 申請書作成アプリ（app5/）](#地域未来交付金地域防災-申請書作成アプリapp5)
+3. [バックエンド API 仕様](#バックエンド-api-仕様)
+4. [セキュリティ仕様](#セキュリティ仕様)
+5. [ディレクトリ構成](#ディレクトリ構成)
+6. [セットアップ](#セットアップweb-アプリ)
+7. [行政事業レビューAI 利用マニュアル](#行政事業レビューai-利用マニュアル)
+8. [注意事項](#注意事項全アプリ共通)
+
+---
+
+## システム全体アーキテクチャ
+
+```
+[ブラウザ]
+   │  index.htm でパスワードログイン（sessionStorage・タブ単位）
+   ▼
+[フロントエンド: 静的 HTM + JS]
+   app/  app2/  app3/  app4/  app5/     … 各業務アプリ（UI・プロンプト構築・Markdown表示）
+   shared/                              … 共通 JS/CSS（レイアウト・認証・APIクライアント・履歴）
+   │  fetch（同一オリジンのみ・NDJSON/SSE ストリーミング）
+   ▼
+[バックエンド: PHP プロキシ（API キー秘匿）]
+   api/   … デジタル庁系アプリ向け（auth / chat-stream / image-generate / transcribe 等）
+   api2/  … 自治体系アプリ向け（chat-stream / dify-answer / review / jgrants-proxy 等）
+   app3/*.php  app4/*.php  rag/  lawsy/ … アプリ個別バックエンド
+   │  x-goog-api-key / Authorization ヘッダー（キーは api/.env に集約）
+   ▼
+[外部 AI・行政 API]
+   Gemini API（chat / 検索グラウンディング / Imagen / File API）
+   OpenAI API（GPT チャット / 審査 / OCR / Web検索）
+   Dify（議会答弁・成長戦略・骨太ナレッジ）
+   jGrants / NDL Search / e-Gov 法令 API
+```
+
+### 設計原則
+
+| 原則 | 内容 |
+|------|------|
+| APIキーの完全秘匿 | 全ての外部 API キーは `api/.env` に集約し、PHP プロキシ経由でのみ使用。ブラウザには一切露出しない。Gemini は `x-goog-api-key` ヘッダー認証（URL に `?key=` を含めない） |
+| ストリーミング | 生成系は Gemini SSE（`streamGenerateContent`）を NDJSON（`{"text":...}` 行）に変換してリアルタイム表示 |
+| モデル使い分け | 通常生成は `gemini-3.1-flash-lite`、Web 検索（google_search グラウンディング）併用時は `gemini-2.5-flash`、審査系は OpenAI `gpt-5.4-nano` |
+| サーバーレスな履歴 | 会話・生成履歴はブラウザ内 IndexedDB（7日保持）。サーバーには保存しない |
+| PHP 7 互換 | 共有ホスティングで動作するよう PHP 8 専用構文を使用しない |
+
+---
 
 ## 機能一覧（源内AI Web v1.0.7）
 
-本パッケージ（`index.htm` / `app/` / `app2/`）で利用できる Web アプリの一覧です。  
-PHP が動作する Web サーバーに配置し、`api/.env` に API キーを設定して利用します。
+本パッケージで利用できる Web アプリの一覧です。
+PHP が動作する Web サーバーに配置し、`api/.env` に API キーを設定して利用します。ポータル（`app/apps.htm`）には **34 枚のアプリカード**が並びます。
 
 ### 共通機能
 
 | 機能 | 説明 | 主なファイル |
 |------|------|----------------|
-| ログイン | パスワード認証（`sessionStorage`、タブ単位） | `index.htm`, `api/auth.php` |
+| ログイン | パスワード認証（`sessionStorage`、タブ単位）。**IPごと10回失敗で10分ロック**のブルートフォース対策付き | `index.htm`, `api/auth.php` |
 | ホーム | アプリ一覧・クイックチャット入力 | `app/main.htm` |
-| AIアプリ一覧 | 全アプリへのカードナビゲーション | `app/apps.htm` |
+| AIアプリ一覧 | 全アプリへのカードナビゲーション（カテゴリ色・モーダル・iframe起動） | `app/apps.htm` |
 | ヘッダーナビ | チャット / AIアプリ / アカウントメニュー | `shared/layout107.js` |
 | 利用履歴 | ブラウザ内 IndexedDB に保存（7日保持）、再開・削除 | `app/history.htm`, `shared/history-store.js` |
-| 利用状況ログ | アプリ別アクセス件数（非ブロッキング） | `log/count.php` |
+| 保存プロンプト | チャットのシステムプロンプトを保存・一覧・リネーム・削除。**端末ごとの匿名オーナーID（localStorage）で分離**され、自分が保存したものだけが表示される | `api/systemcontexts.php` |
+| 利用状況ログ | アプリ別アクセス件数（sendBeacon 非ブロッキング・CSV 累積） | `log/count.php` |
 | デザイン | DADS 107 準拠 UI | `shared/dads107.css` |
 
 ### デジタル庁 提供AIアプリ（`app/`）
 
 | # | アプリ名 | パス | 概要 | 主な技術 |
 |---|----------|------|------|----------|
-| 1 | **チャット** | `app/chat.htm` | AI との対話。モデル切替（Gemini / OpenAI GPT）、システムプロンプトの設定・保存、プロンプト一覧、ファイル添付（PDF/Office/画像等）、Markdown 表示、Ctrl+Enter 送信 | `api/chat-stream.php` |
+| 1 | **チャット** | `app/chat.htm` | AI との対話。モデル切替（Gemini / OpenAI GPT）、システムプロンプトの設定・保存（オーナー分離）、プロンプト一覧（保存済み＋カテゴリ別サンプル例）、ファイル添付（PDF/Office/画像等）、Markdown 表示、Ctrl+Enter 送信 | `api/chat-stream.php`, `api/file-upload.php`, `api/systemcontexts.php` |
 | 2 | **文章を生成** | `app/generate.htm` | 「元になる情報」と「文章の形式」から業務文書のドラフトを生成（1000字以上想定）、コピー | Gemini SSE |
 | 3 | **翻訳** | `app/translate.htm` | 日本語・英語・中国語・韓国語・フランス語・スペイン語・ドイツ語への翻訳。即時翻訳 ON/OFF、コピー | Gemini SSE |
 | 4 | **画像を生成** | `app/image.htm` | Imagen 4.0 Fast による画像生成。チャット形式でプロンプト自動生成、手動プロンプト編集、ネガティブプロンプト、5種アスペクト比、14種スタイルプリセット、ダウンロード | `api/image-generate.php`, `api/chat-stream.php` |
@@ -59,16 +116,21 @@ photographic, anime, cinematic, digital-art, illustration, comic, watercolor, oi
 
 | # | アプリ名 | パス | 概要 | 主な技術 |
 |---|----------|------|------|----------|
-| 9 | **文章の校正・要約** | `app2/proofread.htm` | モード: 校正 / 推敲 / 要約。テキスト入力またはファイル添付（PDF/DOCX/PPTX/XLSX/TXT/CSV/画像） | `api2/chat-stream.php` |
+| 9 | **文章の校正・要約** | `app2/proofread.htm` | モード: 校正 / 推敲 / 要約。テキスト入力またはファイル添付（PDF/DOCX/PPTX/XLSX/TXT/CSV/画像） | `api2/chat-stream.php`, `api2/file-upload.php` |
 | 10 | **メール文案・作成** | `app2/email.htm` | タイトル・内容・スタイル（行政文書 / 丁寧 / カジュアル）からメール文案を生成 | `api2/chat-stream.php` |
-| 11 | **議会答弁の作成** | `app2/answer.htm` | 議会質問の要旨から答弁案ドラフトを生成。ナレッジ検索に基づく引用元表示 | `api2/dify-answer.php`（Dify） |
-| 12 | **補助金制度調査** | `app2/subsidy.htm` | 経済産業省 jGrants API で補助金・助成金を検索・一覧表示 | `api2/jgrants-proxy.php` |
-| 13 | **国立国会図書館サーチ** | `app2/tosho.htm` | 国立国会図書館サーチ API（SRU）で蔵書検索（キーワード・タイトル・著者・出版社） | NDL Search API（ブラウザから直接） |
-| 14 | **孤独・孤立対策 支援策** | `app2/kodoku.htm` | 孤独・孤立対策重点計画ナレッジ（143施策）を RAG 検索し引用付きで回答 | `api2/kodoku-chat.php` |
-| 15 | **行政事業レビューAI** | `app2/review.htm` | 事業概要書・予算/決算資料・成果報告書（PDF/Word/CSV/TXT）をアップロードし、5部構成（幹部向け要約・レビューシート・観点別採点・改善提案・追加確認事項）の行政事業レビューを自動生成。Wordテンプレート・サンプルデータ・コピー/テキスト/Word出力対応 | `api2/review.php`（Gemini SSE）、`api2/file-upload.php` |
-| 16 | **日本成長戦略** | `app3/app11.htm` | 国家戦略「日本成長戦略（案）」のナレッジベースに基づき、自治体・団体の事業をチャットで相談。マルチターン会話継続・回答下に引用元アコーディオン表示 | `app3/app11.php`（Dify） |
-| 17 | **骨太の方針2026** | `app3/app12.htm` | 「経済財政運営と改革の基本方針2026（原案）」のナレッジベースに基づき、国の予算をチャットで相談。マルチターン会話継続・回答下に引用元アコーディオン表示 | `app3/app12.php`（Dify） |
+| 11 | **公文書作成** | `app2/document.htm` | 公文書の形式（通知・依頼・回答等）に則った行政文書ドラフトを生成 | `api2/chat-stream.php` |
+| 12 | **議会答弁の作成** | `app2/answer.htm` | 議会質問の要旨から答弁案ドラフトを生成。ナレッジ検索に基づく引用元表示 | `api2/dify-answer.php`（Dify） |
+| 13 | **補助金制度調査** | `app2/subsidy.htm` | 経済産業省 jGrants API で補助金・助成金を検索・一覧表示。クイックタグ・募集状況/地域/従業員数フィルタ・詳細モーダル | `api2/jgrants-proxy.php` |
+| 14 | **国立国会図書館サーチ** | `app2/tosho.htm` | 国立国会図書館サーチ API（SRU）で蔵書検索（キーワード・タイトル・著者・出版社） | NDL Search API（ブラウザから直接） |
+| 15 | **総務省 相談Govbot** | `app2/govbot.htm` | 総務省提供の国・地方共通相談チャットボットを iframe 埋め込みで利用 | 外部チャットボット埋め込み（`govbot9.htm`） |
+| 16 | **政策評価AI** | `app2/seisakuhyouka.htm` | 政策文書をアップロードし、総務省ガイドラインに基づく8段階の政策評価レポートを自動生成 | `api2/chat-stream.php`, `api2/file-upload.php` |
+| 17 | **厚労省 介護保険QA** | `app2/kaigo.htm` | 厚生労働省の介護保険制度 QA チャットボットを iframe 埋め込みで利用 | 外部チャットボット埋め込み（`kaigo9.htm`） |
+| 18 | **行政事業レビューAI** | `app2/review.htm` | 事業概要書・予算/決算資料・成果報告書（PDF/Word/CSV/TXT）をアップロードし、5部構成（幹部向け要約・レビューシート・観点別採点・改善提案・追加確認事項）の行政事業レビューを自動生成。Wordテンプレート・サンプルデータ・コピー/テキスト/Word出力対応 | `api2/review.php`（Gemini SSE）、`api2/file-upload.php` |
+| 19 | **日本成長戦略** | `app3/app11.htm` | 国家戦略「日本成長戦略（案）」のナレッジベースに基づき、自治体・団体の事業をチャットで相談。マルチターン会話継続・回答下に引用元アコーディオン表示 | `app3/app11.php`（Dify） |
+| 20 | **骨太の方針2026** | `app3/app12.htm` | 「経済財政運営と改革の基本方針2026（原案）」のナレッジベースに基づき、国の予算をチャットで相談。マルチターン会話継続・回答下に引用元アコーディオン表示 | `app3/app12.php`（Dify） |
 
+> **補足1（ポータル未掲載アプリ）**: `app2/kodoku.htm`（孤独・孤立対策 支援策 — 重点計画ナレッジ143施策の RAG 検索・`api2/kodoku-chat.php`）はファイルとして残っていますが、現行ポータルのカード一覧には掲載していません。
+> **補足2（app3 のその他ファイル）**: `app3/` には教員向け「源内 for Teacher」系アプリ群（`app1.htm`〜`app121.htm`：AIチャット・テキストからパワポ・保護者向け文書・校内研修企画 等）と共通基盤 `gemini_core.php` が同居しています。本ポータルから利用するのは `app11`（日本成長戦略）・`app12`（骨太の方針2026）の2つです。
 > 行政事業レビューAI の詳細な機能・操作マニュアルは [行政事業レビューAI 利用マニュアル](#行政事業レビューai-利用マニュアル) を参照してください。
 
 ### 行政書類の自動審査アプリ（`app4/`）
@@ -77,14 +139,14 @@ photographic, anime, cinematic, digital-art, illustration, comic, watercolor, oi
 
 | # | アプリ名 | パス | 概要 | 主な技術 |
 |---|----------|------|------|----------|
-| 18 | **ケアプラン適正性審査** | `app4/app13.htm` | 居宅・施設・介護予防のケアプラン（第1表〜第3表）を運営基準（第13条）に基づく9項目で採点。種別はドロップダウンで選択 | `app4/app13.php`（OpenAI SSE / gpt-5.4-nano） |
-| 19 | **個別支援計画 適正性審査** | `app4/app14.htm` | 障害福祉サービス（就労系・生活介護・GH・児童）の個別支援計画を、本人主体の目標設定・支援内容の整合性などで採点 | `app4/app14.php`（OpenAI SSE / gpt-5.4-nano） |
-| 20 | **運営指導コンプライアンス審査** | `app4/app15.htm` | 事業所（介護・障害・保育）の運営規程・重要事項説明書等を運営指導（実地指導）の観点で採点 | `app4/app15.php`（OpenAI SSE / gpt-5.4-nano） |
-| 21 | **国保税減免申請書 審査** | `app4/app16.htm` | 減免・軽減区分（災害・所得激減・非自発的失業・死亡等）を AI が自動判定し、その制度の枠組みで要件充足・添付書類・申請期限を採点 | `app4/app16.php`（OpenAI SSE / gpt-5.4-nano） |
-| 22 | **生活保護 面接相談アシスタント** | `app4/app17.htm` | 面接相談の聞き取りメモ（手書きメモの写真も可）から世帯状況を整理し、聞き取り充足度を9項目で採点。利用可能な他法他施策（年金・手当・住居確保給付金等）を Web 検索併用で提案。申請権侵害にあたる対応を検出 | `app4/app17.php`（OpenAI Responses SSE + web_search / gpt-5.4-nano） |
-| 23 | **生活保護 申請書類 審査** | `app4/app18.htm` | 保護申請書・資産申告書・収入無収入申告書の記載完全性・申告の整合性・添付書類・形式要件を採点し、要否判定に向けた調査事項（資産・扶養・収入・就労可能性）を提示 | `app4/app18.php`（OpenAI SSE / gpt-5.4-nano） |
-| 24 | **生活保護 開始後支援 審査** | `app4/app19.htm` | 業務の種類（援助方針／ケース記録・収入申告／停廃止）をドロップダウンで切替。法63条返還・法78条徴収の該当性、停廃止手続（文書指示→弁明の機会→処分）の適正性を業務別基準で採点 | `app4/app19.php`（OpenAI SSE / gpt-5.4-nano・業務別プロンプト切替） |
-| 25 | **軽自動車税・原付手続 審査** | `app4/app20.htm` | 業務の種類（減免申請／名義変更／廃車・標識返納／税止め・課税照会）をドロップダウンで切替。手帳等級の該当性、譲渡証明・車台番号の一致、理由別書類（弁償届・盗難届）、賦課期日（4/1）との関係を業務別基準で採点。税額の計算は行わない | `app4/app20.php`（OpenAI SSE / gpt-5.4-nano・業務別プロンプト切替） |
+| 21 | **ケアプラン適正性審査** | `app4/app13.htm` | 居宅・施設・介護予防のケアプラン（第1表〜第3表）を運営基準（第13条）に基づく9項目で採点。種別はドロップダウンで選択 | `app4/app13.php`（OpenAI SSE / gpt-5.4-nano） |
+| 22 | **個別支援計画 適正性審査** | `app4/app14.htm` | 障害福祉サービス（就労系・生活介護・GH・児童）の個別支援計画を、本人主体の目標設定・支援内容の整合性などで採点 | `app4/app14.php`（OpenAI SSE / gpt-5.4-nano） |
+| 23 | **運営指導コンプライアンス審査** | `app4/app15.htm` | 事業所（介護・障害・保育）の運営規程・重要事項説明書等を運営指導（実地指導）の観点で採点 | `app4/app15.php`（OpenAI SSE / gpt-5.4-nano） |
+| 24 | **国保税減免申請書 審査** | `app4/app16.htm` | 減免・軽減区分（災害・所得激減・非自発的失業・死亡等）を AI が自動判定し、その制度の枠組みで要件充足・添付書類・申請期限を採点 | `app4/app16.php`（OpenAI SSE / gpt-5.4-nano） |
+| 25 | **生活保護 面接相談アシスタント** | `app4/app17.htm` | 面接相談の聞き取りメモ（手書きメモの写真も可）から世帯状況を整理し、聞き取り充足度を9項目で採点。利用可能な他法他施策（年金・手当・住居確保給付金等）を Web 検索併用で提案。申請権侵害にあたる対応を検出 | `app4/app17.php`（OpenAI Responses SSE + web_search / gpt-5.4-nano） |
+| 26 | **生活保護 申請書類 審査** | `app4/app18.htm` | 保護申請書・資産申告書・収入無収入申告書の記載完全性・申告の整合性・添付書類・形式要件を採点し、要否判定に向けた調査事項（資産・扶養・収入・就労可能性）を提示 | `app4/app18.php`（OpenAI SSE / gpt-5.4-nano） |
+| 27 | **生活保護 開始後支援 審査** | `app4/app19.htm` | 業務の種類（援助方針／ケース記録・収入申告／停廃止）をドロップダウンで切替。法63条返還・法78条徴収の該当性、停廃止手続（文書指示→弁明の機会→処分）の適正性を業務別基準で採点 | `app4/app19.php`（OpenAI SSE / gpt-5.4-nano・業務別プロンプト切替） |
+| 28 | **軽自動車税・原付手続 審査** | `app4/app20.htm` | 業務の種類（減免申請／名義変更／廃車・標識返納／税止め・課税照会）をドロップダウンで切替。手帳等級の該当性、譲渡証明・車台番号の一致、理由別書類（弁償届・盗難届）、賦課期日（4/1）との関係を業務別基準で採点。税額の計算は行わない | `app4/app20.php`（OpenAI SSE / gpt-5.4-nano・業務別プロンプト切替） |
 
 #### 審査アプリ共通の機能
 
@@ -151,95 +213,219 @@ photographic, anime, cinematic, digital-art, illustration, comic, watercolor, oi
 
 （2026年7月・gpt-5.4-nano・判定固定記録方式での実測値。タグはこの実測ランクに合わせて各アプリのサンプル一覧に表示）
 
-### バックエンド API 一覧
+### 地域未来交付金・地域防災 申請書作成アプリ（`app5/`）
 
-#### `api/`（デジタル庁系アプリ向け）
+内閣府「地域未来交付金」（地域未来推進型・デジタル実装型 TYPE A/V/S）および「地域防災緊急整備型（災害時備蓄資材等整備事業）」の申請書・実施計画書のたたき台を、Web 検索を交えた4段階ワークフローで AI が作成するアプリ群。
 
-| ファイル | 用途 |
-|----------|------|
-| `auth.php` | ログイン認証 |
-| `chat-stream.php` | Gemini / OpenAI の SSE チャットプロキシ |
-| `predict.php` | 非ストリーミング応答 |
-| `image-generate.php` | Imagen 4.0 画像生成 |
-| `transcribe.php` | 音声文字起こし |
-| `file-upload.php` / `file-delete.php` | チャット等のファイル添付 |
-| `systemcontexts.php` | システムプロンプト CRUD（`systemcontexts.json`） |
+| # | アプリ名 | パス | 概要 | 主な技術 |
+|---|----------|------|------|----------|
+| 29 | **地域未来推進型 申請書作成** | `app5/app-mirai.htm` | 地場産業・産業クラスター・雇用創出・関係人口づくり等、地域独自の取組を支援する区分。実施計画（全13項目）のたたき台を4段階で作成 | `api2/chat-stream.php` + `suishin.md` |
+| 30 | **TYPE A 申請書作成** | `app5/app21.htm` | デジタル実装型・地域住民等利用推進型（補助率1/2・上限 国費1億円）。住民裨益・継続利用を重視した申請書を作成 | `api2/chat-stream.php` + `typea.md`/`typeall.md` |
+| 31 | **TYPE V 申請書作成** | `app5/app22.htm` | 先進的デジタル公共財活用型（補助率2/3・上限 国費4億円）。複数自治体連携・データ連携基盤・モデル性を踏まえた申請書を作成 | `api2/chat-stream.php` + `typev.md`/`typeall.md` |
+| 32 | **TYPE S 申請書作成** | `app5/app23.htm` | デジタル行財政改革特化型（補助率3/4・全国6件程度）。先導性・EBPM・標準化を踏まえた申請書を作成 | `api2/chat-stream.php` + `types.md`/`typeall.md` |
+| 33 | **地域防災緊急整備型 実施計画書作成** | `app5/app-bousai.htm` | 災害時備蓄資材等整備事業。避難所環境の改善（TKB・暑さ寒さ対策）に向けた資機材整備の実施計画書（与謝野町記入例準拠・全9項目・KPI3か年）を作成 | `api2/chat-stream.php` + `bousai.md` |
+| 34 | **地域未来交付金 解説** | `app5/app-kaisetsu.htm` | 地域未来推進型・TYPE A/V/S・地域防災緊急整備型の要件・補助率・評価観点・加点ポイントを1ページで解説。各作成アプリへの起動ボタン付き | 静的ページ |
 
-#### `api2/`（自治体追加アプリ向け）
+#### 交付金アプリ共通の4段階ワークフロー
 
-| ファイル | 用途 |
-|----------|------|
-| `chat-stream.php` | Gemini / OpenAI の SSE チャットプロキシ |
-| `dify-answer.php` | 議会答弁（Dify SSE → NDJSON、引用元付き） |
-| `kodoku-chat.php` | 孤独・孤立対策チャット（ナレッジ注入 + Gemini SSE） |
-| `jgrants-proxy.php` | jGrants API プロキシ |
-| `review.php` | 行政事業レビュー生成（Gemini SSE → NDJSON。PDF/画像/テキストは inlineData、Office はテキスト抽出して送信） |
-| `file-upload.php` / `file-delete.php` | ファイル添付（校正・行政事業レビュー等） |
+```
+① 事業概要        … 入力内容を制度趣旨に沿って整形（gemini-3.1-flash-lite）
+② 現状調査        … Web検索（google_search）で自治体の統計・課題・計画を調査（gemini-2.5-flash）
+③ 実施計画案      … 制度ノウハウ（.md）＋①②を基に全項目のたたき台を生成 ＋ 微修正モーダル
+④ 完全版（赤ボタン）… 検索併用で 5000〜6000 字以上の完全版を生成（約2分）→ コピー / テキスト / Word 出力
+```
 
-#### その他
+- 制度の要件・評価基準・出力フォーマットは `app5/*.md`（`gaiyou` / `typeall` / `typea` / `typev` / `types` / `suishin` / `bousai`）にノウハウとして整備し、システムプロンプトに注入
+- 完全版は Markdown 記法を使わない「そのまま Word に貼れる」文書形式で出力
+- 関連の静的解説サイトとして `koufukin2026/`（地域未来交付金 2026 デジタル実装型の解説 HTML 一式）を同梱
+
+---
+
+## バックエンド API 仕様
+
+### `api/`（デジタル庁系アプリ向け）
+
+| ファイル | メソッド | 用途 | 備考 |
+|----------|---------|------|------|
+| `auth.php` | POST | ログイン認証（`GENNAI_PASSWORD` と照合） | IPごと10回失敗→10分ロック。`hash_equals` 比較 |
+| `chat-stream.php` | POST | Gemini / OpenAI の SSE チャットプロキシ（NDJSON 変換） | モデル切替・検索グラウンディング・ファイル添付・システムプロンプト |
+| `predict.php` | POST | 非ストリーミング応答（タイトル生成等） | |
+| `image-generate.php` | POST | Imagen 4.0 画像生成（`:predict`） | |
+| `transcribe.php` | POST | 音声文字起こし（Gemini File API・50MBまで） | 音声拡張子ホワイトリスト＋実行ファイル拒否 |
+| `file-upload.php` | POST | チャット等のファイル添付保存 | 8層検証（下記セキュリティ仕様） |
+| `file-delete.php` | POST | 添付ファイル削除 | `basename()` でパストラバーサル対策 |
+| `systemcontexts.php` | GET/POST/PUT/DELETE | システムプロンプト CRUD（`systemcontexts.json`） | オーナーID必須。他人の分は取得・変更・削除不可。タイトル200字/本文2万字/1オーナー100件の上限 |
+
+### `api2/`（自治体系アプリ向け）
+
+| ファイル | メソッド | 用途 | 備考 |
+|----------|---------|------|------|
+| `chat-stream.php` | POST | Gemini / OpenAI の SSE チャットプロキシ | `api/.env` を共用。app2 の生成系・app5 の交付金系が使用 |
+| `dify-answer.php` | POST | 議会答弁（Dify SSE → NDJSON、引用元付き） | |
+| `kodoku-chat.php` | POST | 孤独・孤立対策チャット（ナレッジ注入 + Gemini SSE） | ポータル未掲載アプリ用 |
+| `jgrants-proxy.php` | GET | jGrants API プロキシ | API キー不要 |
+| `review.php` | POST | 行政事業レビュー生成（Gemini SSE → NDJSON） | PDF/画像/テキストは inlineData、Office はテキスト抽出して送信 |
+| `file-upload.php` | POST | ファイル添付（校正・政策評価・レビュー等） | 8層検証（api/ と同一実装） |
+| `file-delete.php` | POST | 添付ファイル削除 | |
+
+### アプリ個別バックエンド
 
 | パス | 用途 |
 |------|------|
-| `rag/rag_api.php` | 行政実務用 RAG |
-| `lawsy/lawsy_api.php` | 法令AI Lawsy |
+| `app3/app11.php` / `app3/app12.php` | 日本成長戦略 / 骨太の方針2026（Dify プロキシ。`DIFY_GROWTH_KEY` / `DIFY_HONEBUTO_KEY`） |
+| `app3/gemini_core.php` | app3 系アプリの共通 Gemini プロキシ基盤 |
+| `app4/app13.php`〜`app20.php` | 各審査アプリ（OpenAI SSE・業務別プロンプト・多数決判定） |
 | `app4/ocr.php` | 画像・スキャンPDFの OCR テキスト化（審査アプリ共通。手書きON時は高精度モデルに切替） |
-| `log/count.php` | 利用カウント（CSV 累積） |
+| `rag/rag_api.php` | 行政実務用 RAG（`ragcore.php`・SQLite ベクトルDB `rag_vectors.db`） |
+| `lawsy/lawsy_api.php` | 法令AI Lawsy（e-Gov 法令 API 連携） |
+| `log/count.php` | 利用カウント（CSV 累積・ファイルロック） |
+| `review/review.php` | 行政事業レビュー簡易版（独立アプリ・専用 `.env`。詳細は `review/README.md`） |
 
-### ディレクトリ構成（Web アプリ部分）
+### ストリーミング形式（NDJSON）
+
+生成系 API は 1 行 1 JSON の NDJSON でストリーミング返却します。
+
+```
+{"text":"生成テキストの断片","stopReason":"","trace":"","sessionId":""}
+{"text":"…","stopReason":"end_turn","trace":"","sessionId":""}
+{"error":"エラーメッセージ"}   ← 異常時
+```
+
+---
+
+## セキュリティ仕様
+
+多層防御の考え方で、以下を実装しています。
+
+### 1. 認証・アクセス制御
+
+| 対策 | 内容 |
+|------|------|
+| パスワードログイン | `api/.env` の `GENNAI_PASSWORD`（カンマ区切りで複数可）と照合。`sessionStorage` 保持でタブを閉じると失効 |
+| ブルートフォース対策 | IP ごとに失敗回数を記録（`api/auth-attempts.json`）。**10回失敗で10分ロック**（HTTP 429）。成功でリセット |
+| タイミング攻撃対策 | パスワード比較に `hash_equals` を使用 |
+| 保存プロンプトの分離 | 端末ごとの匿名オーナーID（`localStorage`）で保存プロンプトを分離。一覧・変更・削除はオーナー一致時のみ許可（不一致は 403） |
+
+### 2. ファイルアップロードの8層防御（`file-upload.php`）
+
+```
+[1] クライアント: accept 属性 + JS チェック（UX用）
+[2] サーバー: UPLOAD_ERR + is_uploaded_file() 検証
+[3] サーバー: サイズ上限（20MB。文字起こしは50MB）
+[4] サーバー: 拡張子ホワイトリスト（二重拡張子・NULLバイト対策込み）
+[5] サーバー: finfo による実MIME判定（$_FILES['type'] は信用しない）
+[6] サーバー: マジックバイト検査（MZ/ELF/#! の実行ファイル拒否・txt/csv への PHP コード混入拒否）
+[7] 保存時: random_bytes によるランダムリネーム（拡張子は検証済みの値のみ）
+[8] 保存先: uploads/.htaccess でスクリプト実行を完全禁止
+```
+
+**許可する拡張子（ホワイトリスト方式）**: pdf / docx / pptx / xlsx / csv / txt / png / jpg / jpeg / gif / webp / bmp / heic / heif（文字起こしは mp3 / mp4 / wav / flac / ogg / amr / webm / m4a）。EXE・PHP・スクリプト等はサーバー側で確実に拒否されます。
+
+### 3. 通信の保護（HTTPS 強制 + HSTS）
+
+ルートの `.htaccess` で以下を設定しています。
+
+```apache
+# HTTP → HTTPS 301 リダイレクト
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# HSTS（HTTPS 接続時のみ・エラーページ含む全レスポンスに適用）
+Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+```
+
+- 初回アクセスは 301 で HTTPS に誘導、以降1年間はブラウザが HTTP 接続を HTTPS に自動変換（SSL Stripping・中間者攻撃対策）
+- `includeSubDomains` / `preload` は影響範囲が大きいため付与していません
+
+### 4. API・サーバー設定
+
+| 対策 | 内容 |
+|------|------|
+| CORS 制限 | 全 API から `Access-Control-Allow-Origin: *` を撤去。同一オリジンのアプリのみが利用可能（他サイトのブラウザ JS からの API 悪用・クォータ盗用を遮断） |
+| API キー秘匿 | 全キーは `api/.env` に集約し `.htaccess` の `<Files ".env"> Require all denied` で直接アクセス拒否。Git 追跡外（`.gitignore`）。Gemini はヘッダー認証（URL に `?key=` を含めない） |
+| 機微ファイル保護 | `api/`・`api2/` の `.htaccess` で `.env` / `*.json`（保存プロンプト・レート制限記録）/ `.user.ini` / `debug.log` への直接アクセスを拒否 |
+| ディレクトリ一覧禁止 | ルート `.htaccess` で `Options -Indexes` |
+| 入力上限 | 保存プロンプト: タイトル200字・本文2万字・1オーナー100件（スパム・ファイル肥大対策） |
+| エラー情報の非漏えい | `display_errors` 無効化。PHP エラーは `debug.log`（アクセス拒否済み）へ。ユーザーには汎用メッセージのみ |
+| 検索エンジン除外 | 全ページ `<meta name="robots" content="noindex,nofollow">` |
+
+---
+
+## ディレクトリ構成
 
 ```
 genai107/
-├── index.htm              # ログイン画面
-├── app/                   # デジタル庁 提供AIアプリ（8機能）
-├── app2/                  # 自治体専用追加アプリ（6機能）
-├── app3/                  # 日本成長戦略・骨太の方針チャット等
-├── app4/                  # 行政書類の自動審査アプリ（審査8機能・ocr.php・samples/）
-├── api/                   # PHP API（.env はここに配置）
-├── api2/                  # 自治体向け PHP API
-├── shared/                # 共通 JS/CSS（layout, auth, api-client, markdown, history）
-├── rag/                   # RAG エンジン・データ
-├── lawsy/                 # Lawsy API
-├── log/                   # アクセスログ
+├── index.htm              # ログイン画面（パスワード認証・利用同意）
+├── .htaccess              # HTTPS強制・HSTS・セキュリティヘッダー・一覧表示禁止
+├── app/                   # デジタル庁 提供AIアプリ（8機能 + main/apps/history）
+├── app2/                  # 自治体専用追加アプリ（校正・メール・公文書・答弁・補助金・
+│                          #   図書館・Govbot・政策評価・介護QA・行政事業レビュー 等）
+├── app3/                  # 日本成長戦略・骨太の方針チャット（app11/app12）＋
+│                          #   源内 for Teacher 系アプリ群・gemini_core.php
+├── app4/                  # 行政書類の自動審査アプリ（審査8機能・ocr.php・samples/・verdicts/）
+├── app5/                  # 地域未来交付金・地域防災 申請書作成アプリ（6機能・制度ノウハウ .md）
+├── api/                   # PHP API（.env はここに配置。uploads/ は実行禁止）
+├── api2/                  # 自治体向け PHP API（.env は api/ と共用）
+├── shared/                # 共通 JS/CSS（layout107 / auth / api-client / markdown /
+│                          #   history-store / dads107.css）
+├── rag/                   # RAG エンジン・SQLite ベクトルDB・ナレッジデータ
+├── lawsy/                 # 法令AI Lawsy API
+├── log/                   # アクセスログ（count.php・CSV）
+├── koufukin2026/          # 地域未来交付金 2026 静的解説サイト（HTML/画像/ODS）
+├── review/                # 行政事業レビューAI 簡易独立版（専用 .env・別 README）
 ├── images/                # ファビコン等
 ├── azure/                 # Azure 向け開発テンプレート（別 README）
 ├── google-cloud/          # GCP Lawsy 実装テンプレート（別 README）
-└── aws/                   # AWS RAG 開発テンプレート（別 README）
+├── aws/                   # AWS RAG 開発テンプレート（別 README）
+└── genai-web/             # 源内 Web 参照実装（Git 追跡外）
 ```
 
-### セットアップ（Web アプリ）
+---
 
-1. リポジトリを PHP 対応の Web サーバーに配置する
+## セットアップ（Web アプリ）
+
+1. リポジトリを PHP 対応（PHP 7.x 以上・Apache）の Web サーバーに配置する
 2. `api/.env` を作成し、利用する機能に応じてキーを設定する
 
 ```env
 # 必須（多くのアプリで使用）
 GEMINI_API_KEY=your-gemini-api-key
-GENNAI_PASSWORD=kaiin
+GENNAI_PASSWORD=kaiin            # カンマ区切りで複数パスワード可
 
-# チャットで OpenAI を使う場合
+# チャットの OpenAI モード・行政書類審査アプリ（app4）を使う場合
 OPENAI_API_KEY=your-openai-api-key
 
-# 議会答弁（Dify アプリ連携）
-DIFY_ANSWER_KEY=your-dify-api-key
+# Dify 連携アプリを使う場合
+DIFY_ANSWER_KEY=your-dify-api-key      # 議会答弁（app2/answer.htm）
+DIFY_GROWTH_KEY=your-dify-api-key      # 日本成長戦略（app3/app11.htm）
+DIFY_HONEBUTO_KEY=your-dify-api-key    # 骨太の方針2026（app3/app12.htm）
 
-# 任意（モデル指定）
+# 任意（モデル指定・省略時は既定値）
 GEMINI_MODEL=gemini-3.1-flash-lite
+OPENAI_MODEL=gpt-5.4-nano              # 審査アプリの標準モデル
+OPENAI_MODEL_SEARCH=gpt-5.4-nano       # Web検索併用審査（app17）
+OPENAI_MODEL_HANDWRITING=gpt-5.4-mini  # 手書きOCR
 ```
 
-3. ブラウザで `index.htm` を開き、`.env` の `GENNAI_PASSWORD` でログインする
-4. `app/main.htm` から各アプリを利用する
+3. `.htaccess`（ルート・`api/`・`api2/`・各 `uploads/`）が配置されていることを確認する（`.env` 保護・HTTPS 強制・アップロード実行禁止に必須）
+4. ブラウザで `index.htm` を開き、`.env` の `GENNAI_PASSWORD` でログインする
+5. `app/main.htm` から各アプリを利用する
 
-### 注意事項（全アプリ共通）
+### 動作確認（デプロイ後のチェックリスト）
 
-- AI の出力は必ずしも正確ではありません。重要な判断・公表前には原典・担当部署での確認が必要です
-- 機密性の高い情報（機密性3情報等）の入力は避けてください
-- `api/.env` には API キーを含めます。公開リポジトリへのコミットや Web からの直接参照はしないでください（`.htaccess` で `.env` へのアクセスを拒否）
+- [ ] `http://` でアクセスすると `https://` に 301 リダイレクトされる
+- [ ] `curl -sI https://<ドメイン>/ | grep -i strict` で HSTS ヘッダーが返る
+- [ ] `https://<ドメイン>/api/.env` にアクセスすると 403 になる
+- [ ] ログイン → チャット送信・ファイル添付・保存プロンプトが動作する
+- [ ] `.exe` 等を添付すると「このファイル形式は許可されていません」と拒否される
 
 ---
 
 ## 行政事業レビューAI 利用マニュアル
 
-事業の資料（PDF/Word/CSV/TXT）をアップロードするだけで、行政事業レビューに必要な観点を AI が整理・採点し、改善提案までを含む 5 部構成のレポートを自動生成するアプリです（`app2/review.htm`）。  
+事業の資料（PDF/Word/CSV/TXT）をアップロードするだけで、行政事業レビューに必要な観点を AI が整理・採点し、改善提案までを含む 5 部構成のレポートを自動生成するアプリです（`app2/review.htm`）。
 予算編成期の事前点検、レビューシートの下書き、幹部説明用の要約づくりなどを想定しています。
 
 ### 主な機能
@@ -294,9 +480,18 @@ GEMINI_MODEL=gemini-3.1-flash-lite
 
 ---
 
+## 注意事項（全アプリ共通）
+
+- AI の出力は必ずしも正確ではありません。重要な判断・公表前には原典・担当部署での確認が必要です
+- 交付金・補助金アプリの出力はたたき台です。最新の公募要領・要件は必ず公式資料で確認してください
+- 機密性の高い情報（機密性3情報等）の入力は避けてください
+- `api/.env` には API キーを含めます。公開リポジトリへのコミットや Web からの直接参照はしないでください（`.gitignore` で追跡除外・`.htaccess` でアクセス拒否済み）
+
+---
+
 ## 公開中の行政実務用 AI アプリ（クラウド開発テンプレート）
 
-源内で利用できる行政実務用 AI アプリは、源内 Web との間のプロトコルに準拠すれば、源内 Web と独立した環境で構築ができ、GUI 等の操作で源内への追加登録ができます。  
+源内で利用できる行政実務用 AI アプリは、源内 Web との間のプロトコルに準拠すれば、源内 Web と独立した環境で構築ができ、GUI 等の操作で源内への追加登録ができます。
 以下、ガバメントクラウドに採択されたクラウドサービスごとに、どのような行政実務用 AI アプリを本リポジトリで公開しているか、について簡単にまとめたものです。
 
 ### Microsoft Azure
@@ -327,7 +522,7 @@ GEMINI_MODEL=gemini-3.1-flash-lite
 
 #### 報告対象外のもの
 
-以下については、Issue での報告はご遠慮ください。  
+以下については、Issue での報告はご遠慮ください。
 テンプレートに合致しない Issue はクローズさせていただく場合があります。
 
 - 機能追加の要望・提案
@@ -349,7 +544,7 @@ GEMINI_MODEL=gemini-3.1-flash-lite
 
 ## このソースコード・ドキュメント等の性格
 
-このリポジトリ（ソースコードおよびドキュメント）は、デジタル庁が作成し、公開するものです。  
+このリポジトリ（ソースコードおよびドキュメント）は、デジタル庁が作成し、公開するものです。
 公的資源として、OSS コミュニティのすべての方にオープンにしております。そのため、以下のことは禁止します。
 
 - 特定の思想・団体・企業を支持または排除するような行為

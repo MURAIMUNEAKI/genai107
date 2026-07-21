@@ -10,3 +10,9 @@ php_value memory_limit 256M
 <Files "debug.log">
   Require all denied
 </Files>
+<Files ".env">
+  Require all denied
+</Files>
+<Files "*.json">
+  Require all denied
+</Files>
