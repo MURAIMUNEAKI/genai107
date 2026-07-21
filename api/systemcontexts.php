@@ -22,9 +22,19 @@ function writeCtx($items) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// GET — 一覧取得（新しい順）
+// GET — 一覧取得（新しい順・自分のオーナー分のみ）
 if ($method === 'GET') {
+    $owner = trim($_GET['owner'] ?? '');
+    if ($owner === '') {
+        // オーナー未指定は他人のプロンプトを漏らさないため空を返す
+        echo json_encode([]);
+        exit;
+    }
     $items = readCtx();
+    // 自分の ownerId と一致するもののみ（owner 情報のない既存データは非表示）
+    $items = array_values(array_filter($items, function($i) use ($owner) {
+        return isset($i['ownerId']) && $i['ownerId'] === $owner;
+    }));
     usort($items, function($a, $b) { return ($b['createdAt'] ?? 0) - ($a['createdAt'] ?? 0); });
     echo json_encode($items);
     exit;
@@ -36,9 +46,15 @@ $input = json_decode(file_get_contents('php://input'), true);
 if ($method === 'POST') {
     $title = trim($input['title'] ?? '');
     $prompt = trim($input['systemContext'] ?? '');
+    $ownerId = trim($input['ownerId'] ?? '');
     if (!$title || !$prompt) {
         http_response_code(400);
         echo json_encode(['error' => 'タイトルとプロンプトは必須です']);
+        exit;
+    }
+    if (!$ownerId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'オーナーIDは必須です']);
         exit;
     }
     $items = readCtx();
@@ -46,6 +62,7 @@ if ($method === 'POST') {
         'id' => 'sc_' . uniqid(),
         'title' => $title,
         'systemContext' => $prompt,
+        'ownerId' => $ownerId,
         'createdAt' => time()
     ];
     $items[] = $newItem;
@@ -54,37 +71,56 @@ if ($method === 'POST') {
     exit;
 }
 
-// PUT — タイトル変更
+// PUT — タイトル変更（自分のオーナー分のみ）
 if ($method === 'PUT') {
     $id = $input['id'] ?? '';
     $title = trim($input['title'] ?? '');
-    if (!$id || !$title) {
+    $ownerId = trim($input['ownerId'] ?? '');
+    if (!$id || !$title || !$ownerId) {
         http_response_code(400);
-        echo json_encode(['error' => 'IDとタイトルは必須です']);
+        echo json_encode(['error' => 'ID・タイトル・オーナーIDは必須です']);
         exit;
     }
     $items = readCtx();
+    $found = false;
     foreach ($items as &$item) {
-        if ($item['id'] === $id) {
+        if ($item['id'] === $id && ($item['ownerId'] ?? '') === $ownerId) {
             $item['title'] = $title;
+            $found = true;
             break;
         }
+    }
+    unset($item);
+    if (!$found) {
+        http_response_code(403);
+        echo json_encode(['error' => '対象のプロンプトが見つからないか、変更する権限がありません']);
+        exit;
     }
     writeCtx($items);
     echo json_encode(['ok' => true]);
     exit;
 }
 
-// DELETE — 削除
+// DELETE — 削除（自分のオーナー分のみ）
 if ($method === 'DELETE') {
     $id = $input['id'] ?? ($_GET['id'] ?? '');
-    if (!$id) {
+    $ownerId = trim($input['ownerId'] ?? ($_GET['owner'] ?? ''));
+    if (!$id || !$ownerId) {
         http_response_code(400);
-        echo json_encode(['error' => 'IDは必須です']);
+        echo json_encode(['error' => 'IDとオーナーIDは必須です']);
         exit;
     }
     $items = readCtx();
-    $items = array_values(array_filter($items, function($i) use ($id) { return $i['id'] !== $id; }));
+    $before = count($items);
+    // id が一致し、かつ自分の ownerId のものだけ削除する
+    $items = array_values(array_filter($items, function($i) use ($id, $ownerId) {
+        return !($i['id'] === $id && ($i['ownerId'] ?? '') === $ownerId);
+    }));
+    if (count($items) === $before) {
+        http_response_code(403);
+        echo json_encode(['error' => '対象のプロンプトが見つからないか、削除する権限がありません']);
+        exit;
+    }
     writeCtx($items);
     echo json_encode(['ok' => true]);
     exit;

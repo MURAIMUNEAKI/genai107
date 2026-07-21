@@ -657,6 +657,12 @@ function generateTitle() {
 
 /* ---------- System Prompt CRUD ---------- */
 var SYSCTX_API = '../api/systemcontexts.php';
+// 端末ごとの匿名オーナーID（自分が保存したプロンプトだけを表示するために使用）
+var OWNER_ID = localStorage.getItem('gennai_owner');
+if (!OWNER_ID) {
+  OWNER_ID = 'u_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+  localStorage.setItem('gennai_owner', OWNER_ID);
+}
 var openPromptListBtn = document.getElementById('openPromptListBtn');
 var savePromptBtn = document.getElementById('savePromptBtn');
 var promptListOverlay = document.getElementById('promptListOverlay');
@@ -733,7 +739,7 @@ promptListOverlay.addEventListener('click', function(e) {
 function loadSavedPrompts() {
   savedPromptList.innerHTML = '';
   savedPromptEmpty.style.display = '';
-  fetch(SYSCTX_API)
+  fetch(SYSCTX_API + '?owner=' + encodeURIComponent(OWNER_ID))
     .then(function(res) { return res.json(); })
     .then(function(items) {
       if (!items.length) { savedPromptEmpty.style.display = ''; return; }
@@ -797,7 +803,7 @@ function startRename(li, item) {
       fetch(SYSCTX_API, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: item.id, title: newTitle })
+        body: JSON.stringify({ id: item.id, title: newTitle, ownerId: OWNER_ID })
       }).then(function() { loadSavedPrompts(); });
     }
     wrap.remove();
@@ -827,7 +833,7 @@ document.getElementById('confirmDeletePrompt').addEventListener('click', functio
   fetch(SYSCTX_API, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: deleteTarget.id })
+    body: JSON.stringify({ id: deleteTarget.id, ownerId: OWNER_ID })
   }).then(function() {
     deletePromptOverlay.classList.remove('open');
     btn.disabled = false;
@@ -920,7 +926,7 @@ document.getElementById('confirmSavePrompt').addEventListener('click', function(
   fetch(SYSCTX_API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title: title, systemContext: body })
+    body: JSON.stringify({ title: title, systemContext: body, ownerId: OWNER_ID })
   }).then(function(res) { return res.json(); })
     .then(function(data) {
       btn.disabled = false;

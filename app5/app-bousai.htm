@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地域防災緊急整備型 実施計画書作成【災害時備蓄資材等整備事業】- 源内 for Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--solid-gray-50:#f8f8fb;--solid-gray-100:#f1f1f4;--solid-gray-300:#d8d8db;--solid-gray-420:#b4b4b7;--solid-gray-536:#8a8a8d;--solid-gray-600:#6e6e71;--solid-gray-800:#1a1a1c;--blue-50:#eff5ff;--blue-900:#0017c1;--blue-1000:#000fa8;--red-800:#b71c1c;--yellow-300:#ffcc00;--type-color:#dc2626;--type-color-d:#b91c1c;--header-height:3.5rem}
+@media(min-width:1024px){:root{--header-height:3.75rem}}
+*{margin:0;padding:0;box-sizing:border-box}html{height:100%}
+body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:var(--solid-gray-800);height:100%;overflow:hidden;background:#e8f4fc}
+
+.app-shell{display:grid;height:100vh;width:100vw;grid-template-rows:auto minmax(0,1fr);overflow:clip}
+.app-header{display:flex;align-items:center;height:var(--header-height);border-bottom:1px solid var(--solid-gray-420);background:#fff;padding:0 1rem}
+.back-btn{padding:6px 24px;background:#ffd600;color:#1a1a2e;font-weight:700;font-size:14px;border:2px solid #e6c200;border-radius:999px;cursor:pointer;font-family:inherit;margin-right:1rem}
+.back-btn:hover{background:#ffca00}
+.app-logo{font-size:1.05rem;font-weight:700;color:#111827;text-decoration:none}
+@media(min-width:1024px){.app-logo{font-size:1.3rem}}
+
+.app-main{overflow-y:auto;scrollbar-gutter:stable}
+/* PCは左右分割、スマホは縦積み（1カラム）で全体が長く縦スクロール */
+.split{display:flex;flex-direction:column;min-height:100%}
+@media(min-width:768px){.split{flex-direction:row;height:100%}}
+.split-left{flex:5;padding:1.5rem;overflow-y:auto;background:#e8f4fc}
+@media(min-width:768px){.split-left{border-right:1px solid var(--solid-gray-420)}}
+.split-right{flex:5;padding:1.5rem;background:#e8f4fc;display:flex;flex-direction:column;gap:.75rem}
+@media(min-width:768px){.split-right{overflow:hidden}}
+
+.exapp-title{font-size:1.2rem;font-weight:700;margin-bottom:.35rem}
+@media(min-width:1024px){.exapp-title{font-size:1.45rem}}
+.type-badge{display:inline-block;background:var(--type-color);color:#fff;font-weight:700;font-size:.8rem;border-radius:999px;padding:.2rem .8rem;margin-bottom:.75rem}
+
+.info-box{background:#fff;border:1px solid var(--solid-gray-300);border-radius:8px;padding:.875rem 1rem;margin-bottom:1.25rem}
+.info-box summary{font-weight:700;cursor:pointer;font-size:.9375rem}
+.info-box .body{font-size:.85rem;color:var(--solid-gray-600);line-height:1.8;margin-top:.6rem}
+.info-box .body ul{padding-left:1.2rem;margin:.4rem 0}
+.doc-link{display:inline-block;margin-bottom:1rem;color:var(--blue-900);font-weight:700;font-size:.875rem;text-decoration:none}
+.doc-link:hover{text-decoration:underline}
+
+.form-field{display:flex;flex-direction:column;gap:.375rem;margin-bottom:1rem}
+.dads-label{font-size:.95rem;font-weight:700;color:var(--solid-gray-800)}
+.dads-required{font-size:.8rem;font-weight:400;color:var(--red-800);margin-left:.4rem}
+.dads-optional{font-size:.8rem;font-weight:400;color:var(--solid-gray-600);margin-left:.4rem}
+.dads-support{font-size:.8rem;color:var(--solid-gray-600)}
+input[type="text"],select,textarea{width:100%;border-radius:8px;border:2px solid #000;padding:.65rem .8rem;font-size:1rem;line-height:1.6;font-family:inherit;background:#fff;color:#0f172a}
+textarea{resize:vertical;min-height:72px}
+select{appearance:none;height:3rem;padding-right:2.5rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%231a1a1c' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--yellow-300);outline-offset:1px;border-color:var(--type-color)}
+
+.btn-area{display:flex;justify-content:center;margin-top:1rem}
+.dads-btn{min-width:14rem;min-height:3rem;border-radius:8px;padding:.75rem 1rem;font-size:1.05rem;font-weight:700;background:var(--type-color);color:#fff;border:none;cursor:pointer;font-family:inherit;transition:background .15s}
+.dads-btn:hover{background:var(--type-color-d)}
+.dads-btn:disabled{background:var(--solid-gray-300);color:var(--solid-gray-50);cursor:not-allowed}
+
+.result-header{font-size:1.1rem;font-weight:700}
+.result-box{flex:1;border-radius:8px;border:1px solid var(--solid-gray-420);padding:1.25rem;background:#fff;min-height:120px}
+@media(min-width:768px){.result-box{overflow-y:auto}}
+.result-placeholder{color:var(--solid-gray-536)}
+.step-section{margin-bottom:1.5rem}
+.step-heading{font-size:1.05rem;font-weight:700;color:var(--blue-900);border-bottom:1px solid var(--solid-gray-300);padding-bottom:.35rem;margin-bottom:.6rem}
+.step-heading.final{color:var(--type-color);border-bottom:2px solid var(--type-color)}
+
+.spinner{display:flex;align-items:center;gap:.75rem;color:var(--solid-gray-600);font-weight:700;font-size:.9rem;margin:.6rem 0}
+.spinner-circle{width:1.6rem;height:1.6rem;border:3px solid var(--solid-gray-300);border-top-color:var(--type-color);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.final-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem}
+.act-btn{min-height:2.75rem;border-radius:8px;padding:.6rem 1.4rem;font-size:.95rem;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.btn-final{background:#ef4444;color:#fff}.btn-final:hover{background:#dc2626}
+.btn-cancel{background:#fff;color:var(--solid-gray-800);border:2px solid var(--solid-gray-420)}.btn-cancel:hover{background:var(--solid-gray-100)}
+.export-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem}
+.btn-copy{background:#16a34a;color:#fff}.btn-copy:hover{background:#15803d}
+.btn-txt{background:#2563eb;color:#fff}.btn-txt:hover{background:#1d4ed8}
+.btn-word{background:#7c3aed;color:#fff}.btn-word:hover{background:#6d28d9}
+.btn-revise{background:#2563eb;color:#fff}.btn-revise:hover{background:#1d4ed8}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:1rem}
+.modal-ov.active{display:flex}
+.modal-card{background:#fff;width:min(560px,92vw);border-radius:12px;padding:1.25rem;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.modal-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.modal-card p{font-size:.9rem;color:var(--solid-gray-600);margin-bottom:.6rem}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem}
+
+.prose{overflow-wrap:anywhere}
+.prose h1{font-size:1.4rem;font-weight:700;margin:1rem 0 .5rem;padding-bottom:.4rem;border-bottom:1px solid var(--solid-gray-420)}
+.prose h2{font-size:1.2rem;font-weight:700;margin:.9rem 0 .35rem}
+.prose h3{font-size:1.08rem;font-weight:700;margin:.7rem 0 .25rem}
+.prose p{margin:.5rem 0}.prose ul,.prose ol{margin:.5rem 0 .5rem 1.5rem}.prose li{margin:.15rem 0}
+.prose strong{font-weight:700}.prose table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:.9rem}
+.prose th,.prose td{border:1px solid var(--solid-gray-300);padding:.5rem .7rem;text-align:left}.prose th{background:var(--solid-gray-100);font-weight:700}
+
+@media(max-width:767px){
+  input,select,textarea{font-size:16px}
+  .result-box{overflow:visible}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
+</head>
+<body>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'bousai_seibi'}));</script>
+<div class="app-shell">
+  <header class="app-header">
+    <button class="back-btn" onclick="goBack()">メニューに戻る</button>
+    <span class="app-logo">地域防災緊急整備型 実施計画書作成</span>
+  </header>
+  <main class="app-main">
+    <div class="split">
+      <!-- LEFT: 入力 -->
+      <section class="split-left">
+        <h1 class="exapp-title">地域防災緊急整備型 実施計画書作成</h1>
+        <span class="type-badge">災害時備蓄資材等整備事業</span>
+
+        <a class="doc-link" href="app-kaisetsu.htm">▸ 制度の解説（必須要件・対象経費・加点ポイント）を見る</a>
+
+        <details class="info-box">
+          <summary>このアプリの使い方・仕組み</summary>
+          <div class="body">
+            <p>能登半島地震等の教訓を踏まえ、<strong>避難生活環境の改善と災害関連死の防止</strong>を目的に、防災・減災資機材や災害対応車両の緊急整備を支援する区分です。単なる備蓄の積み増しではなく「生命維持中心の備蓄」から「健康と尊厳が守られる避難所環境」への転換が問われます。審査はS〜Dの5段階で、地域課題・目指す防災力・平時利用・KPI・推進体制・スケジュール・事業費が評価されます。</p>
+            <ul>
+              <li>①事業概要：資機材の整備内容・数量・主なKPIを制度趣旨に沿って整形</li>
+              <li>②現状調査：Web検索で想定災害・避難者数・指定避難所・備蓄状況・国土強靱化地域計画などを調査</li>
+              <li>③実施計画案：与謝野町記入例に準拠した実施計画書（全9項目）のたたき台を作成</li>
+              <li>④完全版：赤いボタンで、検索を併用した完全版（9項目フル・KPI3か年）を生成（約2分）</li>
+            </ul>
+            <p>「不足数量の根拠→48時間以内の到達目標→平時の訓練→3年間のKPI」という因果の一貫性が採択のカギです。AIの出力はたたき台です。最終的な内容・単価・数量は必ずご自身でご確認ください。</p>
+          </div>
+        </details>
+
+        <form id="appForm" onsubmit="return false;">
+          <div class="form-field">
+            <label class="dads-label" for="municipality">自治体名<span class="dads-required">※必須</span></label>
+            <input type="text" id="municipality" placeholder="例: ○○県○○町">
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="population">人口<span class="dads-required">※必須</span></label>
+            <input type="text" id="population" placeholder="例: 18,964人">
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="saigai">想定される災害・地域の防災上の課題<span class="dads-required">※必須</span></label>
+            <textarea id="saigai" placeholder="例: 想定災害（地震・津波・大雨等）、最大想定避難者数、指定避難所数、現在の備蓄量と対応可能人数、不足（例: 簡易ベッドは現在300台で整備率10%）、高齢者・障害者・乳幼児等の要配慮者、夏季/冬季の温度対策、断水・停電・道路寸断への課題など。数値で書くと高評価。"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="shizai">整備する資機材（品目・数量）<span class="dads-required">※必須</span></label>
+            <textarea id="shizai" placeholder="例: パーティションテント220セット／簡易ベッド460台／可搬型空調機器2セット／簡易トイレ3セット／発電機2台。分かれば単価・配置/保管場所も。自治体直接購入か民間への間接補助かも記載。"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="budget">総事業費（概算）<span class="dads-required">※必須</span></label>
+            <input type="text" id="budget" placeholder="例: 13,820千円（うち資機材購入費○千円）">
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="heiji">資機材の平時利用の方針<span class="dads-optional">※任意</span></label>
+            <textarea id="heiji" placeholder="例: 毎年の町防災訓練での設営訓練、自主防災組織の設置訓練、小学生の防災学習、地域イベントでの活用など。時期・回数・場所・運営主体まで書くと高評価。"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="others">その他（KPI目標・推進体制・広域連携・訓練実績・国土強靱化計画など）<span class="dads-optional">※任意</span></label>
+            <textarea id="others" placeholder="例: KPI目標（訓練回数・48時間以内にTKB確保できる避難所数など）、庁内/地域/民間の連携体制、連携中枢都市圏・定住自立圏・災害時相互応援協定、過去3か年の住民参加型防災訓練の実施・参加人数、有明の丘研修の受講、他地域応援の意思、国土強靱化地域計画への位置づけ（計画名・該当ページ）など。"></textarea>
+          </div>
+          <div class="btn-area">
+            <button type="submit" class="dads-btn" id="submitBtn" onclick="runWorkflow()">実施計画書案を生成する</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- RIGHT: 出力 -->
+      <section class="split-right">
+        <div class="result-header">調査結果＆実施計画書</div>
+        <div class="result-box" id="resultBox">
+          <div id="resultContent"><span class="result-placeholder">ここに生成された実施計画書案が表示されます…</span></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- 微修正モーダル -->
+<div class="modal-ov" id="reviseModal">
+  <div class="modal-card">
+    <h3>実施計画案の微修正</h3>
+    <p>どう修正したいのかを入れてください。現在の実施計画案と修正内容をもとに、③実施計画案を書き直します。</p>
+    <textarea id="reviseInput" placeholder="例：KPIをアウトカム中心に／簡易ベッドの不足数量の根拠を明確化／推進体制に社会福祉協議会を追加／48時間以内の展開目標を具体化 など"></textarea>
+    <div class="modal-actions">
+      <button type="button" class="act-btn btn-cancel" onclick="closeRevise()">キャンセル</button>
+      <button type="button" class="act-btn btn-revise" onclick="submitRevise()">この内容で修正する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/markdown.js"></script>
+<script>
+/* ===== 種別固定（このアプリ = 地域防災緊急整備型） ===== */
+var TYPE_NAME = '地域防災緊急整備型';
+var MODEL_LITE = 'gemini-3.1-flash-lite';
+var MODEL_SEARCH = 'gemini-2.5-flash';
+var API = '../api2/chat-stream.php';
+
+/* ===== ノウハウ資料（制度概要＋出力フォーマット）をロード ===== */
+var CTX = { bousai:'' };
+function loadContexts(){
+  return fetch('bousai.md').then(function(r){return r.ok?r.text():'';}).catch(function(){return '';})
+    .then(function(t){CTX.bousai=t;});
+}
+var ctxReady = loadContexts();
+
+/* ===== メニューに戻る ===== */
+function goBack(){
+  if(parent&&parent!==window){try{var f=parent.document.getElementById('mainFrame');if(f){f.src='app/apps.htm';return;}}catch(e){}}
+  location.href='../app/apps.htm';
+}
+
+var controller=null;
+var inputs={};
+var results={j1:'',c1:'',j2:'',j3:''};
+var step3Section=null;
+
+/* ===== 1ステップ分のストリーミング（chat-stream.php / NDJSON） ===== */
+function callStream(body, contentEl){
+  return new Promise(function(resolve,reject){
+    var full='';
+    fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal})
+    .then(function(res){
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      var reader=res.body.getReader(),dec=new TextDecoder(),buf='';
+      function read(){
+        return reader.read().then(function(r){
+          if(r.done){resolve(full);return;}
+          buf+=dec.decode(r.value,{stream:true});
+          var lines=buf.split('\n');buf=lines.pop();
+          for(var i=0;i<lines.length;i++){
+            var line=lines[i].trim();if(!line)continue;
+            try{var j=JSON.parse(line);
+              if(j.text){full+=j.text;if(contentEl){contentEl.innerHTML=renderMarkdown(full);scrollBottom();}}
+              if(j.error){full+='\n[エラー] '+j.error;if(contentEl)contentEl.innerHTML=renderMarkdown(full);}
+            }catch(e){}
+          }
+          return read();
+        });
+      }
+      return read();
+    }).catch(reject);
+  });
+}
+
+function scrollBottom(){var b=document.getElementById('resultBox');if(window.innerWidth>=768)b.scrollTop=b.scrollHeight;}
+
+/* ===== 出力セクションの生成 ===== */
+function addSection(heading, isFinal){
+  var sec=document.createElement('div');sec.className='step-section';
+  var h=document.createElement('div');h.className='step-heading'+(isFinal?' final':'');h.textContent=heading;
+  var sp=document.createElement('div');sp.className='spinner';sp.innerHTML='<span class="spinner-circle"></span><span>生成中…</span>';
+  var body=document.createElement('div');body.className='prose';body.style.display='none';
+  sec.appendChild(h);sec.appendChild(sp);sec.appendChild(body);
+  document.getElementById('resultContent').appendChild(sec);
+  scrollBottom();
+  return {sec:sec, spinner:sp, body:body,
+    start:function(){sp.style.display='none';body.style.display='block';}};
+}
+
+/* ===== プロンプト構築 ===== */
+function baseInfo(){
+  return '自治体名: '+inputs.municipality+'\n申請区分: 地域防災緊急整備型（災害時備蓄資材等整備事業）\n人口: '+inputs.population+
+    '\n総事業費（概算）: '+inputs.budget+
+    '\n想定される災害・地域の防災上の課題: '+inputs.saigai+
+    '\n整備する資機材（品目・数量）: '+inputs.shizai+
+    '\n平時利用の方針: '+(inputs.heiji||'（記載なし。町防災訓練・自主防災組織訓練・地域イベント等での活用を想定）')+
+    '\nその他（KPI・連携体制・訓練実績・国土強靱化計画等）: '+(inputs.others||'（記載なし）');
+}
+
+function sys1(){return 'あなたは日本の自治体向け「地域防災緊急整備型（災害時備蓄資材等整備事業）」の企画立案アドバイザーです。\n以下の「制度概要・様式・審査基準」を熟読し、ユーザーが提案する資機材整備が、避難生活環境の改善と災害関連死の防止というこの交付金の趣旨に適合するように、実施計画書の冒頭に置く「事業概要」を作成してください。\n\n【出力構成】\n・事業概要（避難所運営に必要な資機材を整備し避難所環境を向上させる目的と内容。250〜400字程度、「である」調）\n・購入する資機材等の内容（入力された品目を「○品目 数量 （単価・金額・配置場所が分かれば）」の箇条書きで整理）\n・主なKPI（アウトプット指標①とアウトカム指標①を各1つ、簡潔に）\n\n必須要件（購入費が総事業費の50%超・平時利用・住民への直接裨益）を踏まえて記述してください。\n\n【制度概要・様式】\n'+CTX.bousai;}
+function user1(){return '以下の事業案について、地域防災緊急整備型の趣旨に沿った「事業概要／購入する資機材等の内容／主なKPI」を作成してください。\n\n'+baseInfo();}
+
+function sys2(){return 'あなたは自治体の防災・危機管理の調査プロフェッショナルです。\nGoogle検索ツールを活用し、指定された自治体について、想定される災害（地震・津波・洪水・土砂災害等のハザード）、最大想定避難者数、指定避難所数、地域防災計画・国土強靱化地域計画の内容、公的備蓄の考え方、要配慮者（高齢化率等）の状況、過去の防災訓練の実施状況、広域連携（連携中枢都市圏・定住自立圏・災害時相互応援協定）などの現状・数値・構造的課題・関連する最新の動きを調査してください。\n能登半島地震等から得られた避難所環境（TKB＝トイレ・キッチン・ベッド）に関する教訓にも言及してください。';}
+function user2(){return '以下の自治体における、地域防災上の現状と構造的課題を調査し、まとめてください。\n\n自治体名: '+inputs.municipality+'\n人口: '+inputs.population+'\n想定災害・課題（申請者の認識）: '+inputs.saigai+'\n\n【重要】出力は500文字以上、1000文字以内で記述してください。\n想定災害・避難者数・指定避難所数・要配慮者・備蓄状況・国土強靱化地域計画・防災訓練実績・広域応援協定など、具体的な事実・数値・実際の検索結果に基づいて記述してください。';}
+
+var FORMAT9 = '地域防災緊急整備型 実施計画書（災害時備蓄資材等整備事業）\n\n'+
+'１．事業概要（災害時備蓄資材等整備事業）\n（自治体名／人口／総事業費／交付対象事業費／交付申請額／事業概要／購入する資機材等の内容〈○品目・仕様・数量・単価・金額・配置/保管場所〉／自治体直接購入か民間への間接補助かの別／主なKPI〈アウトプット指標①・アウトカム指標①〉）\n\n'+
+'２．目指す地域防災力強化の内容\n■購入する資機材により目指す地域防災力向上の在り方（現状の課題→本事業による転換。整備前後の比較・発災後の展開時間・提供人数・災害関連死の防止効果を具体的に）\n■購入する資機材の平時の利活用方針（訓練・防災学習・地域イベント等での活用。時期・回数・場所・主体まで）\n\n'+
+'３．KPI（アウトプット指標）※1つ以上\nKPI①〜③について、次を記載：指標名／種別（アウトプット）／単位／KPIの概要・測定方法／事業成果等の計測に適する理由／申請時点の状況・1年目末・2年目末・3年目末の目標値\n\n'+
+'４．KPI（アウトカム指標）※1つ以上\nKPI①〜③について、次を記載：指標名／種別（アウトカム）／単位／KPIの概要・測定方法／事業成果等の計測に適する理由／申請時点の状況・1年目末・2年目末・3年目末の目標値\n（例：48時間以内にトイレ・暑さ寒さ対策が可能な避難所数、48時間以内に簡易ベッドを提供できる要配慮者の割合、TKB整備率 など）\n\n'+
+'５．推進体制\n災害対策本部を中心とした庁内体制と地域・民間の連携を、名称／役職名／役割の一覧で示す（防災担当・地方創生/企画・財政・契約/調達・福祉/保健の各部局、自主防災組織、社会福祉協議会、地域事業者、消防・消防団、他自治体）。民間への間接補助で整備する場合は発災時協力を協定で担保する旨を記載。\n\n'+
+'６．事業計画スケジュール\n月単位で記載：予算化（計上時期を明記）／仕様の検討／見積・広告・入札／発注・製造・納品・検収／避難所等への配備／操作研修・防災訓練・地域イベント／住民広報。完了時期は納入後の平時利用を踏まえ年度末（3月末）まで。\n\n'+
+'７．避難生活における暑さ・寒さ対策及びトイレ、キッチン、ベッド、風呂（TKB）の環境改善に向けた取組\n■発災後迅速な暑さ・寒さ対策及びTKBの環境改善に向けた取組\n（具体的な時間目標を伴った確保目標：発災48時間以内に、誰が協力してどの資機材を設置し、どの避難所で環境整備を行うか）\n\n'+
+'８．その他の政策的優遇措置の状況 その①\n■連携中枢都市圏構想／定住自立圏構想／広域リージョン連携に基づく地域間連携事業、又は隣接しない地域間の連携事業（災害時相互応援協定名・構成自治体）\n■過去3か年に毎年、地域住民と連携した防災訓練を行っていること（年度・内容・住民参加者数）\n\n'+
+'９．その他の政策的優遇措置の状況 その②\n■過去3か年の有明の丘研修の受講状況（該当有無）\n■他地域が被災した場合の応援の意思（チェック）\n■国土強靱化地域計画への位置づけ（計画名・該当ページ・記載事項・URL）';
+
+function sys3(){return 'あなたは地域防災緊急整備型（災害時備蓄資材等整備事業）の実施計画書作成の超一流エキスパートです。\n以下の「制度概要・評価基準・出力フォーマット」を熟読し、S評価を狙える「実施計画書」のたたき台を作成してください。\n必須要件（従来の防災対策の改善／住民への直接裨益／庁内・地域の連携体制／平時利用と周知）を必ず満たし、審査項目（地域課題・目指す防災力・平時利用・KPI・推進体制・スケジュール・事業費）で高評価を得られるよう記述してください。\nKPIはアウトプット・アウトカムを各1つ以上、3か年（申請時点・1年目・2年目・3年目）の目標値で設定してください。\n合計2000文字以上で記述してください。\n\n'+CTX.bousai;}
+function user3(){return '以下の情報に基づき、「地域防災緊急整備型 実施計画書」を作成してください。\n\n【基本情報】\n'+baseInfo()+
+  '\n\n【事業概要（予備生成結果）】\n'+results.j1+'\n\n【現状調査結果（予備生成結果）】\n'+results.c1+
+  '\n\n【出力フォーマット（この構成・項目名で作成すること）】\n'+FORMAT9;}
+
+function sys4(){return 'あなたは地域防災緊急整備型（災害時備蓄資材等整備事業）の採択を確実にするための、伝説的な行政コンサルタントです。\n以下の「制度概要・評価基準・出力フォーマット」をバイブルとし、S評価を狙える、審査員が納得するレベルの「実施計画書（完全版）」を作成してください。\n現在の事業案をベースに、Google検索ツールを自律的に活用して、その自治体の地域防災計画・国土強靱化地域計画・想定災害・避難者数・指定避難所・要配慮者・防災訓練実績・広域応援協定などをリサーチし、具体的なエビデンスとして本文に組み込んでください。\n「災害リスク→最大避難者/要配慮者数→現在の備蓄不足（数値化）→発災後に起きる問題→購入資機材と数量の根拠→配備・運用体制→48時間以内等の到達目標→平時の訓練→3年間のKPI」という因果の一貫性を必ず貫いてください。\n文字数は5000文字以上を目指し、圧倒的な情報量と論理性を持たせてください。\n項目や構成は、出力フォーマットの全9項目に従い、必要な項目はすべて追加・補強してください。\n\n'+CTX.bousai;}
+function user4(){return '以下のこれまでの検討内容をベースに、リサーチを行い、5000文字以上の「地域防災緊急整備型 実施計画書（完全版）」を作成してください。\n\n【基本情報】\n'+baseInfo()+
+  '\n\n【これまでの検討内容（ベース資料）】\n'+results.j2+
+  '\n\n【出力フォーマット（全9項目・この構成で作成）】\n'+FORMAT9+
+  '\n\n【指示】\n1. 地域の実情に即した具体的なデータ（想定災害・最大想定避難者数・指定避難所数・要配慮者数・現在の備蓄量と不足量）を検索して補強すること。特に不足量は数値で明確にすること。\n2. 事業費は購入資機材の品目・数量・単価を具体化し、車両・資機材の購入費が総事業費の50％を超えることを踏まえること。\n3. KPIはアウトプット・アウトカムを各1つ以上、必ず申請時点・1年目末・2年目末・3年目末の目標値を明示すること。アウトカムは「48時間以内に○○できる避難所数／割合」のように到達時間を伴わせること。\n4. TKB（トイレ・キッチン・ベッド・風呂）と暑さ・寒さ対策について、発災48時間以内の設置目標と達成方法を具体化すること。\n5. 推進体制は名称・役職名・役割を一覧で示し、平時利用・広域応援協定・過去3か年の防災訓練実績・国土強靱化地域計画への位置づけ（計画名・該当ページ）にも触れること。\n6. 【重要】Markdown記法（#、##、**、- など）は一切使用しないでください。記号を使わず、改行とインデント、「・」「１．」などの日本語の箇条書きのみで構成された、そのままWordに貼り付けて使える文書形式で出力すること。\n7. 段落や項目間には適切な空行を入れ、読みやすさを維持すること。';}
+
+/* ===== メインワークフロー（①②③） ===== */
+function runWorkflow(){
+  inputs={
+    municipality:val('municipality'), population:val('population'), saigai:val('saigai'),
+    shizai:val('shizai'), budget:val('budget'), heiji:val('heiji'), others:val('others')
+  };
+  if(!inputs.municipality||!inputs.population||!inputs.saigai||!inputs.shizai||!inputs.budget){
+    alert('自治体名・人口・想定災害/防災上の課題・整備する資機材・総事業費をすべて入力してください。');return;
+  }
+  controller=new AbortController();
+  results={j1:'',c1:'',j2:'',j3:''};
+  var btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='生成中…';
+  document.getElementById('resultContent').innerHTML='';
+
+  ctxReady.then(function(){
+    var s1=addSection('① 事業概要・資機材内容・主なKPI');
+    return callStream({model:MODEL_LITE,systemPrompt:sys1(),temperature:0.5,searchGrounding:false,
+      messages:[{role:'user',content:user1()}]}, s1.body).then(function(t){s1.start();results.j1=t;
+      var s2=addSection('② 地域防災の現状調査（Web検索）');
+      return callStream({model:MODEL_SEARCH,systemPrompt:sys2(),temperature:0.5,searchGrounding:true,
+        messages:[{role:'user',content:user2()}]}, s2.body).then(function(t2){s2.start();results.c1=t2;});
+    }).then(function(){
+      var s3=addSection('③ 実施計画書案（全9項目）');step3Section=s3;
+      return callStream({model:MODEL_LITE,systemPrompt:sys3(),temperature:0.6,searchGrounding:false,
+        messages:[{role:'user',content:user3()}]}, s3.body).then(function(t3){s3.start();results.j2=t3;});
+    }).then(function(){
+      showFinalButtons();
+      finishBtn();
+    });
+  }).catch(function(err){
+    if(err&&err.name==='AbortError'){document.getElementById('resultContent').insertAdjacentHTML('beforeend','<p style="color:var(--solid-gray-600)">生成を中止しました</p>');}
+    else{document.getElementById('resultContent').insertAdjacentHTML('beforeend','<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>');}
+    finishBtn();
+  });
+}
+
+function finishBtn(){var btn=document.getElementById('submitBtn');btn.disabled=false;btn.textContent='実施計画書案を生成する';}
+
+/* ===== ④ 最終提案書ボタン ===== */
+function showFinalButtons(){
+  var wrap=document.createElement('div');wrap.className='final-actions';wrap.id='finalActions';
+  var bf=document.createElement('button');bf.className='act-btn btn-final';bf.textContent='完全版モード（約2分）';bf.onclick=runFinal;
+  var br=document.createElement('button');br.className='act-btn btn-revise';br.textContent='微修正';br.onclick=openRevise;
+  var bc=document.createElement('button');bc.className='act-btn btn-cancel';bc.textContent='やめる';
+  bc.onclick=function(){document.getElementById('resultContent').innerHTML='<span class="result-placeholder">ここに生成された実施計画書案が表示されます…</span>';};
+  wrap.appendChild(bf);wrap.appendChild(br);wrap.appendChild(bc);
+  document.getElementById('resultContent').appendChild(wrap);
+  scrollBottom();
+}
+
+/* ===== 微修正（③実施計画案の書き直し） ===== */
+function openRevise(){document.getElementById('reviseInput').value='';document.getElementById('reviseModal').classList.add('active');document.getElementById('reviseInput').focus();}
+function closeRevise(){document.getElementById('reviseModal').classList.remove('active');}
+function submitRevise(){var ins=document.getElementById('reviseInput').value.trim();if(!ins){alert('修正内容を入力してください。');return;}closeRevise();reviseStep3(ins);}
+function reviseUser3(instruction){return '以下の「現在の実施計画案」を、修正指示に従って書き直してください。指示に関係する箇所を中心に反映し、実施計画書の全9項目の構成・フォーマットは維持してください。\n\n【基本情報】\n'+baseInfo()+'\n\n【現在の実施計画案】\n'+results.j2+'\n\n【修正指示】\n'+instruction+'\n\n【出力フォーマット（この構成・全9項目を維持）】\n'+FORMAT9;}
+function reviseStep3(instruction){
+  if(!step3Section||!results.j2)return;
+  var fa=document.getElementById('finalActions');if(fa)fa.remove();
+  controller=new AbortController();
+  var sec=step3Section;
+  var h=sec.sec.querySelector('.step-heading');if(h)h.textContent='③ 実施計画書案（修正版・全9項目）';
+  sec.body.style.display='none';sec.body.innerHTML='';
+  sec.spinner.style.display='flex';sec.spinner.innerHTML='<span class="spinner-circle"></span><span>実施計画案を修正中…</span>';
+  scrollBottom();
+  ctxReady.then(function(){
+    return callStream({model:MODEL_LITE,systemPrompt:sys3(),temperature:0.6,searchGrounding:false,
+      messages:[{role:'user',content:reviseUser3(instruction)}]}, sec.body);
+  }).then(function(t){sec.start();results.j2=t;showFinalButtons();})
+  .catch(function(err){
+    sec.spinner.style.display='none';sec.body.style.display='block';
+    if(!(err&&err.name==='AbortError')){sec.body.innerHTML='<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>';}
+    showFinalButtons();
+  });
+}
+
+function runFinal(){
+  var fa=document.getElementById('finalActions');if(fa)fa.remove();
+  controller=new AbortController();
+  document.getElementById('resultContent').innerHTML='';
+  var s4=addSection('地域防災緊急整備型 実施計画書（完全版）', true);
+  s4.spinner.innerHTML='<span class="spinner-circle"></span><span>完全版を作成中…（自治体の防災計画や想定災害を検索するため約2分かかります）</span>';
+  ctxReady.then(function(){
+    return callStream({model:MODEL_SEARCH,systemPrompt:sys4(),temperature:0.6,searchGrounding:true,
+      messages:[{role:'user',content:user4()}]}, s4.body);
+  }).then(function(t){s4.start();results.j3=t;showExport();})
+  .catch(function(err){
+    if(err&&err.name==='AbortError'){s4.body.style.display='block';s4.spinner.style.display='none';s4.body.innerHTML='<p style="color:var(--solid-gray-600)">生成を中止しました</p>';}
+    else{s4.spinner.style.display='none';s4.body.style.display='block';s4.body.innerHTML='<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>';}
+  });
+}
+
+/* ===== エクスポート（コピー / テキスト / Word） ===== */
+function showExport(){
+  var wrap=document.createElement('div');wrap.className='export-actions';
+  wrap.innerHTML='<button class="act-btn btn-copy" onclick="copyFinal()">コピー</button>'+
+    '<button class="act-btn btn-txt" onclick="downloadText()">テキスト保存</button>'+
+    '<button class="act-btn btn-word" onclick="exportWord()">Word出力</button>';
+  document.getElementById('resultContent').appendChild(wrap);
+  scrollBottom();
+}
+function copyFinal(){if(!results.j3)return;navigator.clipboard.writeText(results.j3).then(function(){
+  var b=document.querySelector('.btn-copy');if(b){var o=b.textContent;b.textContent='コピー済';setTimeout(function(){b.textContent=o;},2000);}});}
+function downloadText(){if(!results.j3)return;dl(new Blob([results.j3],{type:'text/plain;charset=utf-8'}),'地域防災緊急整備型_実施計画書_'+today()+'.txt');}
+function exportWord(){
+  if(!results.j3||typeof docx==='undefined'){alert('Word出力の準備ができていません');return;}
+  var lines=results.j3.split('\n');var children=[new docx.Paragraph({text:'地域防災緊急整備型 実施計画書（災害時備蓄資材等整備事業）',heading:docx.HeadingLevel.TITLE,spacing:{after:200}})];
+  for(var i=0;i<lines.length;i++){var l=lines[i];
+    if(l.trim()===''){children.push(new docx.Paragraph({text:'',spacing:{after:80}}));continue;}
+    var c=l.replace(/\*\*(.+?)\*\*/g,'$1').replace(/^#+\s*/,'');
+    children.push(new docx.Paragraph({text:c,spacing:{after:60}}));
+  }
+  var doc=new docx.Document({sections:[{children:children}]});
+  docx.Packer.toBlob(doc).then(function(blob){dl(blob,'地域防災緊急整備型_実施計画書_'+today()+'.docx');});
+}
+function dl(blob,name){var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=name;a.target='_top';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},1000);}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function val(id){return document.getElementById(id).value.trim();}
+</script>
+</body>
+</html>
