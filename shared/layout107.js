@@ -18,7 +18,9 @@ function initLayout(opts) {
     { id: 'apps-local', label: '自治体用アプリ', href: basePath + 'apps.htm#sec-jichitai',
       icon: '<path d="M3 22h18"/><path d="M3 10l9-6 9 6"/><path d="M5 10v8M9 10v8M13 10v8M17 10v8"/>' },
     { id: 'apps-audit', label: '行政書類 自動審査', href: basePath + 'apps.htm#sec-audit',
-      icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>' }
+      icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>' },
+    { id: 'apps-koufukin', label: '地域未来交付金', href: basePath + 'apps.htm#sec-koufukin',
+      icon: '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>' }
   ];
 
   /* ---------- 表示モードによるオビ（ピルナビ）並べ替え ---------- */

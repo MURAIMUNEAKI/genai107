@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地域未来交付金 申請書作成【TYPE V 先進的デジタル公共財活用型】- 源内 for Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--solid-gray-50:#f8f8fb;--solid-gray-100:#f1f1f4;--solid-gray-300:#d8d8db;--solid-gray-420:#b4b4b7;--solid-gray-536:#8a8a8d;--solid-gray-600:#6e6e71;--solid-gray-800:#1a1a1c;--blue-50:#eff5ff;--blue-900:#0017c1;--blue-1000:#000fa8;--red-800:#b71c1c;--yellow-300:#ffcc00;--type-color:#1f6feb;--header-height:3.5rem}
+@media(min-width:1024px){:root{--header-height:3.75rem}}
+*{margin:0;padding:0;box-sizing:border-box}html{height:100%}
+body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:var(--solid-gray-800);height:100%;overflow:hidden;background:#e8f4fc}
+
+.app-shell{display:grid;height:100vh;width:100vw;grid-template-rows:auto minmax(0,1fr);overflow:clip}
+.app-header{display:flex;align-items:center;height:var(--header-height);border-bottom:1px solid var(--solid-gray-420);background:#fff;padding:0 1rem}
+.back-btn{padding:6px 24px;background:#ffd600;color:#1a1a2e;font-weight:700;font-size:14px;border:2px solid #e6c200;border-radius:999px;cursor:pointer;font-family:inherit;margin-right:1rem}
+.back-btn:hover{background:#ffca00}
+.app-logo{font-size:1.05rem;font-weight:700;color:#111827;text-decoration:none}
+@media(min-width:1024px){.app-logo{font-size:1.3rem}}
+
+.app-main{overflow-y:auto;scrollbar-gutter:stable}
+/* PCは左右分割、スマホは縦積み（1カラム）で全体が長く縦スクロール */
+.split{display:flex;flex-direction:column;min-height:100%}
+@media(min-width:768px){.split{flex-direction:row;height:100%}}
+.split-left{flex:5;padding:1.5rem;overflow-y:auto;background:#e8f4fc}
+@media(min-width:768px){.split-left{border-right:1px solid var(--solid-gray-420)}}
+.split-right{flex:5;padding:1.5rem;background:#e8f4fc;display:flex;flex-direction:column;gap:.75rem}
+@media(min-width:768px){.split-right{overflow:hidden}}
+
+.exapp-title{font-size:1.2rem;font-weight:700;margin-bottom:.35rem}
+@media(min-width:1024px){.exapp-title{font-size:1.45rem}}
+.type-badge{display:inline-block;background:var(--type-color);color:#fff;font-weight:700;font-size:.8rem;border-radius:999px;padding:.2rem .8rem;margin-bottom:.75rem}
+
+.info-box{background:#fff;border:1px solid var(--solid-gray-300);border-radius:8px;padding:.875rem 1rem;margin-bottom:1.25rem}
+.info-box summary{font-weight:700;cursor:pointer;font-size:.9375rem}
+.info-box .body{font-size:.85rem;color:var(--solid-gray-600);line-height:1.8;margin-top:.6rem}
+.info-box .body ul{padding-left:1.2rem;margin:.4rem 0}
+.doc-link{display:inline-block;margin-bottom:1rem;color:var(--blue-900);font-weight:700;font-size:.875rem;text-decoration:none}
+.doc-link:hover{text-decoration:underline}
+
+.form-field{display:flex;flex-direction:column;gap:.375rem;margin-bottom:1rem}
+.dads-label{font-size:.95rem;font-weight:700;color:var(--solid-gray-800)}
+.dads-required{font-size:.8rem;font-weight:400;color:var(--red-800);margin-left:.4rem}
+.dads-optional{font-size:.8rem;font-weight:400;color:var(--solid-gray-600);margin-left:.4rem}
+.dads-support{font-size:.8rem;color:var(--solid-gray-600)}
+input[type="text"],select,textarea{width:100%;border-radius:8px;border:2px solid #000;padding:.65rem .8rem;font-size:1rem;line-height:1.6;font-family:inherit;background:#fff;color:#0f172a}
+textarea{resize:vertical;min-height:72px}
+select{appearance:none;height:3rem;padding-right:2.5rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%231a1a1c' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--yellow-300);outline-offset:1px;border-color:var(--blue-900)}
+
+.btn-area{display:flex;justify-content:center;margin-top:1rem}
+.dads-btn{min-width:14rem;min-height:3rem;border-radius:8px;padding:.75rem 1rem;font-size:1.05rem;font-weight:700;background:var(--blue-900);color:#fff;border:none;cursor:pointer;font-family:inherit;transition:background .15s}
+.dads-btn:hover{background:var(--blue-1000)}
+.dads-btn:disabled{background:var(--solid-gray-300);color:var(--solid-gray-50);cursor:not-allowed}
+
+.result-header{font-size:1.1rem;font-weight:700}
+.result-box{flex:1;border-radius:8px;border:1px solid var(--solid-gray-420);padding:1.25rem;background:#fff;min-height:120px}
+@media(min-width:768px){.result-box{overflow-y:auto}}
+.result-placeholder{color:var(--solid-gray-536)}
+.step-section{margin-bottom:1.5rem}
+.step-heading{font-size:1.05rem;font-weight:700;color:var(--blue-900);border-bottom:1px solid var(--solid-gray-300);padding-bottom:.35rem;margin-bottom:.6rem}
+.step-heading.final{color:var(--type-color);border-bottom:2px solid var(--type-color)}
+
+.spinner{display:flex;align-items:center;gap:.75rem;color:var(--solid-gray-600);font-weight:700;font-size:.9rem;margin:.6rem 0}
+.spinner-circle{width:1.6rem;height:1.6rem;border:3px solid var(--solid-gray-300);border-top-color:var(--blue-900);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.final-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem}
+.act-btn{min-height:2.75rem;border-radius:8px;padding:.6rem 1.4rem;font-size:.95rem;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.btn-final{background:#ef4444;color:#fff}.btn-final:hover{background:#dc2626}
+.btn-cancel{background:#fff;color:var(--solid-gray-800);border:2px solid var(--solid-gray-420)}.btn-cancel:hover{background:var(--solid-gray-100)}
+.export-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem}
+.btn-copy{background:#16a34a;color:#fff}.btn-copy:hover{background:#15803d}
+.btn-txt{background:#2563eb;color:#fff}.btn-txt:hover{background:#1d4ed8}
+.btn-word{background:#7c3aed;color:#fff}.btn-word:hover{background:#6d28d9}
+.btn-revise{background:#d97706;color:#fff}.btn-revise:hover{background:#b45309}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:1rem}
+.modal-ov.active{display:flex}
+.modal-card{background:#fff;width:min(560px,92vw);border-radius:12px;padding:1.25rem;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.modal-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.modal-card p{font-size:.9rem;color:var(--solid-gray-600);margin-bottom:.6rem}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem}
+
+.prose{overflow-wrap:anywhere}
+.prose h1{font-size:1.4rem;font-weight:700;margin:1rem 0 .5rem;padding-bottom:.4rem;border-bottom:1px solid var(--solid-gray-420)}
+.prose h2{font-size:1.2rem;font-weight:700;margin:.9rem 0 .35rem}
+.prose h3{font-size:1.08rem;font-weight:700;margin:.7rem 0 .25rem}
+.prose p{margin:.5rem 0}.prose ul,.prose ol{margin:.5rem 0 .5rem 1.5rem}.prose li{margin:.15rem 0}
+.prose strong{font-weight:700}.prose table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:.9rem}
+.prose th,.prose td{border:1px solid var(--solid-gray-300);padding:.5rem .7rem;text-align:left}.prose th{background:var(--solid-gray-100);font-weight:700}
+
+@media(max-width:767px){
+  input,select,textarea{font-size:16px}
+  .result-box{overflow:visible}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
+</head>
+<body>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'koufukin_v'}));</script>
+<div class="app-shell">
+  <header class="app-header">
+    <button class="back-btn" onclick="goBack()">メニューに戻る</button>
+    <span class="app-logo">地域未来交付金 申請書作成</span>
+  </header>
+  <main class="app-main">
+    <div class="split">
+      <!-- LEFT: 入力 -->
+      <section class="split-left">
+        <h1 class="exapp-title">地域未来交付金 申請書作成</h1>
+        <span class="type-badge">TYPE V ／ 先進的デジタル公共財活用型</span>
+
+        <a class="doc-link" href="app-kaisetsu.htm">▸ 制度の解説（共通要件・TYPE A/V/S）を見る</a>
+
+        <details class="info-box">
+          <summary>このアプリの使い方・仕組み</summary>
+          <div class="body">
+            <p>TYPE V（先進的デジタル公共財活用型）の申請書たたき台をAIが4段階で作成します。補助率2/3・上限 国費4億円。複数自治体連携による大規模実装で、データ連携基盤の活用とモデル性（他地域への横展開）が重視されます。</p>
+            <ul>
+              <li>①事業概要：制度趣旨に沿った概要をAIが整形</li>
+              <li>②現状調査：Web検索で自治体の現状・課題・先行事例を調査</li>
+              <li>③実施計画案：共同調達・データ連携基盤・モデル性を含む計画のたたき台</li>
+              <li>④最終提案書：赤いボタンで、検索を併用した約6000字以上の完全版を生成（約2分）</li>
+            </ul>
+            <p>AIの出力はたたき台です。最終的な内容は必ずご自身で確認してください。</p>
+          </div>
+        </details>
+
+        <form id="appForm" onsubmit="return false;">
+          <div class="form-field">
+            <label class="dads-label" for="municipality">自治体名<span class="dads-required">※必須</span></label>
+            <input type="text" id="municipality" placeholder="例: ○○県○○市">
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="genre">ジャンル<span class="dads-required">※必須</span></label>
+            <select id="genre">
+              <option value="" disabled selected>選択してください</option>
+              <option value="健康・福祉">健康・福祉</option>
+              <option value="子育て・教育">子育て・教育</option>
+              <option value="地域経済">地域経済</option>
+              <option value="観光・移住定住">観光・移住定住</option>
+              <option value="防災・安全">防災・安全</option>
+              <option value="行政手続・窓口">行政手続・窓口</option>
+              <option value="インフラ・施設管理">インフラ・施設管理</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="project">事業名<span class="dads-required">※必須</span></label>
+            <input type="text" id="project" placeholder="例: AIを活用した高齢者見守りシステム構築事業">
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="overview">事業概要<span class="dads-required">※必須</span></label>
+            <textarea id="overview" placeholder="事業の目的・背景・具体的な実施内容を簡潔に記述してください。"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="budget">予算額（概算）<span class="dads-required">※必須</span></label>
+            <input type="text" id="budget" placeholder="例: 5,000万円">
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="others">その他（KPI目標・協力体制など）<span class="dads-optional">※任意</span></label>
+            <textarea id="others" placeholder="KPI目標数値、連携する企業・団体、既存システムとの連携などを入力してください。"></textarea>
+          </div>
+          <div class="btn-area">
+            <button type="submit" class="dads-btn" id="submitBtn" onclick="runWorkflow()">申請書案を生成する</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- RIGHT: 出力 -->
+      <section class="split-right">
+        <div class="result-header">調査結果＆申請書</div>
+        <div class="result-box" id="resultBox">
+          <div id="resultContent"><span class="result-placeholder">ここに生成された申請書案が表示されます…</span></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- 微修正モーダル -->
+<div class="modal-ov" id="reviseModal">
+  <div class="modal-card">
+    <h3>実施計画案の微修正</h3>
+    <p>どう修正したいのかを入れてください。現在の実施計画案と修正内容をもとに、③実施計画案を書き直します。</p>
+    <textarea id="reviseInput" placeholder="例：KPIをもっと具体的に／推進体制に商工会を追加／予算配分を見直し など"></textarea>
+    <div class="modal-actions">
+      <button type="button" class="act-btn btn-cancel" onclick="closeRevise()">キャンセル</button>
+      <button type="button" class="act-btn btn-revise" onclick="submitRevise()">この内容で修正する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/markdown.js"></script>
+<script>
+/* ===== 種別固定（このアプリ = TYPE A） ===== */
+var TYPE_NAME = 'TYPE V';
+var TYPE_FULL = '先進的デジタル公共財活用型';
+var TYPE_MD_FILE = 'typev.md';
+var MODEL_LITE = 'gemini-3.1-flash-lite';
+var MODEL_SEARCH = 'gemini-2.5-flash';
+var API = '../api2/chat-stream.php';
+
+/* ===== ノウハウ資料（AIコンテキスト）をロード ===== */
+var CTX = { gaiyou:'', typeall:'', type:'' };
+function loadContexts(){
+  return Promise.all([
+    fetch('gaiyou.md').then(function(r){return r.ok?r.text():'';}).catch(function(){return '';}),
+    fetch('typeall.md').then(function(r){return r.ok?r.text():'';}).catch(function(){return '';}),
+    fetch(TYPE_MD_FILE).then(function(r){return r.ok?r.text():'';}).catch(function(){return '';})
+  ]).then(function(a){CTX.gaiyou=a[0];CTX.typeall=a[1];CTX.type=a[2];});
+}
+var ctxReady = loadContexts();
+
+/* ===== ジャンルに応じてプレイスホルダーを変更（自治体名以外） ===== */
+var PH={
+ '健康・福祉':{project:'例: AIを活用した高齢者見守りシステム構築事業',overview:'例: 高齢者宅にセンサー等を設置し異常を検知、家族・地域包括支援センターに通知。孤立防止と在宅生活の安心を実現する。',budget:'例: 5,000万円',others:'例: 見守り登録者数の目標、地域包括支援センター・民生委員・介護事業者との連携'},
+ '子育て・教育':{project:'例: 保育所入所AIマッチング・子育てワンストップ窓口構築事業',overview:'例: 保育所の入所選考をAIで最適化し、子育て手続きをオンラインで一元化。保護者の負担軽減と職員の業務効率化を図る。',budget:'例: 4,000万円',others:'例: オンライン申請率の目標、教育委員会・保育施設・NPOとの連携'},
+ '地域経済':{project:'例: 電子地域通貨によるキャッシュレス商店街活性化事業',overview:'例: スマホ決済の電子地域通貨を導入し地域内消費を可視化・還元。商店街の売上向上と関係人口づくりにつなげる。',budget:'例: 6,000万円',others:'例: 加盟店舗数・流通額の目標、商工会・金融機関・決済事業者との連携'},
+ '観光・移住定住':{project:'例: AIチャットボットによる多言語観光案内・移住相談事業',overview:'例: 多言語対応AIで観光案内と移住相談をオンライン提供。来訪者の満足度向上と移住検討層の掘り起こしを行う。',budget:'例: 3,500万円',others:'例: 相談件数・移住者数の目標、観光協会・DMO・移住支援団体との連携'},
+ '防災・安全':{project:'例: AI防災・避難支援システム構築事業',overview:'例: 河川・気象データをAIで解析し、危険度に応じた避難情報を個別配信。要支援者の避難行動を支援する。',budget:'例: 7,000万円',others:'例: 情報登録率・避難完了率の目標、消防・自主防災組織・気象事業者との連携'},
+ '行政手続・窓口':{project:'例: 書かない窓口・行政手続オンライン化事業',overview:'例: 記入を不要にする「書かない窓口」とオンライン申請を導入し、住民の待ち時間短縮と職員負担軽減を実現する。',budget:'例: 4,500万円',others:'例: オンライン手続率・待ち時間短縮の目標、関係各課・システム事業者との連携'},
+ 'インフラ・施設管理':{project:'例: デジタルツインによるインフラ点検・施設予約システム事業',overview:'例: 橋梁・道路等をデジタルツインで管理しAIで劣化を予測。公共施設予約もオンライン化し維持管理を効率化する。',budget:'例: 8,000万円',others:'例: 点検効率・施設稼働率の目標、土木部門・点検事業者・指定管理者との連携'},
+ 'その他':{project:'例: ○○のデジタル化による住民サービス向上事業',overview:'例: 事業の目的・背景・具体的な実施内容（誰が何にどう使うか）を簡潔に記述してください。',budget:'例: 5,000万円',others:'例: KPI目標数値、連携する企業・団体、既存システムとの連携'}
+};
+(function(){
+  var g=document.getElementById('genre');
+  g.addEventListener('change',function(){
+    var p=PH[g.value];if(!p)return;
+    document.getElementById('project').placeholder=p.project;
+    document.getElementById('overview').placeholder=p.overview;
+    document.getElementById('budget').placeholder=p.budget;
+    document.getElementById('others').placeholder=p.others;
+  });
+})();
+
+/* ===== メニューに戻る ===== */
+function goBack(){
+  if(parent&&parent!==window){try{var f=parent.document.getElementById('mainFrame');if(f){f.src='app/apps.htm';return;}}catch(e){}}
+  location.href='../app/apps.htm';
+}
+
+var controller=null;
+var inputs={};
+var results={j1:'',c1:'',j2:'',j3:''};
+var step3Section=null;
+
+/* ===== 1ステップ分のストリーミング（chat-stream.php / NDJSON） ===== */
+function callStream(body, contentEl){
+  return new Promise(function(resolve,reject){
+    var full='';
+    fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal})
+    .then(function(res){
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      var reader=res.body.getReader(),dec=new TextDecoder(),buf='';
+      function read(){
+        return reader.read().then(function(r){
+          if(r.done){resolve(full);return;}
+          buf+=dec.decode(r.value,{stream:true});
+          var lines=buf.split('\n');buf=lines.pop();
+          for(var i=0;i<lines.length;i++){
+            var line=lines[i].trim();if(!line)continue;
+            try{var j=JSON.parse(line);
+              if(j.text){full+=j.text;if(contentEl){contentEl.innerHTML=renderMarkdown(full);scrollBottom();}}
+              if(j.error){full+='\n[エラー] '+j.error;if(contentEl)contentEl.innerHTML=renderMarkdown(full);}
+            }catch(e){}
+          }
+          return read();
+        });
+      }
+      return read();
+    }).catch(reject);
+  });
+}
+
+function scrollBottom(){var b=document.getElementById('resultBox');if(window.innerWidth>=768)b.scrollTop=b.scrollHeight;}
+
+/* ===== 出力セクションの生成 ===== */
+function addSection(heading, isFinal){
+  var sec=document.createElement('div');sec.className='step-section';
+  var h=document.createElement('div');h.className='step-heading'+(isFinal?' final':'');h.textContent=heading;
+  var sp=document.createElement('div');sp.className='spinner';sp.innerHTML='<span class="spinner-circle"></span><span>生成中…</span>';
+  var body=document.createElement('div');body.className='prose';body.style.display='none';
+  sec.appendChild(h);sec.appendChild(sp);sec.appendChild(body);
+  document.getElementById('resultContent').appendChild(sec);
+  scrollBottom();
+  return {sec:sec, spinner:sp, body:body,
+    start:function(){sp.style.display='none';body.style.display='block';}};
+}
+
+/* ===== プロンプト構築 ===== */
+function baseInfo(){
+  return '自治体名: '+inputs.municipality+'\n申請タイプ: '+TYPE_NAME+'（'+TYPE_FULL+'）\nジャンル: '+inputs.genre+
+    '\n事業名: '+inputs.project+'\n予算: '+inputs.budget+'\nその他: '+(inputs.others||'（記載なし）');
+}
+function sys1(){return 'あなたは日本の自治体向け「地域未来交付金」の企画立案アドバイザーです。\n以下の「制度概要資料」を熟読し、ユーザーが提案する事業がこの交付金制度に適合するように、魅力的な「事業概要」を作成してください。\n文字数は400字〜600字程度を目安にしてください。\n文体は「である」調で、格調高く記述してください。\n\n【制度概要資料】\n'+CTX.gaiyou;}
+function user1(){return '以下の事業案について、地域未来交付金（'+TYPE_NAME+'）の趣旨に沿った事業概要案を作成してください。\n\n'+baseInfo()+'\n原案: '+inputs.overview;}
+
+function sys2(){return 'あなたは自治体の行政課題調査のプロフェッショナルです。\nGoogle検索ツールを活用し、指定された自治体の現状、統計データ、課題、および関連する最新ニュースを調査してください。\n特に指定されたジャンルにおけるデジタル活用の可能性や、類似する先行事例があれば言及してください。';}
+function user2(){return '以下の自治体における、指定されたジャンルに関する現状と課題を調査し、まとめてください。\n\n自治体名: '+inputs.municipality+'\nジャンル: '+inputs.genre+'\n関連事業名: '+inputs.project+'\n\n【重要】出力は500文字以上、1000文字以内で記述してください。\n具体的な事実、数値、または実際の検索結果に基づいて記述してください。';}
+
+function knowhow(){return '【全タイプ共通ノウハウ】\n'+CTX.typeall+'\n\n【選択タイプ別ノウハウ（'+TYPE_NAME+'）】\n'+CTX.type+'\n\n';}
+function sys3(){return 'あなたは地域未来交付金の申請書作成の超一流エキスパートです。\n以下の「申請書作成ノウハウ」を熟読し、これを最大限に活用して、採択される可能性が極めて高い「地域未来交付金 実施計画」を作成してください。\nノウハウに記載されている重要キーワードやロジック（例：KPIの設定方法、自立性の担保など）を必ず反映させてください。\n合計2000文字以上で記述してください。\n\n'+knowhow();}
+function user3(){return '以下の情報に基づき、「地域未来交付金 実施計画」を作成してください。\n\n【基本情報】\n'+baseInfo()+
+  '\n\n【事業概要（予備生成結果）】\n'+results.j1+'\n\n【現状調査結果（予備生成結果）】\n'+results.c1+
+  '\n\n【出力フォーマット】\n地域未来交付金 実施計画\n\n１．申請者情報\n市町村名 '+inputs.municipality+
+  '\n\n２．交付対象事業の名称等\n'+inputs.project+
+  '\n\n３．交付対象事業の背景・概要\n３－Ａ．地方創生として目指す将来像\n（詳細に記述）\n３－Ｂ．構造的な課題\n（詳細に記述）\n３－Ｃ．交付対象事業の概要\n（詳細に記述）'+
+  '\n\n４．ジャンル\n'+inputs.genre+
+  '\n\n５．重要業績評価指標（KPI）\nKPI①（具体的数値目標）\nKPI②（具体的数値目標）\nKPI③（具体的数値目標）'+
+  '\n\n６．自立性\n【A】自主財源の種類（詳細）\n【B】自主財源の種類（詳細）\n【C】自主財源の種類（詳細）'+
+  '\n\n７．地域の多様な主体の参画\n（詳細に記述）\n\n８．推進体制\n（詳細に記述）\n\n９．実行計画\n（詳細に記述）'+
+  '\n\n１０．予算\n'+inputs.budget+'\n\n１１．加点項目\n（ノウハウに基づき記述）\n\n１２．その他\n'+(inputs.others||'（記載なし）');}
+
+function sys4(){return 'あなたは地域未来交付金の採択を確実にするための、伝説的な行政コンサルタントです。\n以下の「申請書作成ノウハウ」をバイブルとし、Typeごとの特性を完璧に網羅した、審査員が感動するレベルの「最終提案書（完全版）」を作成してください。\n現在の事業案をベースに、Google検索ツールを自律的に活用して、その自治体の最新の総合計画、人口ビジョン、デジタル戦略、地域特有の課題、競合する類似事例などをリサーチし、企画書の中に具体的なエビデンスとして組み込んでください。\n文字数は6000文字以上を目指し、圧倒的な情報量と論理性を持たせてください。\n項目や構成は、指定されたTypeのノウハウに従い、必要な項目はすべて追加・補強してください。\n\n'+knowhow();}
+function user4(){return '以下のこれまでの検討内容をベースに、リサーチを行い、6000文字以上の「地域未来交付金 最終完全提案書」を作成してください。\n\n【基本情報】\n'+baseInfo()+
+  '\n\n【これまでの検討内容（ベース資料）】\n'+results.j2+
+  '\n\n【指示】\n1. 自治体の実情に即した具体的なデータを検索して補強すること。\n2. Typeごとの加点要素を確実に盛り込むこと。\n3. 【重要】Markdown記法（#、##、**、- など）は一切使用しないでください。記号を使わず、改行とインデント、「・」「１．」などの日本語の箇条書きのみで構成された、そのままWordに貼り付けて使える文書形式で出力すること。\n4. 段落や項目間には適切な空行を入れ、読みやすさを維持すること。';}
+
+/* ===== メインワークフロー（①②③） ===== */
+function runWorkflow(){
+  inputs={
+    municipality:val('municipality'), genre:val('genre'), project:val('project'),
+    overview:val('overview'), budget:val('budget'), others:val('others')
+  };
+  if(!inputs.municipality||!inputs.genre||!inputs.project||!inputs.overview||!inputs.budget){
+    alert('自治体名・ジャンル・事業名・事業概要・予算額をすべて入力してください。');return;
+  }
+  controller=new AbortController();
+  results={j1:'',c1:'',j2:'',j3:''};
+  var btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='生成中…';
+  document.getElementById('resultContent').innerHTML='';
+
+  ctxReady.then(function(){
+    var s1=addSection('① 事業概要');
+    return callStream({model:MODEL_LITE,systemPrompt:sys1(),temperature:0.6,searchGrounding:false,
+      messages:[{role:'user',content:user1()}]}, s1.body).then(function(t){s1.start();results.j1=t;
+      var s2=addSection('② 現状調査（Web検索）');
+      return callStream({model:MODEL_SEARCH,systemPrompt:sys2(),temperature:0.5,searchGrounding:true,
+        messages:[{role:'user',content:user2()}]}, s2.body).then(function(t2){s2.start();results.c1=t2;});
+    }).then(function(){
+      var s3=addSection('③ 実施計画案');step3Section=s3;
+      return callStream({model:MODEL_LITE,systemPrompt:sys3(),temperature:0.6,searchGrounding:false,
+        messages:[{role:'user',content:user3()}]}, s3.body).then(function(t3){s3.start();results.j2=t3;});
+    }).then(function(){
+      showFinalButtons();
+      finishBtn();
+    });
+  }).catch(function(err){
+    if(err&&err.name==='AbortError'){document.getElementById('resultContent').insertAdjacentHTML('beforeend','<p style="color:var(--solid-gray-600)">生成を中止しました</p>');}
+    else{document.getElementById('resultContent').insertAdjacentHTML('beforeend','<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>');}
+    finishBtn();
+  });
+}
+
+function finishBtn(){var btn=document.getElementById('submitBtn');btn.disabled=false;btn.textContent='申請書案を生成する';}
+
+/* ===== ④ 最終提案書ボタン ===== */
+function showFinalButtons(){
+  var wrap=document.createElement('div');wrap.className='final-actions';wrap.id='finalActions';
+  var bf=document.createElement('button');bf.className='act-btn btn-final';bf.textContent='最終提案書モード（約2分）';bf.onclick=runFinal;
+  var br=document.createElement('button');br.className='act-btn btn-revise';br.textContent='微修正';br.onclick=openRevise;
+  var bc=document.createElement('button');bc.className='act-btn btn-cancel';bc.textContent='やめる';
+  bc.onclick=function(){document.getElementById('resultContent').innerHTML='<span class="result-placeholder">ここに生成された申請書案が表示されます…</span>';};
+  wrap.appendChild(bf);wrap.appendChild(br);wrap.appendChild(bc);
+  document.getElementById('resultContent').appendChild(wrap);
+  scrollBottom();
+}
+
+/* ===== 微修正（③実施計画案の書き直し） ===== */
+function openRevise(){document.getElementById('reviseInput').value='';document.getElementById('reviseModal').classList.add('active');document.getElementById('reviseInput').focus();}
+function closeRevise(){document.getElementById('reviseModal').classList.remove('active');}
+function submitRevise(){var ins=document.getElementById('reviseInput').value.trim();if(!ins){alert('修正内容を入力してください。');return;}closeRevise();reviseStep3(ins);}
+function reviseUser3(instruction){return '以下の「現在の実施計画案」を、修正指示に従って書き直してください。指示に関係する箇所を中心に反映し、実施計画の項目構成・フォーマットは維持してください。\n\n【基本情報】\n'+baseInfo()+'\n\n【現在の実施計画案】\n'+results.j2+'\n\n【修正指示】\n'+instruction;}
+function reviseStep3(instruction){
+  if(!step3Section||!results.j2)return;
+  var fa=document.getElementById('finalActions');if(fa)fa.remove();
+  controller=new AbortController();
+  var sec=step3Section;
+  var h=sec.sec.querySelector('.step-heading');if(h)h.textContent='③ 実施計画案（修正版）';
+  sec.body.style.display='none';sec.body.innerHTML='';
+  sec.spinner.style.display='flex';sec.spinner.innerHTML='<span class="spinner-circle"></span><span>実施計画案を修正中…</span>';
+  scrollBottom();
+  ctxReady.then(function(){
+    return callStream({model:MODEL_LITE,systemPrompt:sys3(),temperature:0.6,searchGrounding:false,
+      messages:[{role:'user',content:reviseUser3(instruction)}]}, sec.body);
+  }).then(function(t){sec.start();results.j2=t;showFinalButtons();})
+  .catch(function(err){
+    sec.spinner.style.display='none';sec.body.style.display='block';
+    if(!(err&&err.name==='AbortError')){sec.body.innerHTML='<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>';}
+    showFinalButtons();
+  });
+}
+
+function runFinal(){
+  var fa=document.getElementById('finalActions');if(fa)fa.remove();
+  controller=new AbortController();
+  document.getElementById('resultContent').innerHTML='';
+  var s4=addSection('地域未来交付金 最終提案書（完全版）', true);
+  s4.spinner.innerHTML='<span class="spinner-circle"></span><span>最終完全提案書を作成中…（自治体情報や先行事例を検索するため約2分かかります）</span>';
+  ctxReady.then(function(){
+    return callStream({model:MODEL_SEARCH,systemPrompt:sys4(),temperature:0.6,searchGrounding:true,
+      messages:[{role:'user',content:user4()}]}, s4.body);
+  }).then(function(t){s4.start();results.j3=t;showExport();})
+  .catch(function(err){
+    if(err&&err.name==='AbortError'){s4.body.style.display='block';s4.spinner.style.display='none';s4.body.innerHTML='<p style="color:var(--solid-gray-600)">生成を中止しました</p>';}
+    else{s4.spinner.style.display='none';s4.body.style.display='block';s4.body.innerHTML='<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>';}
+  });
+}
+
+/* ===== エクスポート（コピー / テキスト / Word） ===== */
+function showExport(){
+  var wrap=document.createElement('div');wrap.className='export-actions';
+  wrap.innerHTML='<button class="act-btn btn-copy" onclick="copyFinal()">コピー</button>'+
+    '<button class="act-btn btn-txt" onclick="downloadText()">テキスト保存</button>'+
+    '<button class="act-btn btn-word" onclick="exportWord()">Word出力</button>';
+  document.getElementById('resultContent').appendChild(wrap);
+  scrollBottom();
+}
+function copyFinal(){if(!results.j3)return;navigator.clipboard.writeText(results.j3).then(function(){
+  var b=document.querySelector('.btn-copy');if(b){var o=b.textContent;b.textContent='コピー済';setTimeout(function(){b.textContent=o;},2000);}});}
+function downloadText(){if(!results.j3)return;dl(new Blob([results.j3],{type:'text/plain;charset=utf-8'}),'地域未来交付金_最終提案書_'+TYPE_NAME+'_'+today()+'.txt');}
+function exportWord(){
+  if(!results.j3||typeof docx==='undefined'){alert('Word出力の準備ができていません');return;}
+  var lines=results.j3.split('\n');var children=[new docx.Paragraph({text:'地域未来交付金 最終提案書（'+TYPE_NAME+'）',heading:docx.HeadingLevel.TITLE,spacing:{after:200}})];
+  for(var i=0;i<lines.length;i++){var l=lines[i];
+    if(l.trim()===''){children.push(new docx.Paragraph({text:'',spacing:{after:80}}));continue;}
+    var c=l.replace(/\*\*(.+?)\*\*/g,'$1').replace(/^#+\s*/,'');
+    children.push(new docx.Paragraph({text:c,spacing:{after:60}}));
+  }
+  var doc=new docx.Document({sections:[{children:children}]});
+  docx.Packer.toBlob(doc).then(function(blob){dl(blob,'地域未来交付金_最終提案書_'+TYPE_NAME+'_'+today()+'.docx');});
+}
+function dl(blob,name){var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=name;a.target='_top';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},1000);}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function val(id){return document.getElementById(id).value.trim();}
+</script>
+</body>
+</html>

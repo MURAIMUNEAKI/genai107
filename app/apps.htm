@@ -39,6 +39,9 @@
       <h2 class="apps-section-title" id="sec-audit">行政書類の自動審査<span class="section-note" style="color:#1a1a1c">各自治体の各部署ごとにカスタマイズして業務の効率化を実現中</span></h2>
       <div class="card-grid" id="cardGrid3"></div>
 
+      <h2 class="apps-section-title" id="sec-koufukin">地域未来交付金 申請支援<span class="section-note" style="color:#1a1a1c">地域未来推進型・デジタル実装型（TYPE A/V/S）の申請書たたき台をAIが4段階で作成。制度の解説も収録</span></h2>
+      <div class="card-grid" id="cardGrid4"></div>
+
       <p class="apps-contact-note">各自治体の部署に合わせて専用アプリの追加と、行政書類の種類を追加します。事務局に<a onclick="window.open('https://digital-supporter.net/join/','_blank')" style="cursor:pointer">お問い合わせ</a>ください。<br>
         注意: AIの出力は必ずしも正確ではありません。重要な情報は必ずご自身で確認してください。</p>
     </div>
@@ -75,7 +78,8 @@ var cardIcons = {
   review:     '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
   audit:      '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>',
   growth:     '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
-  honebuto:   '<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/>'
+  honebuto:   '<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+  koufukin:   '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><path d="M12 2v6"/>'
 };
 
 var cards = [
@@ -113,6 +117,14 @@ var cards3 = [
   { id: 'audit', title: '軽自動車税・原付手続 審査',   desc: '減免申請・名義変更・廃車/標識返納・税止めを業務別に審査。手帳等級の該当性、譲渡証明や車台番号の一致、理由別書類、賦課期日との関係をチェックします。', href: '../app4/app20.htm' }
 ];
 
+var cards4 = [
+  { id: 'koufukin', title: '地域未来推進型 申請書作成', desc: '地場産業・産業クラスター・雇用創出・関係人口づくり等の地域独自の取組を支援する区分。実施計画（全13項目）のたたき台をAIが4段階で作成します。', href: '../app5/app-mirai.htm' },
+  { id: 'koufukin', title: 'TYPE A 申請書作成',     desc: 'デジタル実装型・地域住民等利用推進型。事業案を入力するとAIが現状調査（Web検索）を経て、申請書のたたき台を4段階で作成します。', href: '../app5/app21.htm' },
+  { id: 'koufukin', title: 'TYPE V 申請書作成',     desc: '先進的デジタル公共財活用型。複数自治体連携・データ連携基盤・モデル性を踏まえた申請書のたたき台を作成します。', href: '../app5/app22.htm' },
+  { id: 'koufukin', title: 'TYPE S 申請書作成',     desc: 'デジタル行財政改革特化型。先導性・EBPM・標準化を踏まえた申請書のたたき台を作成します。', href: '../app5/app23.htm' },
+  { id: 'koufukin', title: '地域未来交付金 解説',   desc: '共通要件とTYPE A/V/S（住民利用・公共財活用・行財政改革）の要件・加点ポイントを解説します。', href: '../app5/app-kaisetsu.htm' }
+];
+
 function renderCards(list, gridEl) {
   for (var i = 0; i < list.length; i++) {
     var c = list[i];
@@ -129,6 +141,7 @@ function renderCards(list, gridEl) {
 renderCards(cards, document.getElementById('cardGrid'));
 renderCards(cards2, document.getElementById('cardGrid2'));
 renderCards(cards3, document.getElementById('cardGrid3'));
+renderCards(cards4, document.getElementById('cardGrid4'));
 
 // mode=shorui のとき「行政書類の自動審査」見出し＋カードを最上段へ移動
 if (gennaiMode === 'shorui') {

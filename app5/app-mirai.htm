@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地域未来交付金 申請書作成【地域未来推進型】- 源内 for Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--solid-gray-50:#f8f8fb;--solid-gray-100:#f1f1f4;--solid-gray-300:#d8d8db;--solid-gray-420:#b4b4b7;--solid-gray-536:#8a8a8d;--solid-gray-600:#6e6e71;--solid-gray-800:#1a1a1c;--blue-50:#eff5ff;--blue-900:#0017c1;--blue-1000:#000fa8;--red-800:#b71c1c;--yellow-300:#ffcc00;--type-color:#d97706;--header-height:3.5rem}
+@media(min-width:1024px){:root{--header-height:3.75rem}}
+*{margin:0;padding:0;box-sizing:border-box}html{height:100%}
+body{font-family:'Noto Sans JP',sans-serif;font-size:1rem;line-height:1.7;color:var(--solid-gray-800);height:100%;overflow:hidden;background:#e8f4fc}
+
+.app-shell{display:grid;height:100vh;width:100vw;grid-template-rows:auto minmax(0,1fr);overflow:clip}
+.app-header{display:flex;align-items:center;height:var(--header-height);border-bottom:1px solid var(--solid-gray-420);background:#fff;padding:0 1rem}
+.back-btn{padding:6px 24px;background:#ffd600;color:#1a1a2e;font-weight:700;font-size:14px;border:2px solid #e6c200;border-radius:999px;cursor:pointer;font-family:inherit;margin-right:1rem}
+.back-btn:hover{background:#ffca00}
+.app-logo{font-size:1.05rem;font-weight:700;color:#111827;text-decoration:none}
+@media(min-width:1024px){.app-logo{font-size:1.3rem}}
+
+.app-main{overflow-y:auto;scrollbar-gutter:stable}
+/* PCは左右分割、スマホは縦積み（1カラム）で全体が長く縦スクロール */
+.split{display:flex;flex-direction:column;min-height:100%}
+@media(min-width:768px){.split{flex-direction:row;height:100%}}
+.split-left{flex:5;padding:1.5rem;overflow-y:auto;background:#e8f4fc}
+@media(min-width:768px){.split-left{border-right:1px solid var(--solid-gray-420)}}
+.split-right{flex:5;padding:1.5rem;background:#e8f4fc;display:flex;flex-direction:column;gap:.75rem}
+@media(min-width:768px){.split-right{overflow:hidden}}
+
+.exapp-title{font-size:1.2rem;font-weight:700;margin-bottom:.35rem}
+@media(min-width:1024px){.exapp-title{font-size:1.45rem}}
+.type-badge{display:inline-block;background:var(--type-color);color:#fff;font-weight:700;font-size:.8rem;border-radius:999px;padding:.2rem .8rem;margin-bottom:.75rem}
+
+.info-box{background:#fff;border:1px solid var(--solid-gray-300);border-radius:8px;padding:.875rem 1rem;margin-bottom:1.25rem}
+.info-box summary{font-weight:700;cursor:pointer;font-size:.9375rem}
+.info-box .body{font-size:.85rem;color:var(--solid-gray-600);line-height:1.8;margin-top:.6rem}
+.info-box .body ul{padding-left:1.2rem;margin:.4rem 0}
+.doc-link{display:inline-block;margin-bottom:1rem;color:var(--blue-900);font-weight:700;font-size:.875rem;text-decoration:none}
+.doc-link:hover{text-decoration:underline}
+
+.form-field{display:flex;flex-direction:column;gap:.375rem;margin-bottom:1rem}
+.dads-label{font-size:.95rem;font-weight:700;color:var(--solid-gray-800)}
+.dads-required{font-size:.8rem;font-weight:400;color:var(--red-800);margin-left:.4rem}
+.dads-optional{font-size:.8rem;font-weight:400;color:var(--solid-gray-600);margin-left:.4rem}
+.dads-support{font-size:.8rem;color:var(--solid-gray-600)}
+input[type="text"],select,textarea{width:100%;border-radius:8px;border:2px solid #000;padding:.65rem .8rem;font-size:1rem;line-height:1.6;font-family:inherit;background:#fff;color:#0f172a}
+textarea{resize:vertical;min-height:72px}
+select{appearance:none;height:3rem;padding-right:2.5rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%231a1a1c' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--yellow-300);outline-offset:1px;border-color:var(--blue-900)}
+.kubun-row{display:flex;flex-wrap:wrap;gap:.5rem .9rem}
+.kubun-row label{display:flex;align-items:center;gap:.35rem;font-size:.9rem;font-weight:700;cursor:pointer}
+.kubun-row input{width:1.15rem;height:1.15rem;accent-color:var(--type-color)}
+
+.btn-area{display:flex;justify-content:center;margin-top:1rem}
+.dads-btn{min-width:14rem;min-height:3rem;border-radius:8px;padding:.75rem 1rem;font-size:1.05rem;font-weight:700;background:var(--blue-900);color:#fff;border:none;cursor:pointer;font-family:inherit;transition:background .15s}
+.dads-btn:hover{background:var(--blue-1000)}
+.dads-btn:disabled{background:var(--solid-gray-300);color:var(--solid-gray-50);cursor:not-allowed}
+
+.result-header{font-size:1.1rem;font-weight:700}
+.result-box{flex:1;border-radius:8px;border:1px solid var(--solid-gray-420);padding:1.25rem;background:#fff;min-height:120px}
+@media(min-width:768px){.result-box{overflow-y:auto}}
+.result-placeholder{color:var(--solid-gray-536)}
+.step-section{margin-bottom:1.5rem}
+.step-heading{font-size:1.05rem;font-weight:700;color:var(--blue-900);border-bottom:1px solid var(--solid-gray-300);padding-bottom:.35rem;margin-bottom:.6rem}
+.step-heading.final{color:var(--type-color);border-bottom:2px solid var(--type-color)}
+
+.spinner{display:flex;align-items:center;gap:.75rem;color:var(--solid-gray-600);font-weight:700;font-size:.9rem;margin:.6rem 0}
+.spinner-circle{width:1.6rem;height:1.6rem;border:3px solid var(--solid-gray-300);border-top-color:var(--blue-900);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.final-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem}
+.act-btn{min-height:2.75rem;border-radius:8px;padding:.6rem 1.4rem;font-size:.95rem;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.btn-final{background:#ef4444;color:#fff}.btn-final:hover{background:#dc2626}
+.btn-cancel{background:#fff;color:var(--solid-gray-800);border:2px solid var(--solid-gray-420)}.btn-cancel:hover{background:var(--solid-gray-100)}
+.export-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem}
+.btn-copy{background:#16a34a;color:#fff}.btn-copy:hover{background:#15803d}
+.btn-txt{background:#2563eb;color:#fff}.btn-txt:hover{background:#1d4ed8}
+.btn-word{background:#7c3aed;color:#fff}.btn-word:hover{background:#6d28d9}
+.btn-revise{background:#2563eb;color:#fff}.btn-revise:hover{background:#1d4ed8}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:1rem}
+.modal-ov.active{display:flex}
+.modal-card{background:#fff;width:min(560px,92vw);border-radius:12px;padding:1.25rem;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.modal-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.modal-card p{font-size:.9rem;color:var(--solid-gray-600);margin-bottom:.6rem}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem}
+
+.prose{overflow-wrap:anywhere}
+.prose h1{font-size:1.4rem;font-weight:700;margin:1rem 0 .5rem;padding-bottom:.4rem;border-bottom:1px solid var(--solid-gray-420)}
+.prose h2{font-size:1.2rem;font-weight:700;margin:.9rem 0 .35rem}
+.prose h3{font-size:1.08rem;font-weight:700;margin:.7rem 0 .25rem}
+.prose p{margin:.5rem 0}.prose ul,.prose ol{margin:.5rem 0 .5rem 1.5rem}.prose li{margin:.15rem 0}
+.prose strong{font-weight:700}.prose table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:.9rem}
+.prose th,.prose td{border:1px solid var(--solid-gray-300);padding:.5rem .7rem;text-align:left}.prose th{background:var(--solid-gray-100);font-weight:700}
+
+@media(max-width:767px){
+  input,select,textarea{font-size:16px}
+  .result-box{overflow:visible}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
+</head>
+<body>
+<script>navigator.sendBeacon('../log/count.php',new URLSearchParams({app:'koufukin_suishin'}));</script>
+<div class="app-shell">
+  <header class="app-header">
+    <button class="back-btn" onclick="goBack()">メニューに戻る</button>
+    <span class="app-logo">地域未来交付金 申請書作成</span>
+  </header>
+  <main class="app-main">
+    <div class="split">
+      <!-- LEFT: 入力 -->
+      <section class="split-left">
+        <h1 class="exapp-title">地域未来交付金 申請書作成</h1>
+        <span class="type-badge">地域未来推進型</span>
+
+        <a class="doc-link" href="app-kaisetsu.htm">▸ 制度の解説（デジタル実装型・地域未来推進型）を見る</a>
+
+        <details class="info-box">
+          <summary>このアプリの使い方・仕組み</summary>
+          <div class="body">
+            <p>地域未来推進型は、デジタルに限らず<strong>地場産業の付加価値向上・産業クラスター・雇用創出・関係人口づくりなど、地域独自の取組を幅広く支援</strong>する区分です（補助率1/2。ソフト・拠点整備・インフラ整備の3事業区分）。評価はS〜Dの5段階で、①目指す将来像・課題設定②KPIの適切性③自立性④地域の多様な主体の参画が問われます。</p>
+            <ul>
+              <li>①事業概要：制度趣旨に沿った概要をAIが整形</li>
+              <li>②現状調査：Web検索で人口・労働力率・創業比率・産業構造など自治体の現状・課題を調査</li>
+              <li>③実施計画案：実施計画（全13項目）のたたき台を作成</li>
+              <li>④最終提案書：赤いボタンで、検索を併用した完全版（13項目フル）を生成（約2分）</li>
+            </ul>
+            <p>AIの出力はたたき台です。最終的な内容は必ずご自身で確認してください。</p>
+          </div>
+        </details>
+
+        <form id="appForm" onsubmit="return false;">
+          <div class="form-field">
+            <label class="dads-label" for="municipality">自治体名<span class="dads-required">※必須</span></label>
+            <input type="text" id="municipality" placeholder="例: ○○県○○町">
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="field">主となる事業分野<span class="dads-required">※必須</span></label>
+            <select id="field">
+              <option value="" disabled selected>選択してください</option>
+              <option value="地場産業・産業振興">地場産業・産業振興</option>
+              <option value="観光・関係人口">観光・関係人口</option>
+              <option value="移住・定住">移住・定住</option>
+              <option value="子育て・女性活躍">子育て・女性活躍</option>
+              <option value="働き方改革・雇用創出">働き方改革・雇用創出</option>
+              <option value="農林水産・食">農林水産・食</option>
+              <option value="まちづくり・拠点整備">まちづくり・拠点整備</option>
+              <option value="防災・インフラ">防災・インフラ</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="project">事業名<span class="dads-required">※必須</span></label>
+            <input type="text" id="project" placeholder="例: 女性の活躍促進とまちの魅力向上による活力あるまちづくり事業">
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="overview">事業概要<span class="dads-required">※必須</span></label>
+            <textarea id="overview" placeholder="事業の目的・背景・具体的な実施内容（個別事業）を簡潔に記述してください。"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="budget">予算額（概算）<span class="dads-required">※必須</span></label>
+            <input type="text" id="budget" placeholder="例: 1,300万円（うちソフト事業）">
+          </div>
+          <div class="form-field">
+            <label class="dads-label">事業区分<span class="dads-optional">※複数選択可</span></label>
+            <span class="dads-support">1つの事業でソフト・ハードを一体的に申請できます。インフラ整備はソフト又は拠点整備との組み合わせが要件です。</span>
+            <div class="kubun-row">
+              <label><input type="checkbox" class="kubun" value="ソフト事業" checked> ソフト事業</label>
+              <label><input type="checkbox" class="kubun" value="拠点整備事業"> 拠点整備事業</label>
+              <label><input type="checkbox" class="kubun" value="インフラ整備事業"> インフラ整備事業</label>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="dads-label" for="others">その他（KPI目標・連携体制・自主財源など）<span class="dads-optional">※任意</span></label>
+            <textarea id="others" placeholder="KPI目標数値、産官学金労言住民の参画（連携する団体名）、ふるさと納税等の自主財源、既存計画との関係などを入力してください。"></textarea>
+          </div>
+          <div class="btn-area">
+            <button type="submit" class="dads-btn" id="submitBtn" onclick="runWorkflow()">申請書案を生成する</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- RIGHT: 出力 -->
+      <section class="split-right">
+        <div class="result-header">調査結果＆申請書</div>
+        <div class="result-box" id="resultBox">
+          <div id="resultContent"><span class="result-placeholder">ここに生成された申請書案が表示されます…</span></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- 微修正モーダル -->
+<div class="modal-ov" id="reviseModal">
+  <div class="modal-card">
+    <h3>実施計画案の微修正</h3>
+    <p>どう修正したいのかを入れてください。現在の実施計画案と修正内容をもとに、③実施計画案を書き直します。</p>
+    <textarea id="reviseInput" placeholder="例：KPIをアウトカム中心に／自主財源に企業版ふるさと納税を追加／産官学金労の参画主体を具体化 など"></textarea>
+    <div class="modal-actions">
+      <button type="button" class="act-btn btn-cancel" onclick="closeRevise()">キャンセル</button>
+      <button type="button" class="act-btn btn-revise" onclick="submitRevise()">この内容で修正する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/markdown.js"></script>
+<script>
+/* ===== 種別固定（このアプリ = 地域未来推進型） ===== */
+var TYPE_NAME = '地域未来推進型';
+var MODEL_LITE = 'gemini-3.1-flash-lite';
+var MODEL_SEARCH = 'gemini-2.5-flash';
+var API = '../api2/chat-stream.php';
+
+/* ===== ノウハウ資料（制度概要＋出力フォーマット）をロード ===== */
+var CTX = { suishin:'' };
+function loadContexts(){
+  return fetch('suishin.md').then(function(r){return r.ok?r.text():'';}).catch(function(){return '';})
+    .then(function(t){CTX.suishin=t;});
+}
+var ctxReady = loadContexts();
+
+/* ===== 主となる事業分野に応じてプレイスホルダーを変更（自治体名以外） ===== */
+var PH={
+ '地場産業・産業振興':{project:'例: 地場産業の高付加価値化・販路拡大支援事業',overview:'例: 地域の地場産業を対象に、商品開発・ブランド化・EC販路開拓を支援し、付加価値向上と雇用維持を図る。',budget:'例: 3,000万円',others:'例: 新商品数・売上・雇用の目標、商工会・中小企業診断士協会・金融機関との連携'},
+ '観光・関係人口':{project:'例: 関係人口創出・シティプロモーション事業',overview:'例: ふるさと納税寄附者等に町の魅力を発信し関係人口を拡大。イベント・体験を通じて移住・定住の入口をつくる。',budget:'例: 1,200万円',others:'例: 情報配信対象者数・来訪者数の目標、観光協会・地元事業者・メディアとの連携'},
+ '移住・定住':{project:'例: 移住・定住促進とお試し居住支援事業',overview:'例: お試し居住施設や相談窓口を整備し、仕事・住まい・暮らしを一体的に支援して移住・定住を促進する。',budget:'例: 2,500万円',others:'例: 移住相談件数・移住世帯数の目標、不動産事業者・地域おこし協力隊・自治会との連携'},
+ '子育て・女性活躍':{project:'例: 女性の活躍促進とまちの魅力向上による活力あるまちづくり事業',overview:'例: 女性向けスキリング講座・創業支援・シティプロモーションを組み合わせ、女性の就労・創業と関係人口づくりを進める。',budget:'例: 1,300万円',others:'例: 女性の創業件数・参加者数の目標、商工会・近隣大学・金融機関・女性団体との連携'},
+ '働き方改革・雇用創出':{project:'例: テレワーク拠点整備と雇用創出事業',overview:'例: サテライトオフィス・コワーキング拠点を整備し、企業誘致とテレワーク人材の受け入れで雇用を創出する。',budget:'例: 4,000万円',others:'例: 立地企業数・新規雇用数の目標、商工会・進出企業・人材事業者との連携'},
+ '農林水産・食':{project:'例: 6次産業化による農林水産物ブランド化事業',overview:'例: 地域の農林水産物を活用した加工・販売・体験を一体化し、6次産業化で所得向上と担い手確保を図る。',budget:'例: 3,500万円',others:'例: 加工品売上・新規就農者数の目標、農協・生産者・食品事業者との連携'},
+ 'まちづくり・拠点整備':{project:'例: 地域交流拠点の整備によるコミュニティ再生事業',overview:'例: 空き施設等を交流拠点として整備し、多世代交流・地域活動の場をつくることでコミュニティを再生する。',budget:'例: 8,000万円',others:'例: 拠点利用者数・活動団体数の目標、自治会・NPO・大学との連携'},
+ '防災・インフラ':{project:'例: 防災力強化と地域インフラ整備事業',overview:'例: 避難拠点・情報基盤・生活インフラを整備し、地域の防災力と暮らしの安全・安心を高める。',budget:'例: 1億円',others:'例: 避難行動要支援者の登録率・整備箇所数の目標、消防・自主防災組織・建設事業者との連携'},
+ 'その他':{project:'例: 地域独自の課題解決による活力あるまちづくり事業',overview:'例: 事業の目的・背景・具体的な実施内容（個別事業）を簡潔に記述してください。',budget:'例: 3,000万円',others:'例: KPI（アウトカム）目標、産官学金労言住民の参画主体、ふるさと納税等の自主財源'}
+};
+(function(){
+  var g=document.getElementById('field');
+  g.addEventListener('change',function(){
+    var p=PH[g.value];if(!p)return;
+    document.getElementById('project').placeholder=p.project;
+    document.getElementById('overview').placeholder=p.overview;
+    document.getElementById('budget').placeholder=p.budget;
+    document.getElementById('others').placeholder=p.others;
+  });
+})();
+
+/* ===== メニューに戻る ===== */
+function goBack(){
+  if(parent&&parent!==window){try{var f=parent.document.getElementById('mainFrame');if(f){f.src='app/apps.htm';return;}}catch(e){}}
+  location.href='../app/apps.htm';
+}
+
+var controller=null;
+var inputs={};
+var results={j1:'',c1:'',j2:'',j3:''};
+var step3Section=null;
+
+/* ===== 1ステップ分のストリーミング（chat-stream.php / NDJSON） ===== */
+function callStream(body, contentEl){
+  return new Promise(function(resolve,reject){
+    var full='';
+    fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal})
+    .then(function(res){
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      var reader=res.body.getReader(),dec=new TextDecoder(),buf='';
+      function read(){
+        return reader.read().then(function(r){
+          if(r.done){resolve(full);return;}
+          buf+=dec.decode(r.value,{stream:true});
+          var lines=buf.split('\n');buf=lines.pop();
+          for(var i=0;i<lines.length;i++){
+            var line=lines[i].trim();if(!line)continue;
+            try{var j=JSON.parse(line);
+              if(j.text){full+=j.text;if(contentEl){contentEl.innerHTML=renderMarkdown(full);scrollBottom();}}
+              if(j.error){full+='\n[エラー] '+j.error;if(contentEl)contentEl.innerHTML=renderMarkdown(full);}
+            }catch(e){}
+          }
+          return read();
+        });
+      }
+      return read();
+    }).catch(reject);
+  });
+}
+
+function scrollBottom(){var b=document.getElementById('resultBox');if(window.innerWidth>=768)b.scrollTop=b.scrollHeight;}
+
+/* ===== 出力セクションの生成 ===== */
+function addSection(heading, isFinal){
+  var sec=document.createElement('div');sec.className='step-section';
+  var h=document.createElement('div');h.className='step-heading'+(isFinal?' final':'');h.textContent=heading;
+  var sp=document.createElement('div');sp.className='spinner';sp.innerHTML='<span class="spinner-circle"></span><span>生成中…</span>';
+  var body=document.createElement('div');body.className='prose';body.style.display='none';
+  sec.appendChild(h);sec.appendChild(sp);sec.appendChild(body);
+  document.getElementById('resultContent').appendChild(sec);
+  scrollBottom();
+  return {sec:sec, spinner:sp, body:body,
+    start:function(){sp.style.display='none';body.style.display='block';}};
+}
+
+/* ===== プロンプト構築 ===== */
+function baseInfo(){
+  return '自治体名: '+inputs.municipality+'\n申請区分: 地域未来交付金（地域未来推進型）\n主となる事業分野: '+inputs.field+
+    '\n事業区分: '+(inputs.kubun||'ソフト事業')+'\n事業名: '+inputs.project+'\n予算: '+inputs.budget+'\nその他: '+(inputs.others||'（記載なし）');
+}
+function sys1(){return 'あなたは日本の自治体向け「地域未来交付金（地域未来推進型）」の企画立案アドバイザーです。\n以下の「制度概要・様式」を熟読し、ユーザーが提案する事業が、地域独自の取組（地場産業・産業クラスター・雇用創出・関係人口づくり等）を支援するこの交付金の趣旨に適合するように、魅力的な「事業概要」を作成してください。\n文字数は400字〜600字程度を目安にしてください。\n文体は「である」調で、格調高く記述してください。\n\n【制度概要・様式】\n'+CTX.suishin;}
+function user1(){return '以下の事業案について、地域未来交付金（地域未来推進型）の趣旨に沿った事業概要案を作成してください。\n\n'+baseInfo()+'\n原案: '+inputs.overview;}
+
+function sys2(){return 'あなたは自治体の地方創生・地域経済の調査プロフェッショナルです。\nGoogle検索ツールを活用し、指定された自治体の人口動態、若年女性の労働力率、創業比率（RESAS等）、地場産業・産業構造、雇用、関係人口などの現状・統計データ・構造的課題・関連する最新ニュースを調査してください。\n指定された事業分野における先行事例や、地方版総合戦略・総合計画上の位置づけがあれば言及してください。';}
+function user2(){return '以下の自治体における、指定された事業分野に関する現状と構造的課題を調査し、まとめてください。\n\n自治体名: '+inputs.municipality+'\n主となる事業分野: '+inputs.field+'\n関連事業名: '+inputs.project+'\n\n【重要】出力は500文字以上、1000文字以内で記述してください。\n人口・労働力率・創業比率・産業構造など、具体的な事実・数値・実際の検索結果に基づいて記述してください。';}
+
+var FORMAT13 = '地域未来交付金 実施計画（地域未来推進型）\n\n'+
+'１．申請者情報\n（自治体名・地方公共団体コード・事業開始年度・継続/変更・担当部局・責任者）\n\n'+
+'２．交付対象事業の名称等\n（事業名／単独・広域の別／主となる事業分野〈大項目・詳細〉／関連する事業分野①②／ソフト・拠点整備・インフラ整備の実施期間／対象事業経費と申請額〈対象経費の1/2〉）\n\n'+
+'３．交付対象事業の背景・概要\nＡ．地方創生として目指す将来像（交付対象事業の背景）…【事業の背景】【目指す将来像】を記述\nＢ．地方創生の実現における構造的な課題…人口・労働力率・創業比率・産業構造等の客観データで課題を明確化\nＣ．交付対象事業の概要…構造的課題の解決にどう寄与するかを、①②③…の個別事業に分けて記述\n\n'+
+'４．重点テーマ／優先採択テーマへの該当\n\n'+
+'５．重点配分事業への該当（他省庁補助金との連携／弾力措置／特区／地域再生法／スタートアップ支援）\n\n'+
+'６．事業の横展開の状況（参考にした自治体・政策分野／最大5団体）\n\n'+
+'７．他の国庫補助金等の対象事業の除外（財源振替・コンサル経費・二重補助の除外）\n\n'+
+'８．交付対象事業の重要業績評価指標（KPI）\nKPI①（事業・施策の全体効果を示す必須KPI／アウトカムベース、単位・各年度増加分・目標値の根拠・計測手法）\nKPI②〜（アウトプット・アウトカム指標）\n\n'+
+'９．自立性\n取組内容（将来的に交付金に頼らず継続できる仕組み）／自主財源の種類【A】一般財源【B】寄附金（ふるさと納税・企業版ふるさと納税等）【C】〜／各年度の自主財源見込額・事業費内訳\n\n'+
+'１０．地域の多様な主体の参画（産・官・学・金・労・言・住民全般の主体名・役割・意見・改善方策）\n\n'+
+'１１．交付対象事業の効果検証及び事業内容の見直しの方法・時期・体制（外部組織による検証：時期／方法／参画者／公表方法）\n\n'+
+'１２．地方版総合戦略の策定状況（計画期間・基本目標）\n\n'+
+'１３．地域再生計画の名称等（名称・区域・計画期間）';
+
+function sys3(){return 'あなたは地域未来交付金（地域未来推進型）の申請書作成の超一流エキスパートです。\n以下の「制度概要・評価基準・出力フォーマット」を熟読し、S評価を狙える「地域未来推進型 実施計画」のたたき台を作成してください。\n評価基準の4観点（目指す将来像・課題設定／KPIの適切性〈アウトカム重視〉／自立性〈自主財源〉／地域の多様な主体の参画）を必ず反映してください。\n合計2000文字以上で記述してください。\n\n'+CTX.suishin;}
+function user3(){return '以下の情報に基づき、「地域未来推進型 実施計画」を作成してください。\n\n【基本情報】\n'+baseInfo()+
+  '\n\n【事業概要（予備生成結果）】\n'+results.j1+'\n\n【現状調査結果（予備生成結果）】\n'+results.c1+
+  '\n\n【出力フォーマット（この構成・項目名で作成すること）】\n'+FORMAT13;}
+
+function sys4(){return 'あなたは地域未来交付金（地域未来推進型）の採択を確実にするための、伝説的な行政コンサルタントです。\n以下の「制度概要・評価基準・出力フォーマット」をバイブルとし、S評価を狙える、審査員が感動するレベルの「実施計画（完全版）」を作成してください。\n現在の事業案をベースに、Google検索ツールを自律的に活用して、その自治体の最新の総合計画・人口ビジョン・地方版総合戦略・地域特有の課題・人口/労働力率/創業比率等のデータ・競合する類似事例をリサーチし、企画書の中に具体的なエビデンスとして組み込んでください。\n文字数は6000文字以上を目指し、圧倒的な情報量と論理性を持たせてください。\n項目や構成は、出力フォーマットの全13項目に従い、必要な項目はすべて追加・補強してください。\n\n'+CTX.suishin;}
+function user4(){return '以下のこれまでの検討内容をベースに、リサーチを行い、6000文字以上の「地域未来推進型 実施計画（完全版）」を作成してください。\n\n【基本情報】\n'+baseInfo()+
+  '\n\n【これまでの検討内容（ベース資料）】\n'+results.j2+
+  '\n\n【出力フォーマット（全13項目・この構成で作成）】\n'+FORMAT13+
+  '\n\n【指示】\n1. 自治体の実情に即した具体的なデータ（人口・労働力率・創業比率・産業構造・RESAS等）を検索して補強すること。\n2. KPI①は必ずアウトカムベースの必須KPIとし、目標値の根拠・計測手法を添えること。\n3. 自立性は「4年目以降は交付金に頼らず継続」を明記し、一般財源・ふるさと納税・企業版ふるさと納税等の自主財源を具体化すること。\n4. 地域の多様な主体の参画は、産・官・学・金・労・言・住民の分類ごとに主体名と役割を記載すること。\n5. 【重要】Markdown記法（#、##、**、- など）は一切使用しないでください。記号を使わず、改行とインデント、「・」「１．」などの日本語の箇条書きのみで構成された、そのままWordに貼り付けて使える文書形式で出力すること。\n6. 段落や項目間には適切な空行を入れ、読みやすさを維持すること。';}
+
+/* ===== メインワークフロー（①②③） ===== */
+function runWorkflow(){
+  var kubunArr=Array.prototype.slice.call(document.querySelectorAll('.kubun:checked')).map(function(c){return c.value;});
+  inputs={
+    municipality:val('municipality'), field:val('field'), project:val('project'),
+    overview:val('overview'), budget:val('budget'), kubun:kubunArr.join('・'), others:val('others')
+  };
+  if(!inputs.municipality||!inputs.field||!inputs.project||!inputs.overview||!inputs.budget){
+    alert('自治体名・主となる事業分野・事業名・事業概要・予算額をすべて入力してください。');return;
+  }
+  if(kubunArr.length===0){alert('事業区分を1つ以上選択してください。');return;}
+  if(kubunArr.indexOf('インフラ整備事業')>=0 && kubunArr.indexOf('ソフト事業')<0 && kubunArr.indexOf('拠点整備事業')<0){
+    alert('インフラ整備事業は、ソフト事業又は拠点整備事業との組み合わせが要件です。いずれかも選択してください。');return;
+  }
+  controller=new AbortController();
+  results={j1:'',c1:'',j2:'',j3:''};
+  var btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='生成中…';
+  document.getElementById('resultContent').innerHTML='';
+
+  ctxReady.then(function(){
+    var s1=addSection('① 事業概要');
+    return callStream({model:MODEL_LITE,systemPrompt:sys1(),temperature:0.6,searchGrounding:false,
+      messages:[{role:'user',content:user1()}]}, s1.body).then(function(t){s1.start();results.j1=t;
+      var s2=addSection('② 現状調査（Web検索）');
+      return callStream({model:MODEL_SEARCH,systemPrompt:sys2(),temperature:0.5,searchGrounding:true,
+        messages:[{role:'user',content:user2()}]}, s2.body).then(function(t2){s2.start();results.c1=t2;});
+    }).then(function(){
+      var s3=addSection('③ 実施計画案（全13項目）');step3Section=s3;
+      return callStream({model:MODEL_LITE,systemPrompt:sys3(),temperature:0.6,searchGrounding:false,
+        messages:[{role:'user',content:user3()}]}, s3.body).then(function(t3){s3.start();results.j2=t3;});
+    }).then(function(){
+      showFinalButtons();
+      finishBtn();
+    });
+  }).catch(function(err){
+    if(err&&err.name==='AbortError'){document.getElementById('resultContent').insertAdjacentHTML('beforeend','<p style="color:var(--solid-gray-600)">生成を中止しました</p>');}
+    else{document.getElementById('resultContent').insertAdjacentHTML('beforeend','<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>');}
+    finishBtn();
+  });
+}
+
+function finishBtn(){var btn=document.getElementById('submitBtn');btn.disabled=false;btn.textContent='申請書案を生成する';}
+
+/* ===== ④ 最終提案書ボタン ===== */
+function showFinalButtons(){
+  var wrap=document.createElement('div');wrap.className='final-actions';wrap.id='finalActions';
+  var bf=document.createElement('button');bf.className='act-btn btn-final';bf.textContent='最終提案書モード（約2分）';bf.onclick=runFinal;
+  var br=document.createElement('button');br.className='act-btn btn-revise';br.textContent='微修正';br.onclick=openRevise;
+  var bc=document.createElement('button');bc.className='act-btn btn-cancel';bc.textContent='やめる';
+  bc.onclick=function(){document.getElementById('resultContent').innerHTML='<span class="result-placeholder">ここに生成された申請書案が表示されます…</span>';};
+  wrap.appendChild(bf);wrap.appendChild(br);wrap.appendChild(bc);
+  document.getElementById('resultContent').appendChild(wrap);
+  scrollBottom();
+}
+
+/* ===== 微修正（③実施計画案の書き直し） ===== */
+function openRevise(){document.getElementById('reviseInput').value='';document.getElementById('reviseModal').classList.add('active');document.getElementById('reviseInput').focus();}
+function closeRevise(){document.getElementById('reviseModal').classList.remove('active');}
+function submitRevise(){var ins=document.getElementById('reviseInput').value.trim();if(!ins){alert('修正内容を入力してください。');return;}closeRevise();reviseStep3(ins);}
+function reviseUser3(instruction){return '以下の「現在の実施計画案」を、修正指示に従って書き直してください。指示に関係する箇所を中心に反映し、実施計画の全13項目の構成・フォーマットは維持してください。\n\n【基本情報】\n'+baseInfo()+'\n\n【現在の実施計画案】\n'+results.j2+'\n\n【修正指示】\n'+instruction+'\n\n【出力フォーマット（この構成・全13項目を維持）】\n'+FORMAT13;}
+function reviseStep3(instruction){
+  if(!step3Section||!results.j2)return;
+  var fa=document.getElementById('finalActions');if(fa)fa.remove();
+  controller=new AbortController();
+  var sec=step3Section;
+  var h=sec.sec.querySelector('.step-heading');if(h)h.textContent='③ 実施計画案（修正版・全13項目）';
+  sec.body.style.display='none';sec.body.innerHTML='';
+  sec.spinner.style.display='flex';sec.spinner.innerHTML='<span class="spinner-circle"></span><span>実施計画案を修正中…</span>';
+  scrollBottom();
+  ctxReady.then(function(){
+    return callStream({model:MODEL_LITE,systemPrompt:sys3(),temperature:0.6,searchGrounding:false,
+      messages:[{role:'user',content:reviseUser3(instruction)}]}, sec.body);
+  }).then(function(t){sec.start();results.j2=t;showFinalButtons();})
+  .catch(function(err){
+    sec.spinner.style.display='none';sec.body.style.display='block';
+    if(!(err&&err.name==='AbortError')){sec.body.innerHTML='<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>';}
+    showFinalButtons();
+  });
+}
+
+function runFinal(){
+  var fa=document.getElementById('finalActions');if(fa)fa.remove();
+  controller=new AbortController();
+  document.getElementById('resultContent').innerHTML='';
+  var s4=addSection('地域未来推進型 実施計画（完全版）', true);
+  s4.spinner.innerHTML='<span class="spinner-circle"></span><span>最終完全版を作成中…（自治体情報や先行事例を検索するため約2分かかります）</span>';
+  ctxReady.then(function(){
+    return callStream({model:MODEL_SEARCH,systemPrompt:sys4(),temperature:0.6,searchGrounding:true,
+      messages:[{role:'user',content:user4()}]}, s4.body);
+  }).then(function(t){s4.start();results.j3=t;showExport();})
+  .catch(function(err){
+    if(err&&err.name==='AbortError'){s4.body.style.display='block';s4.spinner.style.display='none';s4.body.innerHTML='<p style="color:var(--solid-gray-600)">生成を中止しました</p>';}
+    else{s4.spinner.style.display='none';s4.body.style.display='block';s4.body.innerHTML='<p style="color:#d32f2f">エラー: '+(err&&err.message||err)+'</p>';}
+  });
+}
+
+/* ===== エクスポート（コピー / テキスト / Word） ===== */
+function showExport(){
+  var wrap=document.createElement('div');wrap.className='export-actions';
+  wrap.innerHTML='<button class="act-btn btn-copy" onclick="copyFinal()">コピー</button>'+
+    '<button class="act-btn btn-txt" onclick="downloadText()">テキスト保存</button>'+
+    '<button class="act-btn btn-word" onclick="exportWord()">Word出力</button>';
+  document.getElementById('resultContent').appendChild(wrap);
+  scrollBottom();
+}
+function copyFinal(){if(!results.j3)return;navigator.clipboard.writeText(results.j3).then(function(){
+  var b=document.querySelector('.btn-copy');if(b){var o=b.textContent;b.textContent='コピー済';setTimeout(function(){b.textContent=o;},2000);}});}
+function downloadText(){if(!results.j3)return;dl(new Blob([results.j3],{type:'text/plain;charset=utf-8'}),'地域未来交付金_実施計画_推進型_'+today()+'.txt');}
+function exportWord(){
+  if(!results.j3||typeof docx==='undefined'){alert('Word出力の準備ができていません');return;}
+  var lines=results.j3.split('\n');var children=[new docx.Paragraph({text:'地域未来交付金 実施計画（地域未来推進型）',heading:docx.HeadingLevel.TITLE,spacing:{after:200}})];
+  for(var i=0;i<lines.length;i++){var l=lines[i];
+    if(l.trim()===''){children.push(new docx.Paragraph({text:'',spacing:{after:80}}));continue;}
+    var c=l.replace(/\*\*(.+?)\*\*/g,'$1').replace(/^#+\s*/,'');
+    children.push(new docx.Paragraph({text:c,spacing:{after:60}}));
+  }
+  var doc=new docx.Document({sections:[{children:children}]});
+  docx.Packer.toBlob(doc).then(function(blob){dl(blob,'地域未来交付金_実施計画_推進型_'+today()+'.docx');});
+}
+function dl(blob,name){var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=name;a.target='_top';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},1000);}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function val(id){return document.getElementById(id).value.trim();}
+</script>
+</body>
+</html>
